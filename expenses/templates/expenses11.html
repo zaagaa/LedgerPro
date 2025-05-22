@@ -1,0 +1,62 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+<span class="d-flex align-items-center justify-content-center mb-3">
+                <form action="" method="POST" class="row gy-2 gx-3 align-items-center">
+                    {% csrf_token %}
+                    <div class="col-auto">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                From:
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <input style='width:150px;' class='form-control datepicker form-control-sm-4'
+                               type='text' name='start_date' value='{{form_start_date}}'>
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                To:
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <input style='width:150px;' class='form-control datepicker form-control-sm-4'
+                               type='text' name='end_date' value='{{form_end_date}}'>
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                Filter:
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <input style='width:150px;' type='text' class='form-control form-control-sm-4'
+                               name='filter' value='{{filter}}'>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Show</button>
+                    </div>
+                </form>
+ </span>
+                <table class="table">
+                {% for data in expenses_list %}
+                <tr><td>{{data.id}}</td><td>{{data.entry_date}}</td><td>{{data.user.username}}</td><td>{{data.description}}</td><td style="text-align: right;">{{data.amount}}</td></tr>
+                {% endfor %}
+                    <tr><th colspan="4"></th><th style="text-align: right;">{{total_amount}}</th></tr>
+                </table>
+
+
+
+</div></div></div></div>
+
+
+{% endblock content %}

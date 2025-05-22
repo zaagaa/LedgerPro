@@ -1,0 +1,66 @@
+ {% load static %}
+ {% if '/pos/' in request.path %}
+ <div class="sidebar horizontal-sidebar">
+        <div id="sidebar-menu-3" class="sidebar-menu">
+            <ul class="nav">
+                <li>
+                    <a href="{% url 'pos' %}"><i data-feather="grid"></i><span> Home</span></a>
+                </li>
+                <li>
+                    <a href="{% url 'pos' %}" target="_blank"><i data-feather="grid"></i><span> New Tab</span></a>
+                </li>
+                <li>
+                    <a href="{% url 'pos_bill_copy' %}"><i data-feather="grid"></i><span> Bill Copy</span></a>
+                </li>
+                <li>
+                    <a href="{% url 'pos_statement' %}"><i data-feather="grid"></i><span> Statement</span></a>
+                </li>
+                <li>
+                    <a href="{% url 'pos_expenses' %}"><i data-feather="grid"></i><span> Expenses</span></a>
+                </li>
+                <li>
+                    <a href="{% url 'pos_bill_list' %}"><i data-feather="grid"></i><span> Bill List</span></a>
+                </li>
+                <li>
+                    <a href="{% url 'pos_bundle' %}"><i data-feather="grid"></i><span> Bundle</span></a>
+                </li>
+                <li>
+                    <a href="{% url 'pos_supplier_payment' %}"><i data-feather="grid"></i><span> Cash Payment</span></a>
+                </li>
+                <li>
+                    <a href="{% url 'pos_add_staff_credit' %}"><i data-feather="grid"></i><span> Staff Credit</span></a>
+                </li>
+                <li>
+                    <a href="{% url 'dashboard' %}"><i data-feather="grid"></i><span> Admin Panel</span></a>
+                </li>
+
+                <li>
+                    <a href="{% url 'customer_gift_otp' %}"><i data-feather="grid"></i><span> Gift OTP</span></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+ {% endif %}
+
+ {% if '/customer/' in request.path %}
+ <div class="sidebar horizontal-sidebar">
+        <div id="sidebar-menu-3" class="sidebar-menu">
+            <ul class="nav">
+                <li>
+                    <a href="{% url 'customer_point' %}"><i data-feather="grid"></i><span> Home</span></a>
+                </li>
+                <li>
+                    <a href="{% url 'customer_activities' %}"><i data-feather="grid"></i><span> Recent Activities</span></a>
+                </li>
+
+                <li>
+                    <a href="{% url 'update_customer_name' %}"><i data-feather="grid"></i><span> Change Customer Name</span></a>
+                </li>
+
+                <li>
+                    <a href="{% url 'customer_gift_otp' %}"><i data-feather="grid"></i><span> Gift OTP</span></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+ {% endif %}
