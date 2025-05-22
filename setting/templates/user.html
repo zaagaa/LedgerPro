@@ -1,0 +1,216 @@
+{% extends 'layouts2/main.html' %}
+
+
+{% block modal %}
+<div class="modal fade" id="add-units">
+    <div class="modal-dialog modal-dialog-centered custom-modal-two">
+        <div class="modal-content">
+            <div class="page-wrapper-new p-0">
+                <div class="content">
+                    <div class="modal-header border-0 custom-modal-header">
+                        <div class="page-title">
+                            {% if not edit_user.id %}
+                            <h4>Add User</h4>
+                            {% else %}
+                            <h4>Edit User</h4>
+                            {% endif %}
+                        </div>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body custom-modal-body">
+
+                        <form action="./" method="POST">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                <input class='form-control' type='text' autocomplete='off'
+                                       name='username' value='{{edit_user.username}}'>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input class='form-control' type='text' autocomplete='off'
+                                       name='password' value='{{edit_user.raw_password}}'>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-lg-12">
+                                    <div class="input-blocks">
+                                        <label class="form-label">Position</label>
+                                        <select id="position" name="position" class="select">
+                                            {% for key, value in position_option %}
+                                                {% if key != 0 %}
+                                            <option value='{{key}}'>{{value}}</option>
+                                                {% endif %}
+
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-lg-12">
+                                    <div class="input-blocks">
+                                        <label class="form-label">Pos Print Template</label>
+                                        <select id="pos_template" name="pos_template" class="select">
+                                            <option>Default</option>
+                                            {% for data in pos_print_template %}
+                                                {% if key != 0 %}
+                                            <option value='{{data.id}}'>{{data.template_name}}</option>
+                                                {% endif %}
+
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label class="form-label">IP Address(Optional)</label>
+                                <input class='form-control' type='text' autocomplete='off'
+                                       name='ip_address'
+                                       value='{{edit_user.ip_address}}'>
+                            </div>
+
+
+                            <div class="mb-0">
+                                <div class="status-toggle modal-status d-flex justify-content-between align-items-center">
+                                    <span class="status-label">Status</span>
+                                    <input type="checkbox" name="is_active" id="is_active" value="1" class="check" checked>
+                                    <label for="is_active" class="checktoggle"></label>
+                                </div>
+                            </div>
+
+                            {% if not edit_user.id %}
+                                                        <div class="modal-footer-btn">
+                                <a href="./" class="btn btn-cancel me-2" role="button">Cancel</a>
+
+                                <button type="submit" class="btn btn-submit">Add User</button>
+                            </div>
+
+
+                            {% else %}
+
+                            <input type="hidden" name="edit_id" value="{{edit_user.id}}">
+
+                            <div class="modal-footer-btn">
+                                <a href="./" class="btn btn-cancel me-2" role="button">Cancel</a>
+
+                                <button type="submit" class="btn btn-submit">Update</button>
+                            </div>
+
+                            {% endif %}
+
+
+                        </form>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock modal %}
+
+{% block content %}
+
+
+<div class="page-header">
+    <div class="add-item d-flex">
+        <div class="page-title">
+            <h4>User Setting</h4>
+            <h6>Manage your Users</h6>
+        </div>
+    </div>
+
+    <div class="page-btn">
+        <a href="#" id="add_user" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#add-units"><i
+                data-feather="plus-circle" class="me-2"></i> Add Users</a>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+
+
+                <table class='table table-sm table-bordered table-centered mb-0' style='width:100%;'>
+                    <tr>
+                        <th></th>
+                        <th>ID</th>
+                        <th>USERNAME</th>
+                        <th>PASSWORD</th>
+                        <th>POSITION</th>
+                        <th>POS TEMPLATE</th>
+                        <th>IP ADDRESS</th>
+                        <th>ACTIVE</th>
+                    </tr>
+
+                    {% for data in user_list %}
+
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>#{{data.id}}</td>
+                        <td><a target='blank'
+                               href="{% url 'impersonate_user' data.id %}">{{data.username}}</a></td>
+                        <td><i>{{data.raw_password}}</i></td>
+                        <td>{{data.get_position_display}}</td>
+                        <td>{{data.pos_template.template_name|default:"Default"}}</td>
+                        <td>{{data.ip_address|default:'-'}}</td>
+                        <td>{{data.is_active|default:'No'}}</td>
+                        <td class="text-center"><a class="confirm-text p-2" href="./?edit_user={{data.id}}">
+                            <i data-feather="edit" class="feather-edit"></i>
+                        </a></td>
+                        <td style='text-align:center;'><a onclick='return confirm("Are You Sure to Delete?");'
+                                                          href='./?delete_user={{data.id}}'
+                                                          class='action-icon'> <i data-feather="trash-2"
+                                                                                  class="feather-trash-2"></i></a></td>
+                    </tr>
+
+                    {% endfor %}
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+
+{% block footer %}
+
+{% if edit_user.position %}
+<script>
+    $("#position").val("{{edit_user.position}}").change();
+    {% if edit_user.pos_template.id %}$("#pos_template").val("{{edit_user.pos_template.id}}").change();{% endif %}
+</script>
+{% endif %}
+
+{% if edit_user.is_active == 0 %}
+<script>
+$('#is_active').attr('checked', false);
+</script>
+{% endif %}
+
+{% if edit_user.id %}
+<script>
+$(document).ready(function() {
+$('#add-units').modal('show');
+});
+</script>
+{% endif %}
+
+
+{% endblock footer %}

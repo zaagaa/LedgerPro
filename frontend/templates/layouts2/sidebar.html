@@ -1,0 +1,145 @@
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-inner slimscroll">
+        <div id="sidebar-menu" class="sidebar-menu">
+            <ul>
+                <li class="submenu-open">
+                    <h6 class="submenu-hdr">Main</h6>
+                    <ul>
+                        <li><a href="{% url 'dashboard' %}"><i data-feather="grid"></i><span>Dashboard</span></a></li>
+                        <li><a href="{% url 'pos' %}"><i data-feather="smartphone"></i><span>Point of Sale</span></a></li>
+                        {% if user.is_superuser %}
+                        <li><a href="{% url 'unprinted_logs' %}"><i data-feather="smartphone"></i><span>Pos Unprint Log</span></a></li>
+                        {% endif %}
+                        <li><a href="{% url 'user_activity_logs' %}"><i data-feather="smartphone"></i><span>User Activities</span></a></li>
+                    </ul>
+                </li>
+                <li class="submenu-open">
+                    <h6 class="submenu-hdr">General</h6>
+                    <ul>
+                        <li><a href="{% url 'tax_code' %}"><i data-feather="percent"></i><span>{{ request.session.TAX_CODE_NAME }} Code</span></a></li>
+                        <li><a href="{% url 'inventory' %}"><i data-feather="package"></i><span>Inventory</span></a></li>
+                        <li><a href="{% url 'tax_slab_list_create' %}"><i data-feather="bar-chart-2"></i><span>Tax Slab</span></a></li>
+                        <li><a href="{% url 'manage_inventory' %}"><i data-feather="layout"></i><span>Section</span></a></li>
+                        <li><a href="{% url 'attribute' %}"><i data-feather="tag"></i><span>Attribute</span></a></li>
+                    </ul>
+                </li>
+                                <li class="submenu-open">
+                    <h6 class="submenu-hdr">Purchases</h6>
+                    <ul>
+                        <li><a href="{% url 'purchase' %}"><i data-feather="shopping-cart"></i><span>Purchases</span></a></li>
+                        <li><a href="{% url 'purchase_statement' %}"><i data-feather="file-text"></i><span>Statement</span></a></li>
+                    </ul>
+                </li>
+                <li class="submenu-open">
+                    <h6 class="submenu-hdr">Account</h6>
+                    <ul>
+                        {% if user.is_superuser %}
+                        <li><a href="{% url 'company_index' %}"><i data-feather="briefcase"></i><span>Company</span></a></li>
+                        {% endif %}
+                        <li class="submenu">
+                            <a href="javascript:void(0);"><i data-feather="user"></i><span>Customer</span><span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="{% url 'customer' %}">Add & View Customer</a></li>
+                                <li><a href="{% url 'customer_point' %}">Customer Point</a></li>
+                                <li><a href="{% url 'transfer_points' %}">Transfer Point</a></li>
+                                <li><a href="{% url 'customer_point_reversal' %}">Reversal Point</a></li>
+                                <li><a href="{% url 'manual_point_entry' %}">Manual Point Entry</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="javascript:void(0);"><i data-feather="truck"></i><span>Supplier</span><span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="{% url 'supplier' %}">Create</a></li>
+                                <li><a href="{% url 'supplier_account' 'home' %}">Transaction</a></li>
+                                <li><a href="{% url 'supplier_current_balance' %}">Current Balance</a></li>
+                                <li><a href="{% url 'supplier_upcoming_payment' %}">Upcoming Payments</a></li>
+                                {% if user.is_superuser %}
+                                <li><a href="{% url 'sundry_creditors_chart' %}">Sundry Creditors Graph</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="javascript:void(0);"><i data-feather="users"></i><span>Staff</span><span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="{% url 'staff_list' %}">Staff List</a></li>
+                                <li><a href="{% url 'attendance_entry' %}">Attendance Entry</a></li>
+                                <li><a href="{% url 'attendance_summary' %}">Attendance Summary</a></li>
+                                <li><a href="#">Credit</a></li>
+                                <li><a href="{% url 'payslip_quartered' %}">Payslip</a></li>
+                                <li><a href="{% url 'early_comer_incentive' %}">Early Comer Incentive</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="javascript:void(0);"><i data-feather="credit-card"></i><span>Bank Account</span><span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="{% url 'bank_account' %}">Create</a></li>
+                                <li><a href="{% url 'bank_statement' %}">Statement</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="submenu-open">
+                    <h6 class="submenu-hdr">Expenses</h6>
+                    <ul>
+                        <li><a href="{% url 'expenses' %}"><i data-feather="dollar-sign"></i><span>Expenses</span></a></li>
+                        <li><a href="{% url 'cash_payment' %}"><i data-feather="credit-card"></i><span>Supplier Cash Payment</span></a></li>
+                        {% if user.is_superuser %}
+                        <li><a href="{% url 'cash_flow_expense_list' %}"><i data-feather="credit-card"></i><span>Cash Flow Expenses</span></a></li>
+                        {% endif %}
+                        <li><a href="{% url 'expenses_report' %}"><i data-feather="bar-chart-2"></i><span>Expenses Report</span></a></li>
+
+                    </ul>
+                </li>
+                {% if request.user.is_superuser %}
+                <li class="submenu-open">
+                    <h6 class="submenu-hdr">Statement</h6>
+                    <ul>
+                        <li><a href="{% url 'statement_bill_wise' %}"><i data-feather="list"></i><span>Bill Wise</span></a></li>
+                        <li><a href="{% url 'statement_day_wise' %}"><i data-feather="calendar"></i><span>Day Wise</span></a></li>
+                        <li><a href="{% url 'gstr1_summary' %}"><i data-feather="file-text"></i><span>GSTR1 Summary</span></a></li>
+                        <li><a href="{% url 'statement_report' %}"><i data-feather="bar-chart"></i><span>Sale Report</span></a></li>
+                        <li><a href="{% url 'cash_flow_summary' %}"><i data-feather="bar-chart"></i><span>Cash Flow</span></a></li>
+                        <li><a href="{% url 'analysis_report' %}"><i data-feather="bar-chart"></i><span>Analysis Report</span></a></li>
+                        <li><a href="{% url 'sales_breakdown_report' %}"><i data-feather="grid"></i><span>Floor Wise</span></a></li>
+                        <li><a href="{% url 'inventory_trend_analysis' %}"><i data-feather="activity"></i><span>Trend Analysis</span></a></li>
+                        <li><a href="{% url 'inventory_wise_sales' %}"><i data-feather="package"></i><span>Inventory Wise</span></a></li>
+                        <li><a href="{% url 'month_wise_sales' %}"><i data-feather="calendar"></i><span>Month Wise</span></a></li>
+                        <li><a href="{% url 'year_wise_sales' %}"><i data-feather="clock"></i><span>Year Wise</span></a></li>
+                        <li><a href="{% url 'daily_sales_chart' %}"><i data-feather="clock"></i><span>Daily Sale Graph</span></a></li>
+                    </ul>
+                </li>
+                {% endif %}
+                <li class="submenu-open">
+                    <h6 class="submenu-hdr">Tools</h6>
+                    <ul>
+                        <li><a href="{% url 'todo' %}"><i data-feather="check-square"></i><span>Todo Task</span></a></li>
+                    </ul>
+                </li>
+                {% if user.is_superuser %}
+                <li class="submenu-open">
+                    <h6 class="submenu-hdr">Settings</h6>
+                    <ul>
+                        <li><a href="{% url 'general_setting' %}"><i data-feather="sliders"></i><span>General Setting</span></a></li>
+                        <li><a href="{% url 'pos_setting' %}"><i data-feather="monitor"></i><span>Pos Setting</span></a></li>
+                        <li><a href="{% url 'master_setting' %}"><i data-feather="settings"></i><span>Master Setting</span></a></li>
+                        <li><a href="{% url 'user_setting' %}"><i data-feather="user-check"></i><span>User Setting</span></a></li>
+                        <li><a href="{% url 'sticker_setting' %}"><i data-feather="printer"></i><span>Sticker Setting</span></a></li>
+                        <li><a href="{% url 'add_pos_template' %}"><i data-feather="layout"></i><span>Pos Print Template</span></a></li>
+                        <li><a href="{% url 'customer_setting' %}"><i data-feather="layout"></i><span>Customer Setting</span></a></li>
+                        <li><a href="{% url 'db_setup' %}"><i data-feather="layout"></i><span>Database Setting</span></a></li>
+                    </ul>
+                </li>
+                {% endif %}
+                <li class="submenu-open">
+                    <h6 class="submenu-hdr">Help</h6>
+                    <ul>
+                        <li><a href="javascript:void(0);"><i data-feather="book-open"></i><span>Documentation</span></a></li>
+                         <li><a href="{% url 'check_update' %}"><i data-feather="shield"></i><span>Check Update</span></a></li>
+                        <li><a href="javascript:void(0);"><i data-feather="shield"></i><span>Version <span class="text-muted small">{{ VERSION }}</span></span></a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

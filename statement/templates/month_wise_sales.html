@@ -1,0 +1,143 @@
+{% extends 'layouts2/main.html' %}
+{% load custom_filters %}
+
+{% block content %}
+    <div class="row">
+    <div class="col-lg-12">
+    <h4 class="mb-3">Month-wise Sales Summary</h4>
+
+<form method="get" class="mb-3 row g-2 align-items-end">
+    <div class="col-md-3">
+        <label for="start_month">From Month:</label>
+        <input type="text" name="start_month" class="form-control monthPicker" value="{{ start_month }}">
+    </div>
+    <div class="col-md-3">
+        <label for="end_month">To Month:</label>
+        <input type="text" name="end_month" class="form-control monthPicker" value="{{ end_month }}">
+    </div>
+    <div class="col-md-4">
+        <label for="company_id">Select Company:</label>
+        <select name="company_id" class="form-select">
+            <option value="all" {% if selected_company_id == "all" %}selected{% endif %}>All Companies</option>
+            {% for company in companies %}
+                <option value="{{ company.id }}" {% if company.id|stringformat:"s" == selected_company_id|stringformat:"s" %}selected{% endif %}>
+                    {{ company.company_name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Show</button>
+    </div>
+</form>
+
+    </div></div>
+
+    <div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+    {% if selected_company_id == "all" %}
+    <h5 class="mt-3">Showing overall sales for all companies</h5>
+{% else %}
+    {% for c in companies %}
+        {% if c.id|stringformat:"s" == selected_company_id|stringformat:"s" %}
+            <h5 class="mt-3">Sales for: {{ c.company_name }}</h5>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+
+{% if monthly_data %}
+    <table class="table table-bordered mt-4">
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Total Sales</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in monthly_data %}
+                <tr>
+                    <td>{{ entry.month }}</td>
+                    <td>{{ entry.total_sales|floatformat:2|intcomma_indian }}</td>
+
+                </tr>
+            {% endfor %}
+            <tr class="fw-bold">
+                <td>Grand Total</td>
+                <td>{{ grand_total|floatformat:2|intcomma_indian }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% else %}
+    <p>No data available. Please select a valid month range.</p>
+{% endif %}
+
+                </div></div></div></div>
+
+                <div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+    <div class="mt-5">
+    <h5>Monthly Sales Trend</h5>
+    <canvas id="salesLineChart" height="100"></canvas>
+</div>
+
+                </div></div></div></div>
+
+
+{% endblock %}
+
+{% block footer %}
+
+<!-- ✅ 1. Embed JSON -->
+{{ monthly_data|json_script:"monthly-sales-data" }}
+
+<!-- ✅ 2. Include Chart.js BEFORE the script uses it -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- ✅ 3. JavaScript to render chart -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const raw = document.getElementById('monthly-sales-data');
+        if (!raw) return;  // fail silently if data not present
+
+        const monthlyData = JSON.parse(raw.textContent);
+        if (!Array.isArray(monthlyData) || monthlyData.length === 0) return;
+
+        const labelsParsed = monthlyData.map(item => item.month);
+        const salesParsed = monthlyData.map(item => item.total_sales);
+
+        const ctx = document.getElementById('salesLineChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labelsParsed,
+                datasets: [{
+                    label: 'Total Sales',
+                    data: salesParsed,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock footer %}
