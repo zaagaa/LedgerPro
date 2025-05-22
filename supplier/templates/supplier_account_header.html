@@ -1,0 +1,48 @@
+<div class="row mb-4">
+    <!-- On large screens: side by side. On small screens: stacked -->
+    <div class="col-8 col-lg-8">
+        <label for="select_supplier" class="form-label">Select Supplier:</label>
+
+        <div class="row g-2">
+            <!-- Dropdown -->
+            <div class="col-12 col-md flex-grow-1">
+                <select name="supplier" class="select2 form-control" id="select_supplier">
+                    <option value="">Select Supplier</option>
+                    {% for data in supplier_list %}
+                        <option value="{{ data.id }}" {% if supplier_id == data.id %}selected{% endif %}>
+                            {{ data.supplier_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+<!-- Buttons -->
+<div class="col-12 col-md-auto d-flex gap-2 justify-content-start justify-content-md-end">
+    <!-- Home Button -->
+<button type="button" class="btn btn-success"
+        {% if not supplier_id %}disabled{% else %}
+        onclick="window.location.href='{% url 'supplier_account' supplier_id %}'"{% endif %}
+        title="Home">
+    <i class="fa fa-home"></i>
+</button>
+
+    <!-- Invoice Pending -->
+    <button type="button" class="btn btn-warning px-3" id="btn_invoice_pending"
+        {% if not supplier_id %}disabled{% else %}
+        onclick="window.location.href='{% url 'invoice_pending' supplier_id %}'"{% endif %}>
+        Payment Pending
+    </button>
+
+    <!-- Yearly Transaction -->
+    <button type="button" class="btn btn-info px-3" id="btn_yearly_transaction"
+        onclick="window.location.href='#'">
+        Yearly Transaction
+    </button>
+</div>
+
+
+        </div>
+    </div>
+</div>
+

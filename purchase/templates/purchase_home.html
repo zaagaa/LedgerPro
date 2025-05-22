@@ -1,0 +1,274 @@
+{% extends 'layouts2/main.html' %}
+
+{% block modal %}
+<div class="modal fade" id="create-purchase">
+    <div class="modal-dialog modal-dialog-centered custom-modal-two">
+        <div class="modal-content">
+            <div class="page-wrapper-new p-0">
+                <div class="content">
+                    <div class="modal-header border-0 custom-modal-header">
+                        <div class="page-title">
+                            <h4>Create Purchase</h4>
+                        </div>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body custom-modal-body">
+                        <form action="" method="POST">
+                            <input type="hidden" value="1" name="add">
+
+                    <div class="mb-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="company" value="{{ COMPANY.id }}">
+                        <label for="select_supplier">Select Supplier:</label>
+                        <select name="supplier" id="select_supplier" class="form-select select2 mb-3">
+
+                            {% for data in supplier_list %}
+
+                            <option value="{{ data.id }}">{{ data.supplier_name }}</option>
+
+                            {% endfor %}
+
+                        </select>
+                    </div>
+
+                            <div class="mb-3">
+                                Add Only Stock Without Purchase: <input name='stock_only' value="1" type="checkbox">
+                            </div>
+
+                            <div class="modal-footer-btn">
+                                <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel
+                                </button>
+                                <button type="submit" class="btn btn-submit">Create Purchase</button>
+                            </div>
+
+                </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock modal %}
+
+{% block content %}
+
+
+<div class="page-header">
+    <div class="add-item row align-items-center">
+
+        <!-- Title -->
+        <div class="col-md-3">
+            <div class="page-title">
+                <h4>Purchase</h4>
+                <h6>Add Purchase & Stock</h6>
+            </div>
+        </div>
+
+        <!-- Supplier Filter + Radio Buttons -->
+        <div class="col-md-5">
+            <form action="" method="POST" class="d-flex align-items-center gap-3">{% csrf_token %}
+
+                <!-- Supplier dropdown -->
+                <select onchange="this.form.submit();" name="supplier_filter" class="select2 form-control w-auto" id="select_supplierx">
+                    <option value="">Select Supplier</option>
+                    {% for data in supplier_list %}
+                        <option value="{{ data.id }}" {% if supplier_filter == data.id %}selected{% endif %}>
+                            {{ data.supplier_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <!-- Radio buttons -->
+                <div class="d-flex align-items-center gap-2">
+                    <div class="form-check form-check-inline">
+                        <input onchange="this.form.submit();" class="form-check-input" type="radio" name="filter_type" id="invoice_only" value="invoice" {% if filter_type == 'invoice' %}checked{% endif %}>
+                        <label class="form-check-label" for="invoice_only">Invoice&nbsp;Only</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input onchange="this.form.submit();" class="form-check-input" type="radio" name="filter_type" id="stock_only" value="stock" {% if filter_type == 'stock' %}checked{% endif %}>
+                        <label class="form-check-label" for="stock_only">Stock&nbsp;Only</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input onchange="this.form.submit();" class="form-check-input" type="radio" name="filter_type" id="both" value="both" {% if filter_type == 'both' or not filter_type %}checked{% endif %}>
+                        <label class="form-check-label" for="both">Both</label>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+
+
+
+
+    </div>
+            <!-- Add Purchase Button -->
+        <div class="col-md-3 d-flex justify-content-end">
+            <a href="#" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#create-purchase">
+                <i data-feather="plus-circle" class="me-2"></i> Add Purchase
+            </a>
+        </div>
+</div>
+
+<style>
+  /* Make the cursor pointer when hovering over the search icon */
+  .search-icon {
+    cursor: pointer;
+  }
+</style>
+
+<div class="row">
+
+
+
+
+     <div class="col-lg-12">
+            <div class="card mb-3">
+                <div class="card-body">
+
+<div class="d-flex justify-content-end mb-3">
+  <div class="d-flex gap-3">
+
+    <!-- Find Barcode -->
+    <form action="" method="POST" class="input-group w-auto">{% csrf_token %}
+      <input type="text" name="search_barcode" class="form-control" value="{{ request.POST.search_barcode }}" placeholder="Search Barcode" aria-label="Find Barcode">
+      <span class="input-group-text search-icon">
+        <i data-feather="search"></i>
+      </span>
+    </form>
+
+    <!-- Search Purchase ID -->
+    <form action="" method="POST" class="input-group w-auto">{% csrf_token %}
+      <input type="text" name="search_purchase_id" id="search_purchase_id" value="{{ search_purchase_id }}" class="form-control" placeholder="Search Purchase ID" aria-label="Search Purchase ID">
+      <span class="input-group-text search-icon">
+        <i data-feather="search"></i>
+      </span>
+    </form>
+
+  </div>
+</div>
+
+
+
+
+                <table class="table table-bordered table-centered mb-0">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Invoice Date</th>
+                        <th>Invoice_Number</th>
+                        <th>Supplier Name</th>
+                        <th>Amount</th>
+                        <th class="text-center">Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+
+                    {% for data in purchase_list %}
+
+                    <tr>
+
+                        <td><a class="fw-bold" href="{% url 'purchase_add_stock' data.id %}">#{{ data.id }}</a></td>
+                        <td>{{ data.transaction_date|date:'d/m/Y' }}</td>
+                        <td>{% if data.stock_only == 0 %}{{ data.invoice_number }}{% else %}<span style="color: red;">*STOCK ONLY*</span>{% endif %}</td>
+                        <td><a class="fw-bold" href="{% url 'purchase_add_stock' data.id %}">{{ data.supplier.supplier_name }}</a></td>
+                        <td>{{ data.payable_amount }}</td>
+                        <td class="table-action text-center">
+
+                            {% if data.finish == 1 %}
+                             <i class="fas fa-lg fa-fw me-2 fa-check text-theme"></i>
+                            {% else %}
+                            <i class="fas fa-lg fa-fw me-2 fa-pause-circle text-theme"></i>
+                            {% endif %}
+
+                        </td>
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                    </tbody>
+                </table>
+
+
+                </div>
+
+            </div>
+    </div>
+
+
+    <div class="d-flex justify-content-between mt-3 mb-5">
+    {% if purchase_list.has_previous %}
+        <a class="btn btn-outline-primary" href="?page={{ purchase_list.previous_page_number }}">Previous</a>
+    {% else %}
+        <button class="btn btn-outline-secondary" disabled>Previous</button>
+    {% endif %}
+
+    <span class="align-self-center">Page {{ purchase_list.number }} of {{ purchase_list.paginator.num_pages }}</span>
+
+    {% if purchase_list.has_next %}
+        <a class="btn btn-outline-primary" href="?page={{ purchase_list.next_page_number }}">Next</a>
+    {% else %}
+        <button class="btn btn-outline-secondary" disabled>Next</button>
+    {% endif %}
+</div>
+
+
+</div>
+
+
+
+
+{% endblock content %}
+
+
+{% block footer %}
+<script>
+
+$(document).ready(function() {
+$("#select_supplier").select2({
+placeholder: "Select a Supplier",
+dir: "ltr",
+    dropdownParent: $("#create-purchase")
+  });
+});
+
+
+
+
+
+
+$("#select_supplierx").select2({
+placeholder: "Select a Supplier",
+dir: "ltr"
+});
+
+
+
+
+$(document).ready(function() {
+    $('#search_purchase_id').on('input', function() {
+        var value = $(this).val();
+        // Allow only numbers and #, replace invalid characters
+        var newValue = value.replace(/[^0-9#]/g, '');
+        $(this).val(newValue);
+    });
+});
+
+
+
+$(document).ready(function() {
+    // Dynamically find any form with a search icon and submit it on icon click
+    $('.search-icon').on('click', function() {
+      // Find the closest form to the clicked icon and submit it
+      $(this).closest('form').submit();
+    });
+});
+
+
+</script>
+{% endblock footer %}
