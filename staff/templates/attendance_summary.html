@@ -1,0 +1,276 @@
+{% extends 'layouts2/main.html' %}
+{% load static %}
+{% load app_tags %}
+{% load custom_filters %}
+{% block content %}
+<h4 class="page-title mb-4">Staff Attendance Summary</h4>
+
+<form method="get" id="attendance-form">
+<div class="row mb-3">
+    <div class="col-md-6">
+        <label>SELECT STAFF:</label>
+        <select name="staff" id="staff-select" class="form-select select2">
+            <option value="">Select</option>
+            {% for s in staff_list %}
+                <option value="{{ s.id }}" {% if staff and s.id == staff.id %}selected{% endif %}>{{ s.staff_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label>Month:</label>
+        <input type="text" name="month" id="month-select" class="form-control" value="{{ month_input }}">
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary">SHOW</button>
+    </div>
+</div>
+</form>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body table-responsive">
+                <table class="table table-bordered table-sm" style="border-collapse: collapse;">
+                    <thead class="table-light">
+                        <tr>
+                            <th>DATE</th><th>IN TIME</th><th>OUT TIME</th><th>STATUS</th><th>SALARY</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in records %}
+                            <tr class="{% if row.status == 'ABSENT' %}table-danger{% elif row.status == 'H' %}table-warning{% endif %}">
+                                <td>{{ row.date|date:"d D M" }}</td>
+                                <td>{{ row.in_time|default:"ABSENT" }}</td>
+                                <td>{{ row.out_time|default:"" }}</td>
+                                <td>
+                                  {% if row.status == "H" %}
+                                    <span class="badge bg-warning text-dark">Half Day</span>
+                                  {% elif row.status == "F" %}
+                                    <span class="badge bg-success">Full Day</span>
+                                  {% else %}
+                                    {{ row.status }}
+                                  {% endif %}
+                                </td>
+                                <td>₹{{ row.amount|floatformat:2|intcomma_indian }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr><td colspan="4" class="text-end fw-bold">Total</td>
+                        <td class="fw-bold">₹{{ gross_salary|floatformat:2|intcomma_indian }}</td></tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-body p-3">
+                <table class="table table-sm mb-0">
+                    <tbody>
+                        <tr>
+                            <th class="text-start">SALARY</th>
+                            <td class="text-end text-dark fw-bold">₹{{ salary_value|floatformat:2|intcomma_indian }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-start">WORKING {{ working_days }} DAYS</th>
+                            <td class="text-end">₹{{ gross_salary|floatformat:2|intcomma_indian }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-start">CREDIT</th>
+                            <td class="text-end text-danger">₹{{ credit_total|floatformat:2|intcomma_indian }}</td>
+                        </tr>
+                        <tr class="table-success fw-bold">
+                            <th class="text-start">SALARY</th>
+                            <td class="text-end text-success">₹{{ net_salary|floatformat:2|intcomma_indian }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body p-3">
+                <h5 class="mb-3 fw-semibold">CREDIT</h5>
+
+                <table class="table table-sm table-bordered mb-3">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th class="w-50">Note</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in credits %}
+                            <tr>
+                                <td>
+  {% if request.user.is_superuser %}
+    <a href="#" class="text-decoration-none edit-credit-link"
+       data-id="{{ c.id }}"
+       data-date="{{ c.date|date:'Y-m-d' }}"
+       data-amount="{{ c.amount }}"
+       data-notes="{{ c.notes|default:'' }}">
+       #{{ c.id }}
+    </a>
+  {% else %}
+    #{{ c.id }}
+  {% endif %}
+</td>
+                                <td>{{ c.date|date:"d/m/Y" }}</td>
+                                <td style="max-width: 50px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="{{ c.notes|default:"-" }}">
+                                    {{ c.notes|default:"-" }}
+                                </td>
+                                <td class="text-end">₹{{ c.amount|floatformat:2|intcomma_indian }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="4" class="text-center">No credits</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <form method="post" action="{% url 'add_staff_credit' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="staff_id" value="{{ staff.id }}">
+                    <input type="hidden" name="date" value="{{ today }}">
+                    <input type="hidden" name="month" value="{{ month_input }}">
+
+                    <input type="number" name="amount" class="form-control mb-2" placeholder="Amount" required>
+                    <input type="text" name="notes" class="form-control mb-2" placeholder="Note (optional)">
+                    <button type="submit" class="btn btn-danger w-100">CREDIT</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal fade" id="editCreditModal" tabindex="-1" aria-labelledby="editCreditModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" id="edit-credit-form">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editCreditModalLabel">Edit Credit</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="credit_id" id="edit-credit-id">
+          <div class="mb-2">
+            <label>Date</label>
+            <input type="date" name="date" id="edit-date" class="form-control" required>
+          </div>
+          <div class="mb-2">
+            <label>Amount</label>
+            <input type="number" name="amount" id="edit-amount" class="form-control" required>
+          </div>
+          <div class="mb-2">
+            <label>Note</label>
+            <input type="text" name="notes" id="edit-notes" class="form-control">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+
+
+<script>
+$(function () {
+    $("#month-select").datepicker({
+        changeMonth: true,
+        changeYear: true,
+        showButtonPanel: true,
+        dateFormat: 'yy-mm',
+        onClose: function(dateText, inst) {
+            const month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+            const year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+            $(this).val(year + '-' + ('0' + (parseInt(month) + 1)).slice(-2)).change();
+        }
+    });
+
+    $("#month-select").focus(function () {
+        $(".ui-datepicker-calendar").hide();
+        $("#ui-datepicker-div").position({
+            my: "left top",
+            at: "left bottom",
+            of: $(this)
+        });
+    });
+
+    $(".select2").select2().on("change", function () {
+        document.getElementById("attendance-form").submit();
+    });
+
+    const monthSelect = document.getElementById("month-select");
+    const form = document.getElementById("attendance-form");
+
+    if (monthSelect && form) {
+        monthSelect.addEventListener("change", () => form.submit());
+    }
+
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
+});
+
+
+$(function () {
+    // existing code...
+
+    $(".edit-credit-link").on("click", function (e) {
+        e.preventDefault();
+        const id = $(this).data("id");
+        const date = $(this).data("date");
+        const amount = $(this).data("amount");
+        const notes = $(this).data("notes");
+
+        $("#edit-credit-id").val(id);
+        $("#edit-date").val(date);
+        $("#edit-amount").val(amount);
+        $("#edit-notes").val(notes);
+        $("#editCreditModal").modal("show");
+    });
+
+    $("#edit-credit-form").on("submit", function (e) {
+        e.preventDefault();
+        const formData = $(this).serialize();
+
+        $.post("{% url 'edit_staff_credit' %}", formData, function (res) {
+            if (res.status === "success") {
+                location.reload();
+            } else {
+                alert("Update failed!");
+            }
+        });
+    });
+});
+
+</script>
+
+<style>
+.table-bordered td,
+.table-bordered th {
+    border: 1px solid #dee2e6 !important;
+}
+
+.table-bordered {
+    border-collapse: collapse !important;
+    border: 1px solid #dee2e6;
+}
+</style>
+
+
+{% endblock footer %}
+
