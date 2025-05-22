@@ -1,0 +1,21 @@
+POS:
+Bundle
+Supplier Cash Payment
+Staff Credit
+
+
+Customer:
+Customer Point Add System
+Coupon System
+
+
+MULTIPLE USER ACCESS Admin & Staff
+
+
+
+
+
+
+
+
+

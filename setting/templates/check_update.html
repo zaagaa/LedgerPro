@@ -1,0 +1,98 @@
+{% extends 'layouts2/main.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card border-0 shadow-lg glass-card mt-5">
+      <div class="card-body text-center">
+        <h2 class="mb-4 fw-bold"><i class="bi bi-git"></i> Software Update Checker</h2>
+
+        <div class="mb-3">
+          <div class="d-flex justify-content-between">
+            <span class="fw-semibold text-muted">Current Using Version</span>
+            <code class="text-primary small">{{ local_hash }}</code>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span class="fw-semibold text-muted">Current Released Version</span>
+            <code class="text-success small">{{ remote_hash }}</code>
+          </div>
+        </div>
+
+        {% if update_needed %}
+        <div id="update-section" class="mt-4">
+          <button class="btn btn-warning btn-lg w-100 fw-semibold shadow-sm" id="start-update">
+            <i class="bi bi-arrow-clockwise me-1"></i> Update Now
+          </button>
+          <div class="form-text text-danger mt-2">⚠ This will disconnect the app temporarily.</div>
+        </div>
+        {% else %}
+        <div class="alert alert-success d-flex align-items-center justify-content-center mt-4">
+          <i class="bi bi-patch-check-fill me-2"></i> App is up to date
+        </div>
+        {% endif %}
+
+        <div id="update-msg" class="mt-4"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<style>
+.glass-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 2rem;
+}
+</style>
+
+<script>
+document.getElementById('start-update')?.addEventListener('click', function () {
+    if (!confirm("⚠️ The app will restart and disconnect. Continue?")) return;
+
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = `<div class="spinner-border spinner-border-sm me-2"></div> Updating...`;
+
+    fetch("{% url 'run_update' %}", {
+        method: "POST",
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('update-msg').innerHTML = `
+            <div class="alert alert-info d-flex align-items-center justify-content-center">
+                <i class="bi bi-info-circle-fill me-2"></i> ${data}
+            </div>`;
+
+        // Wait 3 seconds, then begin reconnect checks
+        setTimeout(startReconnectCheck, 5000);
+    })
+    .catch(error => {
+        document.getElementById('update-msg').innerHTML = `
+            <div class="alert alert-danger d-flex align-items-center justify-content-center">
+                <i class="bi bi-x-circle-fill me-2"></i> ❌ Update failed: ${error}
+            </div>`;
+    });
+});
+
+function startReconnectCheck() {
+    const interval = setInterval(() => {
+        fetch(window.location.href, { cache: "no-store" })
+            .then(response => {
+                if (response.ok) {
+                    clearInterval(interval);
+                    location.reload();
+                }
+            })
+            .catch(() => {
+                // Server still down; continue checking
+            });
+    }, 3000); // Check every 3 seconds
+}
+</script>
+
+{% endblock %}
