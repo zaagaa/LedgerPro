@@ -1,0 +1,253 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+{% load custom_tags %}
+
+
+
+
+<div class="row">
+
+{% if cash_counter_status != 0 or is_impersonating or request.user.is_superuser %}
+    <div class="col-lg-4" id="left_column">
+        <div class="card mb-4">
+            <div class="card-body">
+
+
+<h4 class="page-title mb-4">Statement</h4>
+
+
+<table class="table">
+
+    {% if is_impersonating or request.user.is_superuser %}
+    <tr><td>Date</td><td>
+        <form class="row g-3" method="POST" action="">
+    {% csrf_token %}
+  <div class="col-auto"><input type="hidden" name="finish" value="">
+    <input type="text" onchange="this.form.submit();" class="form-control datepicker" id="statement_date" name="statement_date" placeholder="" value="{{form_statement_date}}">
+  </div>
+</form></td></tr>
+    {% endif %}
+
+    <tr><td>DATE</td><td>{{form_statement_date}}</td></tr>
+    <tr><td>CASHIER</td><td>{{user}}</td></tr>
+    <tr><td>CASH COUNTER</td><td>{{cash_counter_stand_by}}</td></tr>
+    <tr><td>TOTAL SALE</td><td>{{total_sale}}</td></tr>
+    <tr><td>CREDIT RECEIVED</td><td>{{form_statement_date}}</td></tr>
+    <tr><td>DISCOUNT</td><td>{{invoice.discount|multiply:-1}}</td></tr>
+    <tr><td>CARD SALE</td><td>{{invoice.card|multiply:-1}}</td></tr>
+    <tr><td>UPI SALE</td><td>{{invoice.upi|multiply:-1}}</td></tr>
+    <tr><td>CREDIT SALE</td><td>{{invoice.credit|multiply:-1}}</td></tr>
+    <tr><td>CANCEL BILL</td><td>{{total_cancel_amount|multiply:-1}}</td></tr>
+    <tr><td>CASH RETURN</td><td>{{total_return_amount|multiply:-1}}</td></tr>
+    <tr><td>SUPPLIER PAYMENT</td><td>{{supplier_payment|multiply:-1}}</td></tr>
+    <tr><td>EXPENSES</td><td>{{expenses|multiply:-1}}</td></tr>
+    <tr><td>STAFF CREDIT</td><td>{{staff_credit|multiply:-1}}</td></tr>
+    <tr><td>BUNDLE CHARGES</td><td>{{bundle_charge|multiply:-1}}</td></tr>
+
+    <tr><td>ROUND OFF</td><td>{{invoice.round_off|multiply:-1}}</td></tr>
+    <tr><th>CASH BALANCE</th><th>{{cash_balance}}</th></tr>
+
+
+</table>
+
+
+
+            </div>
+
+        </div>
+    </div>
+{% endif %}
+
+       <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-body">
+
+
+<div class="row justify-content-center">
+
+    <div class="row">
+    <div class="col-6">
+<table class="table table-bordered">
+    <tr><th class="text-center" colspan="3">STAND BY</th></tr>
+    {% for data in cash_counter %}
+    <tr><td><span class="stand_by_denomination">{{data.denomination}}</span></td><td> x
+        {% if cash_counter_status == 0 %}
+        <input style="width:50px;" onfocus="this.select();" class="stand_by_qty int_numeric_only" value="{{data.stand_by}}" type="text">
+        {% else %}
+        {{data.stand_by|default:0}}
+        {% endif %}
+    </td><td>= <span class="stand_by_value">{{data.denomination|multiply:data.stand_by}}</span></td></tr>
+    {% endfor %}
+    <tr><th class="text-center" colspan="2">TOTAL</th><th><span id="stand_by_total">0.00</span></th></tr>
+</table>
+    </div>
+    <div class="col-6">
+<table class="table table-bordered">
+    <tr><th class="text-center" colspan="3">CASH TAKEN</th></tr>
+    {% for data in cash_counter %}
+    <tr><td><span class="cash_taken_denomination">{{data.denomination}}</span></td><td> x
+        {% if cash_counter_status == 0 %}
+        <input style="width:50px;" onfocus="this.select();" class="cash_taken_qty int_numeric_only" value="{{data.cash_taken}}" type="text">
+    {% else %}
+        {{data.cash_taken|default:0}}
+        {% endif %}
+    </td><td>= <span class="cash_taken_value">{{data.denomination|multiply:data.cash_taken}}</span></td></tr>
+    {% endfor %}
+    <tr><th class="text-center" colspan="2">TOTAL</th><th><span id="cash_taken_total">0.00</span></th></tr>
+</table>
+  </div>
+
+        </div>
+
+{% if cash_counter_status != 0 or is_impersonating or request.user.is_superuser %}
+<div class="row justify-content-center" id="finish_tab">
+    <div class="col-auto">
+        <table>
+            <tr><td>Cash Balance</td><td>: <span id="total_cash_balancex">{{cash_balance}}</span></td></tr>
+            <tr><td>Stand By + Cash Taken</td><td>: <span id="stand_by_cash_taken">{{stand_by_cash_taken}}</span></td></tr>
+            <tr><th>Balance</th><th>: <span id="total_balance">{{shortage}}</span></th></tr>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% if cash_counter_status == 0 %}
+<div class="row justify-content-center mt-3">
+    <div class="col-auto">
+        <form method="POST">{% csrf_token %}<input name="statement_date" type="hidden" value="{{form_statement_date}}">
+            <input name="finish" type="hidden" value="1">
+            <input name="shortage" id="shortage" type="hidden" value="">
+            <input name="stand_by_total" id="stand_by_total_input" type="hidden" value="">
+            <input name="cash_taken_total" id="cash_taken_total_input" type="hidden" value="">
+            <input name="finish_count" type="hidden" value="{{finish_count}}">
+        <input type="submit" value="Finish Request"></form>
+
+    </div>
+            {% if finish_count != 0%}
+        <h3 class="text-danger mt-3">Amount Mismatch with Statement, Request Count: {{finish_count}}</h3>
+        {% endif %}
+</div>
+{% endif %}
+
+</div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock content %}
+
+{% block footer %}
+
+<script>
+
+function cash_counter_total(){
+    /**** TOTAL STAND BY ***/
+    var sum = 0;
+    $('.stand_by_value').each(function () {
+    if ($.isNumeric($(this).text())) { sum += parseFloat($(this).text()); }
+    });
+    $("#stand_by_total").text(sum);
+    $("#stand_by_total_input").val(sum);
+    //$("#stand_by_totalx").text(sum);
+    var stand_by=sum;
+    /**** TOTAL STAND BY ***/
+
+    /**** TOTAL CASH TAKEN ***/
+    var sum = 0;
+    $('.cash_taken_value').each(function () {
+    if ($.isNumeric($(this).text())) { sum += parseFloat($(this).text()); }
+    });
+    $("#cash_taken_total").text(sum);
+    $("#cash_taken_total_input").val(sum);
+    //$("#cash_taken_totalx").text(sum);
+    var cash_taken=sum;
+    /**** TOTAL CASH TAKEN ***/
+
+    {% if cash_counter_status == 1 or is_impersonating or request.user.is_superuser %}
+
+    $("#stand_by_cash_taken").text((stand_by+cash_taken));
+
+    var cash_balance='{{cash_balance}}';
+
+    $("#total_balance").text((stand_by+cash_taken)-parseFloat(cash_balance));
+    $("#shortage").val($("#total_balance").text());
+
+    {% endif %}
+
+}
+
+cash_counter_total();
+
+ function update_data(){
+
+        var stand_by_qty = $('.stand_by_qty').map((_, el) => el.value).get()
+        var cash_taken_qty = $('.cash_taken_qty').map((_, el) => el.value).get()
+        var statement_date='{{form_statement_date}}';
+
+         $.ajax(
+            {
+                type: "POST",
+                url: "{% url 'pos_statement_update' %}",
+                data: {
+                    'stand_by_qty': stand_by_qty,
+                    'cash_taken_qty': cash_taken_qty,
+                    'statement_date': statement_date,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                success: function (response) {
+
+                //alert(response.test)
+
+                               },
+                failure: function (response) {
+                    alert(1);
+                },
+                error: function (response) {
+                    alert(2);
+                }
+
+            })
+
+
+ }
+
+    $('body').on("keyup", "input", function (e) {
+
+    var row = $(this).closest('tr');
+
+    var stand_by_denomination = parseFloat(row.find('.stand_by_denomination').text());
+    var stand_by_qty = parseFloat(row.find('.stand_by_qty').val());
+    if(isNaN(stand_by_qty)){stand_by_qty=0}
+    row.find('.stand_by_value').text(stand_by_denomination*stand_by_qty)
+
+    var cash_taken_denomination = parseFloat(row.find('.cash_taken_denomination').text());
+    var cash_taken_qty = parseFloat(row.find('.cash_taken_qty').val());
+    if(isNaN(cash_taken_qty)){cash_taken_qty=0}
+    row.find('.cash_taken_value').text(cash_taken_denomination*cash_taken_qty)
+
+    cash_counter_total();
+
+    update_data();
+
+    });
+
+
+
+
+</script>
+
+<script>
+$(function() {
+document.querySelector("html").setAttribute("data-layout-mode", 'light_mode');
+document.querySelector("html").setAttribute('data-layout-style', 'modern');
+document.querySelector("html").setAttribute('data-nav-color', 'light');
+});
+</script>
+{% endblock footer %}

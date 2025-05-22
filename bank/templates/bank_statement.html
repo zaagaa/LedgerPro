@@ -1,0 +1,347 @@
+{% extends 'layouts2/main.html' %}
+{% load custom_tags %}
+
+{% block content %}
+<style>
+    table.transaction  {
+
+    td {
+      width: 10ch;
+      white-space: nowrap;
+    }
+
+    td:nth-child(3) {
+      width: 100%;
+      max-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    }
+
+
+    .row.equal-cols {
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-flex-wrap: wrap;
+      -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+    }
+
+    .row.equal-cols:before,
+    .row.equal-cols:after {
+      display: block;
+    }
+
+    .row.equal-cols > [class*='col-'] {
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+      flex-direction: column;
+    }
+
+    .row.equal-cols > [class*='col-'] > * {
+      -webkit-flex: 1 1 auto;
+      -ms-flex: 1 1 auto;
+      flex: 1 1 auto;
+    }
+</style>
+
+<div class="row equal-cols">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-body">
+
+                <form action='' method='get'>SELECT BANK ACCOUNT: <select
+                        class='form-control select2' data-toggle='select2' style='width:100%;'
+                        onchange='' id='bank_id'>
+                    <option value=''></option>
+                    {% for data in bank_account_list %}
+                    {% if data.id|stringformat:'s' == id|stringformat:'s' %}
+                    <option value='{{data.id}}' selected="selected">{{data.ac_name}} - {{data.bank_name}} - A/C:
+                        {{data.ac_no}}
+                    </option>
+                    {% else %}
+                    <option value='{{data.id}}'>{{data.ac_name}} - {{data.bank_name}} - A/C: {{data.ac_no}}</option>
+                    {% endif %}
+                    {% endfor %}
+
+                </select></form>
+
+            </div>
+        </div>
+    </div>
+
+    {% if not CLIENT %}
+
+    <div class="col-6">
+        <div class="card">
+            <div class="card-body">
+ <span class="d-flex align-items-center justify-content-center mt-3">
+                <form enctype="multipart/form-data" action="" method="POST" class="row gy-2 gx-3 align-items-center">
+                    {% csrf_token %}
+                    <input type="hidden" name="uploaded_filex" value="1">
+
+                                        <div class="col-auto">
+      <input type="file" name="uploaded_file" class="form-control-file">
+                                        </div>
+
+                                        <div class="col-auto">
+                                            <button type="submit" class="btn btn-primary">Upload Statement</button>
+                                        </div>
+                                    </form>
+
+</span>
+
+
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% if messages %}
+
+    {% for message in messages %}
+<div class="row"><div class="col-12 d-flex align-items-center justify-content-center ">
+    <div class="alert alert-outline-{{ message.tags }} rounded-pill alert-dismissible fade show" style="display:inline-block;">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="fas fa-xmark"></i></button>
+                                    </div>
+</div> </div>
+    {% endfor %}
+
+{% endif %}
+
+{% if bank_transaction_list %}
+
+{% if unverified_txns %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+<h5>Unverified Transactions <i class="fa fa-exclamation-triangle text-warning"></i></h5>
+<table class='transaction table table-sm table-bordered table-centered mb-0'>
+    <tr>
+        <th>DATE</th>
+        <th>TRAN&nbsp;ID</th>
+        <th>DESCRIPTION</th>
+        <th>CHEQUE&nbsp;NO</th>
+        <th style='text-align:right;'>DEBIT</th>
+
+    </tr>
+
+    {% for data in unverified_txns %}
+    <tr>
+        <td>{{ data.entry_date|date:'d/m/Y' }}</td>
+        <td>{{ data.tran_id }}</td>
+        <td>{{ data.description }}</td>
+        <td>
+            {{ data.cheque_no|cheque }}
+            <i class="fa fa-exclamation-triangle text-warning" title="Unverified"></i>
+        </td>
+        <td style='text-align:right;'>{{ data.debit|money:MONEY_DATA|default_if_none:"-" }}</td>
+
+    </tr>
+    {% endfor %}
+</table>
+</div></div></div></div>
+{% endif %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+ <span class="d-flex align-items-center justify-content-center mb-3">
+                <form action="" method="POST" class="row gy-2 gx-3 align-items-center">
+                    {% csrf_token %}
+                    <div class="col-auto">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                From:
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <input style='width:150px;' class='form-control datepicker form-control-sm-4'
+                               type='text' name='start_date' value='{{form_start_date}}'>
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                To:
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <input style='width:150px;' class='form-control datepicker form-control-sm-4'
+                               type='text' name='end_date' value='{{form_end_date}}'>
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                Filter:
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <input style='width:150px;' type='text' class='form-control form-control-sm-4'
+                               name='filter' value='{{filter}}'>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Show</button>
+                    </div>
+                </form>
+ </span>
+
+                    <table class='transaction table table-sm table-bordered table-centered mb-0'>
+                        <tr>
+                            <th>DATE</th>
+                            <th>TRAN&nbsp;ID</th>
+                            <th>DESCRIPTION</th>
+                            <th>CHEQUE&nbsp;NO</th>
+                            <th style='text-align:right;'>DEBIT</th>
+                            <th style='text-align:right;'>CREDIT</th>
+                            <th style='text-align:right;'>BALANCE</th>
+                        </tr>
+
+
+
+                        {% for data in bank_transaction_list %}
+                        <tr>
+                            <td>{{data.entry_date|date:'d/m/Y'}}</td>
+                            <td>{{data.tran_id}}</td>
+<td>
+  {% if request.user.is_superuser %}
+    <a href="#" class="edit-description text-decoration-none" data-id="{{ data.id }}" data-description="{{ data.description }}">
+      {{ data.description }}
+    </a>
+  {% else %}
+    {{ data.description }}
+  {% endif %}
+
+  {% if data.bank_verified == 1 %}
+    <i class="fa fa-check-circle text-success"></i>
+  {% endif %}
+</td>
+
+                            <td>
+                              {{ data.cheque_no|cheque }}
+                              {% if data.verified == 1 %}
+                                <i class="fa fa-check-circle text-success"></i>
+                              {% elif data.verified == 0 %}
+                                <i class="fa fa-exclamation-triangle text-warning"></i>
+                              {% endif %}
+                            </td>
+                            <td style='text-align:right;'>{{data.debit|money:MONEY_DATA|default_if_none:"-"}}</td>
+                            <td style='text-align:right;'>{{data.credit|money:MONEY_DATA|default_if_none:"-"}}</td>
+                            <td style='text-align:right;'>{{data.balance|money:MONEY_DATA|default_if_none:"-"}}</td>
+
+                        </tr>
+                        {% endfor %}
+
+
+
+                    </table>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+{% endif %}
+
+<!-- Edit Description Modal -->
+<div class="modal fade" id="editDescriptionModal" tabindex="-1" aria-labelledby="editDescriptionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="updateDescriptionForm">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="editDescriptionModalLabel">Edit Description</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="txn_id" id="edit_txn_id">
+          <input type="text" name="description" class="form-control" id="edit_description_input">
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block footer %}
+<script>
+$(document).ready(function () {
+  // Show modal with current description
+  $('.edit-description').on('click', function (e) {
+    e.preventDefault();
+    const id = $(this).data('id');
+    const description = $(this).data('description');
+
+    $('#edit_txn_id').val(id);
+    $('#edit_description_input').val(description);
+    $('#editDescriptionModal').modal('show');
+  });
+
+  // Submit via AJAX
+  $('#updateDescriptionForm').on('submit', function (e) {
+    e.preventDefault();
+    const txnId = $('#edit_txn_id').val();
+    const newDescription = $('#edit_description_input').val();
+    const csrfToken = $("input[name=csrfmiddlewaretoken]").val();
+
+    $.ajax({
+      url: "{% url 'update_bank_description' %}",
+      method: "POST",
+      headers: { 'X-CSRFToken': csrfToken },
+      data: {
+        txn_id: txnId,
+        description: newDescription
+      },
+      success: function (res) {
+        if (res.status === 'success') {
+          // Update text without reload
+          const link = $('.edit-description[data-id="' + txnId + '"]');
+          link.text(newDescription);
+          link.data('description', newDescription);
+          $('#editDescriptionModal').modal('hide');
+        } else {
+          alert("Update failed.");
+        }
+      },
+      error: function () {
+        alert("Server error.");
+      }
+    });
+  });
+});
+</script>
+
+<script>
+    $('#bank_id').on('change', function() {
+    location.href = "{% url 'bank_statement' 123 %}".replace("123",this.value);
+});
+</script>
+
+{% endblock footer %}
