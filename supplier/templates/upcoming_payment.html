@@ -1,0 +1,150 @@
+{% extends 'layouts2/main.html' %}
+{% load custom_tags %}
+{% load tz %}  {# optional if you use timezone-aware dates #}
+{% block modal %}
+<div class="modal fade" id="show-payment">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="page-wrapper-new p-0">
+                <div class="content">
+                    <div class="modal-header border-0 custom-modal-header">
+                        <div class="page-title">
+                            <h4>Payments</h4>
+                        </div>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="payment_list" class="modal-body custom-modal-body">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock modal %}
+
+{% block content %}
+
+
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+                <table class="table text-nowrap table-hover">
+
+                    <tr>
+                        <th>DATE</th>
+                        {% for data in company_list %}
+                        <th>{{data.company_name|upper}}</th>
+                        {% endfor %}
+                        <th class="text-end">TOTAL</th>
+                        <th class="text-end">BALANCE</th>
+                    </tr>
+
+                {% for data in payment %}
+
+{% now "Ymd" as today %}
+<tr>
+
+
+<td{% if data.datex|stringformat:'s' == today %} style="background-color: #fcfbb6;"{% endif %}>{{data.date}}</td>
+
+                    {% for datax in data.company_total %}
+
+                    <td{% if data.datex|stringformat:'s' == today %} style="background-color: #fcfbb6;"{% endif %}><a class="fw-bold text-primary" href="javascript:show_payment({{data.datex}},{{datax.company_id}});">{{datax.total_amount|money:MONEY_DATA|default_if_none:"-"}}</a></td>
+
+                    {% endfor %}
+
+    <td{% if data.datex|stringformat:'s' == today %} style="background-color: #fcfbb6;"{% endif %} class="text-end">{{ data.total|money:MONEY_DATA|default_if_none:"-" }}</td>
+
+
+                    <td{% if data.datex|stringformat:'s' == today %} style="background-color: #fcfbb6;"{% endif %} class="text-end">{{data.total_amount|money:MONEY_DATA|default_if_none:"-"}}</td>
+
+
+</tr>
+
+
+                {% endfor %}
+
+
+
+                </table>
+
+
+
+
+<style>
+    .table-fit {
+        width: auto;
+        table-layout: auto;
+    }
+    .table-fit th,
+    .table-fit td {
+        padding: 8px 16px; /* vertical 8px, horizontal 16px */
+        white-space: nowrap; /* prevents text wrapping */
+    }
+</style>
+
+<div class="d-flex justify-content-center mt-4">
+    <table class="table table-bordered table-fit mb-0">
+        {% for data in month_wise %}
+        <tr>
+            <td>{{ data.month }}</td>
+            <td class="text-end">{{ data.monthly_total|money:MONEY_DATA|default_if_none:"-" }}</td>
+            <td class="text-end">{{ data.total|money:MONEY_DATA|default_if_none:"-" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+
+</div></div></div></div>
+
+
+{% endblock content %}
+
+
+
+{% block footer %}
+
+<script>
+
+function show_payment(date,company_id){
+
+$.ajax({
+        url: '{% url 'supplier_upcoming_payment'  %}',
+        method: "POST",
+        data: {
+            company_id: company_id,
+            date: date,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+        },
+        success: function(data) {
+
+
+
+            $("#payment_list").html(data);
+
+            $('#show-payment').modal('show');
+
+        },
+        error: function(error) {
+            alert(1);
+
+        }
+    });
+
+
+
+
+    }
+
+
+</script>
+
+{% endblock footer %}
