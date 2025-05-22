@@ -1,0 +1,9 @@
+ 
+[24-04-2025 23:27:33.96] 🔄 Script started 
+[24-04-2025 23:27:33.96] 📄 Reading BACKUP_DIR from: C:\Users\PERSONAL\Desktop\BusinessApp\backup\config.py 
+[24-04-2025 23:27:34.38] 🐞 DEBUG BACKUP_FOLDER = D:\backup 
+[24-04-2025 23:27:34.38] 📁 BACKUP_FOLDER: D:\backup 
+[24-04-2025 23:27:34.38] 📂 Entered backup folder: D:\backup 
+[24-04-2025 23:27:34.40] 🔄 Zipping ledger_pro_backup_2025-04-24_23-27-27.sql 
+[24-04-2025 23:27:34.40] 🗑️ Deleted ledger_pro_backup_2025-04-24_23-27-27.sql 
+[24-04-2025 23:27:50.46] 🔚 Finished processing 

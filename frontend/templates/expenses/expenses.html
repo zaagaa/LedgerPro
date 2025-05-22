@@ -1,0 +1,63 @@
+{% extends 'layouts/main.html' %}
+
+{% block content %}
+
+<h4 class="page-title mb-4">Expenses</h4>
+
+<div class="row">
+
+
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+ <table class="table">
+
+
+     {% for data in expenses_list %}
+
+     <tr><td>{{data.entry_date}}</td><td>{{data.description}}</td><td>{{data.amount}}</td><td>{{data.balance}}</td></tr>
+
+     {% endfor %}
+
+
+ </table>
+
+
+
+
+<form class="row g-3" method="POST">
+{%csrf_token%}
+  <div class="col-auto">
+
+    <input type="text" class="form-control datepicker" id="date" placeholder="" value="{{TODAY}}">
+  </div>
+      <div class="col-auto">
+    <input type="text" class="form-control" name="description" placeholder="Description">
+  </div>
+          <div class="col-auto">
+    <input type="text" class="form-control" name="amount" placeholder="Amount">
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-primary mb-3">Add</button>
+  </div>
+</form>
+
+
+            </div>
+            <!-- BEGIN card-arrow -->
+            <div class="card-arrow">
+                <div class="card-arrow-top-left"></div>
+                <div class="card-arrow-top-right"></div>
+                <div class="card-arrow-bottom-left"></div>
+                <div class="card-arrow-bottom-right"></div>
+            </div>
+            <!-- END card-arrow -->
+        </div>
+    </div>
+
+
+</div>
+
+
+{% endblock content %}

@@ -1,0 +1,236 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+
+<div class="page-header">
+    <div class="add-item d-flex">
+        <div class="page-title">
+            <h4>Inventory</h4>
+
+        </div>
+    </div>
+
+    <div class="page-btn">
+        <a href="#" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#standard-modal"><i
+                data-feather="plus-circle" class="me-2"></i>Add New</a>
+    </div>
+</div>
+
+
+ <div id="standard-modal" class="modal fade" tabindex="-1" role="dialog"
+                 aria-labelledby="standard-modalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="standard-modalLabel">Add Inventory</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                         <form action="" method="POST">
+                             <input type="hidden" name="action" id="action" value="add">
+                             <input type="hidden" name="save_edit_id" id="edit" value="">
+                        <div class="modal-body">
+
+                                <div class="form-group">
+                                    <label for="inventory_name">Inventory Name:</label>
+                                    <input type="text" name="inventory_name" class="form-control"
+                                           id="inventory_name"
+                                           aria-describedby="emailHelp"
+                                           placeholder="" autofocus>
+                                </div>
+
+                                <div class="form-group mt-4">
+                                    <label for="shortcode">Short Code</label>
+                                    <input type="text" name="shortcode" class="form-control" id="shortcode"
+                                           aria-describedby="emailHelp"
+                                           placeholder="">
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <div class="form-check mt-4 mb-4">
+                                        <input class="form-check-input" name="unit_enabled" type="checkbox" value="1"
+                                               id="unit_status" checked="">
+                                        <label class="form-check-label" for="unit_status">Unit Status</label>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="form-group">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="company" value="{{ COMPANY.id }}">
+                                    <label for="tax_code">Hsn Code:</label>
+                                    <select name="tax_code" id="tax_code" class="form-select mb-3">
+
+                                        {% for tax in tax_list %}
+
+                                        <option value="{{ tax.id }}">{{ tax.tax_code }} [{{ tax.tax_rate }}%]</option>
+
+                                        {% endfor %}
+
+                                    </select>
+                                </div>
+
+                                <div class="form-group mt-4">
+                                    <label for="default_price">Default Price:</label>
+                                    <input type="text" name="default_price" class="form-control" id="default_price"
+                                           aria-describedby="emailHelp"
+                                           placeholder="">
+
+                                </div>
+
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+<div class="row">
+
+
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+                <table class="table table-bordered table-centered">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Inventory Name</th>
+                        <th>Hsn Code</th>
+                        <th>Gst</th>
+                        <th>Shortcode</th>
+                        <th>Unit Status</th>
+                        <th>Price</th>
+                        <th>Stock Count</th>
+                        <th class="text-center" colspan="2">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+
+                    {% for data in inventory_list %}
+
+                    <tr>
+<td> #{{ data.id }}</td>
+                        <td> {{ data.inventory_name }}</td>
+                        <td> {{ data.tax_code.tax_code }}</td>
+                        <td> {{ data.tax_code.tax_rate }}%</td>
+                        <td> {{ data.shortcode|default:"-" }}</td>
+                        <td> {{ data.unit_enabled }}</td>
+                        <td>{{ data.default_price|default:"-" }}</td>
+                        <td>{{ data.stock_count|default:"-" }}</td>
+                        <td class="table-action text-center">
+                            <a href="#" id="edit_{{data.id}}" class="action-icon edit-btn">
+    <i class="fas fa-lg fa-fw me-2 fa-edit"></i>
+</a>
+
+                        </td>
+                        <td class="table-action text-center">
+                            <a href="{% url 'delete_inventory' data.id %}" class="action-icon"> <i
+                                    class="fas fa-lg fa-fw me-2 fa-trash-alt"></i></a>
+                        </td>
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                    </tbody>
+                </table>
+
+
+            </div>
+            <!-- BEGIN card-arrow -->
+            <div class="card-arrow">
+                <div class="card-arrow-top-left"></div>
+                <div class="card-arrow-top-right"></div>
+                <div class="card-arrow-bottom-left"></div>
+                <div class="card-arrow-bottom-right"></div>
+            </div>
+            <!-- END card-arrow -->
+        </div>
+    </div>
+
+
+</div>
+
+
+{% endblock content %}
+
+
+{% block footer %}
+<script>
+
+$(document).ready(function () {
+    $('.edit-btn').on('click', function (e) {
+        e.preventDefault(); // Prevent default link behavior
+
+
+
+id=$(this).attr('id').split('_')[1];
+
+ $.ajax({
+        url: '{% url 'inventory' %}',
+        method: "POST",
+        data: {
+            edit_id: id,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+        },
+        success: function(data) {
+
+
+            $('#standard-modal').modal('show');
+            $("#edit").val(data.id);
+            $("#action").val("edit");
+            $("#inventory_name").val(data.inventory_name);
+            $("#shortcode").val(data.shortcode);
+
+            if(data.unit_enabled==0){
+            $('#unit_status').prop('checked', false);
+            }else{
+            $('#unit_status').prop('checked', true);
+            }
+
+            $('#tax_code').val(data.tax_code);
+            $('#default_price').val(data.default_price);
+
+            return 1
+        },
+        error: function(error) {
+            return 0
+
+        }
+    });
+
+
+    });
+});
+
+
+$('#standard-modal').on('hidden.bs.modal', function () {
+    // Do something when modal is closed
+    console.log("Modal closed");
+
+    // Example: Reset form fields
+    $('#standard-modal form')[0].reset();
+
+    // Example: Reset action to "add"
+    $('#action').val('add');
+    $('#edit').val('');
+     $('#unit_status').prop('checked', false);
+});
+
+
+    $('#unit_status').prop('checked', false);
+</script>
+{% endblock footer %}

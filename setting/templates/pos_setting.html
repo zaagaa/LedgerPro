@@ -1,0 +1,77 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+<h4 class="page-title mb-4">Pos Setting</h4>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <table class="table table-bordered table-centered mb-0">
+                        <thead>
+                        <tr>
+                            <th>Setting</th>
+                            <th>Value</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                      <tr>
+                            <td>Round Off</td>
+                            <td>
+                                <input class="form-control" style="width:250px;" type="text" name="SETTING.pos_round_off" value="{{SETTING.pos_round_off}}">
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td>Header</td>
+                            <td>
+                                <textarea class="summernote" name="SETTING.pos_header">{{ SETTING.pos_header }}</textarea>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Footer</td>
+                            <td>
+                                <textarea class="summernote" name="SETTING.pos_footer">{{ SETTING.pos_footer }}</textarea>
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                    <button type="submit">Add</button>
+                </form>
+
+
+            </div>
+            <!-- BEGIN card-arrow -->
+            <div class="card-arrow">
+                <div class="card-arrow-top-left"></div>
+                <div class="card-arrow-top-right"></div>
+                <div class="card-arrow-bottom-left"></div>
+                <div class="card-arrow-bottom-right"></div>
+            </div>
+            <!-- END card-arrow -->
+        </div>
+
+    </div>
+
+
+</div>
+
+
+{% endblock content %}
+
+{% block footer %}
+<script>
+    $('.summernote').summernote({
+      tabsize: 2,
+      height: 200,
+    });
+</script>
+{% endblock footer %}
