@@ -1,0 +1,12 @@
+.venv/
+.pyarmor/
+python-3.12.8-embed-amd64/
+*.sqlite3
+data.json
+media/
+__pycache__/
+*.pyc
+db_config.json
+dump.json
+LedgerPro
+DjangoProject_Protected

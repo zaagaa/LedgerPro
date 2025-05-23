@@ -1,0 +1,168 @@
+{% extends 'layouts2/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="mb-3">Transfer Customer Points & Update Mobile</h5>
+
+
+
+        <form method="post" id="transferForm">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">From Mobile Number</label>
+            <input type="text" name="from_mobile" id="from_mobile" class="form-control" required>
+            <small id="from_info" class="text-muted"></small>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">To Mobile Number</label>
+            <input type="text" name="to_mobile" id="to_mobile" class="form-control" required>
+            <small id="to_info" class="text-muted"></small>
+          </div>
+          <button type="submit" class="btn btn-primary">Transfer & Update</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-4">
+  <div class="card-body">
+    <h5 class="mb-3">Last 50 Transfer History</h5>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Customer Name</th>
+            <th>Mobile</th>
+            <th>Point</th>
+            <th>Description</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in history %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ entry.customer.customer_name }}</td>
+              <td>{{ entry.customer.mobile }}</td>
+              <td>{{ entry.balance|floatformat:2 }}</td>
+              <td>{{ entry.description }}</td>
+              <td>{{ entry.entry_date|date:"d/m/Y h:i A" }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="text-center">No transfer history found.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">Confirm Transfer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>From:</strong> <span id="confirm_from_name"></span> (<span id="confirm_from_mobile"></span>)<br>
+        <strong>Points:</strong> <span id="confirm_from_point"></span></p>
+
+        <p><strong>To:</strong> <span id="confirm_to_name"></span> (<span id="confirm_to_mobile"></span>)<br>
+        <strong>Points:</strong> <span id="confirm_to_point"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="confirmTransferBtn" class="btn btn-primary">Yes, Transfer</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script>
+$(document).ready(function () {
+    function fetchCustomerInfo(inputId, infoId) {
+        let mobile = $(`#${inputId}`).val();
+        if (mobile.length === 10) {
+            $.ajax({
+                url: "{% url 'get_customer_info' %}",
+                data: { mobile: mobile },
+                success: function (data) {
+                    if (data.exists) {
+                        $(`#${infoId}`).html(`${data.name} - ${data.point} points`);
+                        $(`#${inputId}`).data("name", data.name);
+                        $(`#${inputId}`).data("point", data.point);
+                    } else {
+                        $(`#${infoId}`).html(`<span class="text-danger">Customer not found</span>`);
+                        $(`#${inputId}`).removeData("name").removeData("point");
+                    }
+                },
+                error: function () {
+                    $(`#${infoId}`).html(`<span class="text-danger">Error fetching data</span>`);
+                    $(`#${inputId}`).removeData("name").removeData("point");
+                }
+            });
+        } else {
+            $(`#${infoId}`).text('');
+            $(`#${inputId}`).removeData("name").removeData("point");
+        }
+    }
+
+    $("#from_mobile").on("keyup", function () {
+        fetchCustomerInfo("from_mobile", "from_info");
+    });
+
+    $("#to_mobile").on("keyup", function () {
+        fetchCustomerInfo("to_mobile", "to_info");
+    });
+
+    // Intercept form submission
+    $("#transferForm").on("submit", function (e) {
+        e.preventDefault();
+
+        const fromMobile = $("#from_mobile").val();
+        const toMobile = $("#to_mobile").val();
+        const fromName = $("#from_mobile").data("name") || "N/A";
+        const toName = $("#to_mobile").data("name") || "New Number";
+        const fromPoint = $("#from_mobile").data("point") || 0;
+        const toPoint = $("#to_mobile").data("point") || 0;
+
+        if (fromMobile.length !== 10 || toMobile.length !== 10) {
+            alert("Please enter both 10-digit mobile numbers.");
+            return;
+        }
+
+        // Fill modal
+        $("#confirm_from_name").text(fromName);
+        $("#confirm_from_mobile").text(fromMobile);
+        $("#confirm_from_point").text(fromPoint);
+
+        $("#confirm_to_name").text(toName);
+        $("#confirm_to_mobile").text(toMobile);
+        $("#confirm_to_point").text(toPoint);
+
+        // Show modal using Bootstrap 5 API
+        const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+        modal.show();
+
+        // Confirm button click
+        $("#confirmTransferBtn").off("click").on("click", function () {
+            modal.hide();
+            $("#transferForm")[0].submit();
+        });
+    });
+});
+</script>
+{% endblock %}
