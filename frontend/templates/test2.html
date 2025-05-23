@@ -1,0 +1,1395 @@
+
+
+
+
+<!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="utf-8" />
+        <title>STAFF - ATTENDANCE ENTRY</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+        <meta content="Coderthemes" name="author" />
+        <!-- App favicon -->
+        <link rel="shortcut icon" href="content/images/favicon.png">
+
+        <!-- third party css -->
+        <link href="../bootstrap/creative/assets/css/vendor/jquery-jvectormap-1.2.2.css" rel="stylesheet" type="text/css" />
+        <!-- third party css end -->
+
+        <!-- App css -->
+        <link href="../bootstrap/creative/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+        <link href="../bootstrap/creative/assets/css/app-creative.min.css" rel="stylesheet" type="text/css" id="light-style" />
+        <link href="../bootstrap/creative/assets/css/app-creative-dark.min.css" rel="stylesheet" type="text/css" id="dark-style" />
+
+        <link href="../bootstrap/creative/assets/css/vendor/summernote-bs4.css" rel="stylesheet" type="text/css" />
+
+
+
+
+<style>
+
+
+@media print
+{
+    .no-print, .no-print *
+    {
+        display: none !important;
+    }
+}
+
+
+input.form-fixer {
+    padding: 3px;
+}
+
+
+.no-marginLR {
+    margin-left:15px;
+    margin-right:15px;
+}
+
+
+
+
+</style>
+
+
+
+
+
+
+
+    </head>
+
+    <body class="loading" data-layout="topnav" data-layout-config='{"darkMode":}'>
+
+        <!-- Pre-loader -->
+        <div id="preloader">
+            <div id="status">
+                <div class="bouncing-loader"><div ></div><div ></div><div ></div></div>
+            </div>
+        </div>
+        <!-- End Preloader-->
+
+        <!-- Begin page -->
+        <div class="wrapper">
+
+            <!-- ============================================================== -->
+            <!-- Start Page Content here -->
+            <!-- ============================================================== -->
+
+            <div class="content-page">
+                <div class="content">
+                    <!-- Topbar Start -->
+                    <div class="navbar-custom topnav-navbar topnav-navbar-dark">                        <div class="container-fluid">
+
+                            <!-- LOGO -->
+                            <a href="./" class="topnav-logo">
+                                <span class="topnav-logo-lg">
+                                    <img src="content/images/logo_white.png" alt="" height="40">
+                                </span>
+                                <span class="topnav-logo-sm">
+                                    <img src="content/images/favicon.png" alt="" height="">
+                                </span>
+                            </a>
+
+                            <ul class="list-unstyled topbar-right-menu float-right mb-0">
+
+                            <li class="dropdown notification-list d-lg-none">
+                                <a class="nav-link dropdown-toggle arrow-none" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                                    <i class="dripicons-search noti-icon"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-animated dropdown-lg p-0">
+                                    <form class="p-3">
+                                        <input type="text" class="form-control" placeholder="Search ..." aria-label="Recipient's username">
+                                    </form>
+                                </div>
+                            </li>
+
+<li class="notification-list">
+    <a class="nav-link" href="./?page=staff/attendance_entry&dark_mode=false">
+        <i class="dripicons-brightness-medium noti-icon"></i>
+    </a>
+</li>
+
+
+                                <li class="notification-list">
+                                    <a class="nav-link right-bar-toggle" href="javascript: void(0);">
+                                        <i class="dripicons-message noti-icon"></i>
+                                        <span class="noti-icon-badge"></span>
+                                    </a>
+                                </li>
+
+
+                                <li class="dropdown notification-list">
+                                    <a class="nav-link dropdown-toggle nav-user arrow-none mr-0" data-toggle="dropdown" id="topbar-userdrop" href="#" role="button" aria-haspopup="true"
+                                        aria-expanded="false">
+                                        <span class="account-user-avatar">
+                                            <img src="../bootstrap/creative/assets/images/users/avatar-1.jpg" alt="user-image" class="rounded-circle">
+                                        </span>
+                                        <span>
+                                            <span class="account-user-name">KURINJI DRESS CENTRE</span>
+                                            <span class="account-position">login by: <b>kurinji</b></span>
+                                        </span>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-animated topbar-dropdown-menu profile-dropdown" aria-labelledby="topbar-userdrop">
+                                        <!-- item-->
+
+
+
+<div class=" dropdown-header noti-title">
+        <h6 class="text-overflow m-0">Select Company:</h6>
+    </div><a href="./?default_company_id=0" class="dropdown-item notify-item">
+    <i class="mdi mdi-account-circle mr-1"></i>
+    <span>ALL COMPANY</span>
+    </a><a href="./?default_company_id=1&page=staff/attendance_entry" class="dropdown-item notify-item">
+    <i class="mdi mdi-account-circle mr-1"></i>
+    <span>KURINJI DRESS CENTRE</span>
+    </a><a href="./?default_company_id=2&page=staff/attendance_entry" class="dropdown-item notify-item">
+    <i class="mdi mdi-account-circle mr-1"></i>
+    <span>KURINJI TRADERS (SUPERMARKET)</span>
+    </a><a href="./?default_company_id=3&page=staff/attendance_entry" class="dropdown-item notify-item">
+    <i class="mdi mdi-account-circle mr-1"></i>
+    <span>KURINJI SHOPPING CENTRE PVT LTD</span>
+    </a>
+                                        <a href="./?page=profile" class="dropdown-item notify-item">
+                                            <i class="mdi mdi-account-circle mr-1"></i>
+                                            <span>My Profile</span>
+                                        </a>
+
+                                        <!-- item-->
+                                        <a href="./?logout=yes" class="dropdown-item notify-item">
+                                            <i class="mdi mdi-logout mr-1"></i>
+                                            <span>Logout</span>
+                                        </a>
+
+                                    </div>
+                                </li>
+
+                            </ul>
+
+
+                            <a class="navbar-toggle"  data-toggle="collapse" data-target="#topnav-menu-content">
+                                <div class="lines">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </a>
+
+
+                        </div></div>
+                    <!-- end Topbar -->
+
+                    <div class="topnav shadow-sm">                        <div class="container-fluid">
+                            <nav class="navbar navbar-light navbar-expand-lg topnav-menu">
+
+                                <div class="collapse navbar-collapse" id="topnav-menu-content">
+                                    <ul class="navbar-nav">
+
+
+
+
+
+
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-dashboards" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="uil-dashboard mr-1"></i>General <div class="arrow-down"></div>
+                                            </a>
+                                            <div class="dropdown-menu" aria-labelledby="topnav-dashboards">
+                                                <a href="./?page=product/hsn_code" class="dropdown-item">Hsn Code</a>
+                                                <a href="./?page=product/inventory" class="dropdown-item">Inventory</a>
+                                                <a href="./?page=product/category" class="dropdown-item">Category</a>
+												<div class="dropdown">
+                                                    <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-project" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Specification <div class="arrow-down"></div>
+                                                    </a>
+                                                    <div class="dropdown-menu" aria-labelledby="topnav-project">
+<a href="./?page=specification/add_data&parent_id=1" class="dropdown-item">Brand</a><a href="./?page=specification/add_data&parent_id=3" class="dropdown-item">Type</a><a href="./?page=specification/add_data&parent_id=4" class="dropdown-item">Color</a><a href="./?page=specification/add_data&parent_id=5900" class="dropdown-item">Style</a><a href="./?page=specification/add_data&parent_id=5903" class="dropdown-item">Size</a>
+
+                                                <a href="./?page=specification/add_specification" class="dropdown-item">Add Specification</a>
+                                                    </div></div>
+
+
+                                                   <div class="dropdown">
+                                                    <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-project" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Tools <div class="arrow-down"></div>
+                                                    </a>
+                                                    <div class="dropdown-menu" aria-labelledby="topnav-project">
+                                                    <a href="./?page=product/merge_inventory" class="dropdown-item">Merge Inventory</a>
+                                                    </div></div>
+
+
+                                            </div>
+                                        </li>
+
+
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-apps" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class=" uil-lock-alt mr-1"></i>Account <div class="arrow-down"></div>
+                                            </a>
+                                            <div class="dropdown-menu" aria-labelledby="topnav-apps">
+                                                <a href="./?page=company/create_company" class="dropdown-item">Company</a>
+
+												<div class="dropdown">
+                                                    <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-project" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Customer <div class="arrow-down"></div>
+                                                    </a>
+                                                    <div class="dropdown-menu" aria-labelledby="topnav-project">
+                                                        <a href="./?page=customer/add_customer" class="dropdown-item">Add Customer</a>
+														<a href="./?page=customer/accounts" class="dropdown-item">Customer Accounts</a>
+														<a href="./?page=customer/credit_list" class="dropdown-item">Creditor List</a>
+
+
+														<div class="dropdown">
+                                                            <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-apex-charts" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                Customer Card <div class="arrow-down"></div>
+                                                            </a>
+                                                            <div class="dropdown-menu" aria-labelledby="topnav-apex-charts">
+                                                            <a href="./?page=customer/activities" class="dropdown-item">Activities</a>
+                                                            <a href="./?page=customer/gift_item" class="dropdown-item">Add Gift Item</a>
+                                                            <a href="./?page=customer/gift_stock" class="dropdown-item">Add Gift Stock</a>
+														    <a href="./?page=customer/add_point" class="dropdown-item">Add Point</a>
+														    <a href="./?page=customer/gift_otp" class="dropdown-item">Gift OTP</a>
+                                                            <a href="./?page=customer/customer_visit" class="dropdown-item">Customer Visit</a>
+                                                            <a href="./?page=customer/join_list" class="dropdown-item">Join List</a>
+                                                            <a href="./?page=customer/sale_report_monthly" class="dropdown-item">Sale Report - Monthly</a>
+                                                            <a href="./?page=customer/sale_report_daily" class="dropdown-item">Sale Report - Daily</a>
+                                                            <a href="./?page=customer/update_customer_info" class="dropdown-item">Update Customer Info</a>
+                                                            <a href="./?page=customer/regular_customer" class="dropdown-item">Regular Customer</a>
+                                                            <a href="./?page=customer/point_wise_list" class="dropdown-item">Poin Wise List</a>
+                                                            <a href="./?page=customer/recent_gift" class="dropdown-item">Recent Gifted</a>
+                                                            </div>
+                                                        </div>
+
+														<div class="dropdown">
+                                                            <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-apex-charts" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                Customer Portal <div class="arrow-down"></div>
+                                                            </a>
+                                                            <div class="dropdown-menu" aria-labelledby="topnav-apex-charts">
+                                                                <a href="./?page=customer/portal/activities" class="dropdown-item">Activities</a>
+                                                                <a href="./?page=customer/portal/rewards/rewards" class="dropdown-item">Rewards</a>
+                                                            <a href="./?page=customer/portal/claim_gift" class="dropdown-item">Claim Gift</a>
+                                                            <a href="./?page=customer/portal/setting" class="dropdown-item">Setting</a>
+                                                            <a href="./?page=customer/portal/device_info" class="dropdown-item">Device Info</a>
+                                                             <a href="./?page=customer/portal/referral" class="dropdown-item">Referral</a>
+                                                             <a href="./?page=customer/portal/offer_sale" class="dropdown-item">Offer Sale</a>
+                                                             <a href="./?page=customer/portal/change_mobile_number" class="dropdown-item">Change Mobile Number</a>
+
+                                                            </div>
+                                                        </div>
+
+
+
+                                                    </div>
+                                                </div>
+												<div class="dropdown">
+                                                    <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-project" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Supplier <div class="arrow-down"></div>
+                                                    </a>
+                                                    <div class="dropdown-menu" aria-labelledby="topnav-project">
+                                                        <a href="./?page=supplier/add_supplier" class="dropdown-item">Add Supplier</a>
+                                                        <a href="./?page=supplier/supplier_list" class="dropdown-item">Supplier List</a>
+														<a href="./?page=supplier/accounts" class="dropdown-item">Supplier Accounts</a>
+														<a href="./?page=supplier/recent_payment" class="dropdown-item">Recent Payment</a>
+															<a href="./?page=supplier/upcoming_cheque" class="dropdown-item">Upcoming Cheque</a>
+														<a href="./?page=supplier/closing_balance" class="dropdown-item">Closing Balance</a>
+														<a href="./?page=supplier/current_balance" class="dropdown-item">Current Balance</a>
+														<a href="./?page=supplier/transaction" class="dropdown-item">Transaction</a>
+														<a href="./?page=supplier/unknown_payment" class="dropdown-item">Unknown Payment</a>
+														<a href="./?page=supplier/bundle" class="dropdown-item">Bundle</a>
+
+                                                    </div>
+                                                </div>
+
+												<div class="dropdown">
+                                                    <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-project" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Bank Account <div class="arrow-down"></div>
+                                                    </a>
+                                                    <div class="dropdown-menu" aria-labelledby="topnav-project">
+                                                        <a href="./?page=bank/add_account" class="dropdown-item">Add Bank Account</a>
+                                                        <a href="./?page=bank/add_card_swipe" class="dropdown-item">Add Card Swipe Machine</a>
+                                                         <a href="./?page=bank/statement" class="dropdown-item">Statement</a>
+                                                         <a href="./?page=bank/debit_report" class="dropdown-item">Debit Report</a>
+                                                         <a href="./?page=bank/card_payment_verify" class="dropdown-item">Card Payment Verify</a>
+                                                         <a href="./?page=bank/upi_payment_verify" class="dropdown-item">Upi Payment Verify</a>
+							                        </div>
+                                                </div>
+
+                                                <div class="dropdown">
+                                                    <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-ecommerce" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Staff <div class="arrow-down"></div>
+                                                    </a>
+                                                    <div class="dropdown-menu" aria-labelledby="topnav-ecommerce">
+                                                        <a href="./?page=staff/add_staff" class="dropdown-item">Add Staff</a>
+                                                        <a href="./?page=staff/staff_list" class="dropdown-item">Staff List</a>
+                                                        <a href="./?page=staff/designation" class="dropdown-item">Designation</a>
+                                                        <a href="./?page=staff/shift" class="dropdown-item">Shift</a>
+                                                        <a href="./?page=staff/lunch_break" class="dropdown-item">Lunch Break</a>
+                                                        <a href="./?page=staff/holiday" class="dropdown-item">Holiday</a>
+                                                        <a href="./?page=staff/attendance" class="dropdown-item">Attendance</a>
+                                                        <a href="./?page=staff/epf_attendance" class="dropdown-item">EPF & ESI Attendance</a>
+                                                        <a href="./?page=staff/attendance_entry" class="dropdown-item">Attendance Entry</a>
+                                                        <a href="./?page=staff/salary" class="dropdown-item">Salary</a>
+                                                        <a href="./?page=staff/salary_printout" class="dropdown-item">Salary Printout</a>
+                                                        <a href="./?page=staff/credit" class="dropdown-item">Credit</a>
+                                                        <a href="./?page=staff/leave_booking" class="dropdown-item">Leave Booking</a>
+                                                        <a href="./?page=staff/leave_count" class="dropdown-item">Leave Count</a>
+                                                        <a href="./?page=staff/target" class="dropdown-item">Sale Target</a>
+                                                        <a href="./?page=staff/biometric" class="dropdown-item">Biometric Config</a>
+                                                    </div>
+                                                </div>
+
+												<div class="dropdown">
+                                                    <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-project" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Expenses <div class="arrow-down"></div>
+                                                    </a>
+                                                    <div class="dropdown-menu" aria-labelledby="topnav-project">
+                                                        <a href="./?page=expenses/report" class="dropdown-item">Report</a>
+                                                        <a href="./?page=expenses/yearly_report" class="dropdown-item">Yearly Report</a>
+														<a href="./?page=expenses/add_entry" class="dropdown-item">Add Entry</a>
+														<a href="./?page=expenses/add_category" class="dropdown-item">Add Category</a>
+                                                    </div>
+                                                </div>
+
+												<div class="dropdown">
+                                                    <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-project" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Online Shopping <div class="arrow-down"></div>
+                                                    </a>
+                                                    <div class="dropdown-menu" aria-labelledby="topnav-project">
+                                                        <a target='_blank' href="../shopping/?sid=kurinji" class="dropdown-item">Preview</a>
+                                                        <a href="./?page=online_shopping/menu" class="dropdown-item">Menu</a>
+
+                                                    </div>
+                                                </div>
+
+                                                <a href="./?page=tools_and_equipments" class="dropdown-item">Tools & Equipments</a>
+
+                                        </li>
+
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="uil-wheel-barrow mr-1"></i>Stock <div class="arrow-down"></div>
+                                            </a>
+                                            <div class="dropdown-menu" aria-labelledby="topnav-pages">
+                                                <div class="dropdown">
+                                                <a href="./?page=purchase/index" class="dropdown-item">Purchase</a>
+                                                <a href="./?page=purchase/stock_status" class="dropdown-item">Stock Status</a>
+												<a href="./?page=stock/index" class="dropdown-item">Stock</a>
+												<a href="./?page=purchase/order" class="dropdown-item">Order</a>
+												<a href="./?page=stock/expired" class="dropdown-item">Expired Stock</a>
+												<a href="./?page=stock/buy_price" class="dropdown-item">Buy & Sale Price</a>
+												<a href="./?page=stock/stock_report" class="dropdown-item">Stock Report</a>
+                                            </div>
+                                        </li>
+
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="uil-wheel-barrow mr-1"></i>Invoice <div class="arrow-down"></div>
+                                            </a>
+                                            <div class="dropdown-menu" aria-labelledby="topnav-pages">
+                                                <div class="dropdown">
+                                                <a href="./?page=invoice/index&invoice_type=3" class="dropdown-item">Create Invoice</a>
+                                                <a href="./?page=invoice/index&invoice_type=4" class="dropdown-item">Create Estimate</a>
+                                            </div>
+                                        </li>
+
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="uil-arrow-growth mr-1"></i>Report <div class="arrow-down"></div>
+                                            </a>
+                                            <div class="dropdown-menu" aria-labelledby="topnav-pages">
+                                                <div class="dropdown">
+                                                        <a href="./?page=statement/bill_wise" class="dropdown-item">Bill Wise</a>
+                                                        <a href="./?page=statement/day_wise" class="dropdown-item">Day Wise</a>
+														<a href="./?page=statement/month_wise" class="dropdown-item">Month Wise</a>
+														<a href="./?page=statement/inventory_wise" class="dropdown-item">Inventory Wise</a>
+														<a href="./?page=statement/inventory_wise_ps" class="dropdown-item">Inventory Wise P/S</a>
+														<a href="./?page=statement/inventory_yearly_wise" class="dropdown-item">Inventory Wise Yearly</a>
+														<a href="./?page=statement/inventory_graph" class="dropdown-item">Inventory Graph</a>
+														<a href="./?page=statement/inventory_wise_detail" class="dropdown-item">Inventory Wise Detail</a>
+														<a href="./?page=statement/cancel_bill" class="dropdown-item">Cancel Bill</a>
+														<a href="./?page=statement/exchange_bill" class="dropdown-item">Exchange Bill</a>
+														<a href="./?page=statement/cash_counter" class="dropdown-item">Cash Counter</a>
+														<a href="./?page=statement/cash_taken" class="dropdown-item">Cash Taken</a>
+														<a href="./?page=statement/expenses" class="dropdown-item">Expenses</a>
+														<a href="./?page=statement/purchase_payment_graph" class="dropdown-item">Purchase & Payment</a>
+														<a href="./?page=statement/monthly_growth" class="dropdown-item">Monthly Growth</a>
+                                            </div>
+                                        </li>
+
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="uil-invoice mr-1"></i>Gst Filling <div class="arrow-down"></div>
+                                            </a>
+                                            <div class="dropdown-menu" aria-labelledby="topnav-pages">
+                                                <div class="dropdown">
+                                               <a href="./?page=gst/gstr3b" class="dropdown-item">GSTR 3B</a>
+                                               <a href="./?page=gst/gstr1" class="dropdown-item">GSTR 1</a>
+                                               <a href="./?page=gst/gstr9_purchase" class="dropdown-item">GSTR 9 Purchase</a>
+                                               <a href="./?page=gst/purchase_report" class="dropdown-item">Purchase Report</a>
+                                               <a href="./?page=gst/day_wise" class="dropdown-item">Day Wise Report</a>
+                                               <a href="./?page=gst/gst_no" class="dropdown-item">Supplier's Gst Number</a>
+                                               <a href="./?page=gst/gst_reconciliation" class="dropdown-item">Gst Reconciliation</a>
+                                               <a href="./?page=gst/gst_portal_config" class="dropdown-item">Gst Portal Config</a>
+                                            </div>
+                                        </li>
+
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="uil-tag mr-1"></i>PoS <div class="arrow-down"></div>
+                                            </a>
+                                            <div class="dropdown-menu" aria-labelledby="topnav-pages">
+                                                <div class="dropdown">
+                                                <a href="../client/?company_id=1" target="_blank" class="dropdown-item">Billing</a>
+                                                <a href="./?page=pos/page_setup" class="dropdown-item">Page Setup</a>
+                                            </div>
+                                        </li>
+
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-components" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="uil-cog mr-1"></i>Setting <div class="arrow-down"></div>
+                                            </a>
+                                            <div class="dropdown-menu" aria-labelledby="topnav-components">
+                                                <a href="./?page=setting/dashboard" class="dropdown-item">Dashboard Setting</a>
+                                                <a href="./?page=setting/setting" class="dropdown-item">Common Setting</a>
+												<a href="./?page=setting/pos" class="dropdown-item">Pos</a>
+												<a href="./?page=setting/sticker" class="dropdown-item">Sticker</a>
+												<a href="./?page=setting/user" class="dropdown-item">User</a>
+												<a href="./?page=setting/backup" class="dropdown-item">Backup & Restore</a>
+												<a href="./?page=setting/ticket" class="dropdown-item">Ticket</a>
+												<a href="./?page=setting/help" class="dropdown-item">Help</a>
+                                            </div>
+                                        </li>
+
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-layouts" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="uil-download-alt mr-1"></i>Downloads <div class="arrow-down"></div>
+                                            </a>
+                                            <div class="dropdown-menu" aria-labelledby="topnav-layouts">
+                                                <a href="../download/wampserver3.1.9_x64.exe" class="dropdown-item">Wampserver 3.1.9 - 64 Bit</a>
+                                                <a href="../download/wampserver3.1.9_x64_vcredist_x64.exe" class="dropdown-item">Supporting File - 64 Bit</a>
+												<a href="../download/" class="dropdown-item">Offline Billing - 3.5</a>
+												<a href="./?page=setting/client_backup" class="dropdown-item" target='_blank'>Offline Database</a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </nav>
+                        </div></div>
+
+
+                    <!-- Start Content-->
+                    <div class="container-fluid"><div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">STAFF</a></li>
+                    <li class="breadcrumb-item active">ATTENDANCE ENTRY</li>
+                </ol>
+            </div>
+            <h4 class="page-title">ATTENDANCE ENTRY</h4>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+
+<table style='width:60%;' class='table'><tr><td><form action='' method='post'>DATE:</td><td><input style='width:150px;' class='form-control form-control-sm-4' data-provide='datepicker' data-date-autoclose='true' data-date-format='dd/mm/yyyy' type='text' name='from' value='09/02/2025'> </td><td><input type='submit' class='btn btn-primary mb-2' value='SHOW'></form></td></tr></table><br><br><table class='table'><tr style=''><td>1.</td><td>AJAY-K</td><td>8608138238</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="09:01:31 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="09:01:31 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12792'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style='background-color:#ffe2db;'><td>2.</td><td>AJITHKUMAR</td><td>7826946697</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='9187'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>3.</td><td>AKILA - M</td><td>6385945018</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="08:58:19 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="08:58:19 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12561'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>4.</td><td>AMALA-G</td><td>6385550305</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="09:28:25 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="09:28:25 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12797'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>5.</td><td>ANBARASI-S</td><td>9345802271</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="09:00:53 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="09:00:53 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12810'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>6.</td><td>ARUN KUMAR-G</td><td>8344383916</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="10:43:31 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="10:43:31 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12652'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>7.</td><td>ARUNTHATHI</td><td>7845730394</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="10:23:51 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="10:23:51 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12857'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>8.</td><td>BALASUBRAMANIYAN .M</td><td>9789526124</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="08:56:40 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="08:56:40 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='8953'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style='background-color:#ffe2db;'><td>9.</td><td>CHITHRA .R</td><td>6382574987</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12215'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>10.</td><td>DEEPIKA-B</td><td>7397759906</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="08:56:22 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="08:56:22 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12837'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>11.</td><td>DHAKSHINAMURTHY .K</td><td>9750816860</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="08:57:53 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="08:57:53 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='11047'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>12.</td><td>DHANAPRIYA-A</td><td>8807601844</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="09:55:03 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="09:55:03 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12827'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>13.</td><td>INITHA-R</td><td>8148466264</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="08:56:28 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="08:56:28 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12818'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>14.</td><td>JANSI RANI-S</td><td>9345802271</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="10:22:31 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="10:22:31 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12634'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style='background-color:#ffe2db;'><td>15.</td><td>KASTHURI-S</td><td>8610228789</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12781'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>16.</td><td>KATHIRAVAN-J</td><td>9626652780</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="08:56:52 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="08:56:52 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12872'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>17.</td><td>LAKSHMI-R</td><td>6384390853</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="08:56:35 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="08:56:35 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12670'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style='background-color:#ffe2db;'><td>18.</td><td>MALLIKESWARI-J</td><td>7094025613</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12838'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>19.</td><td>MATHIVATHANI-R</td><td>7639767661</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="08:59:05 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="08:59:05 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12816'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>20.</td><td>MEGALA-M</td><td>9655397026</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="09:01:13 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="09:01:13 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12624'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>21.</td><td>NAGARATHINAM-S</td><td>9597691229</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="08:56:47 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="08:56:47 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12822'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style='background-color:#ffe2db;'><td>22.</td><td>NITHIYANANTHAN .P</td><td>7200003052</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='9104'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style='background-color:#ffe2db;'><td>23.</td><td>PADAMARIYAL-I</td><td>9159011560</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12799'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>24.</td><td>PANEERSELVAM .S</td><td>9578457145</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="09:01:04 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="09:01:04 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='5952'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style='background-color:#ffe2db;'><td>25.</td><td>PAVITHRA.P</td><td>7339545782</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12873'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>26.</td><td>RAJESHWARI</td><td>7538889380</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="09:23:56 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="09:23:56 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12874'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>27.</td><td>RUPA-M</td><td>9566845231</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="09:32:32 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="09:32:32 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12716'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style='background-color:#ffe2db;'><td>28.</td><td>SHAIK ALWDEEN-M</td><td>7418771779</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12718'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style='background-color:#ffe2db;'><td>29.</td><td>SHAMILI-R</td><td>9940702112</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12853'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>30.</td><td>SIVASANGARI-N</td><td>9789346549</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="09:01:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="09:01:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12839'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style='background-color:#ffe2db;'><td>31.</td><td>SOWMIYA.S</td><td>9566506774</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12871'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style='background-color:#ffe2db;'><td>32.</td><td>SRILATHA </td><td>6374090649</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="00:00:00 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12706'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>33.</td><td>SWETHA-P</td><td>7639767661</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="08:56:32 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="08:56:32 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12870'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>34.</td><td>VENU GOPAL .D</td><td>9578890300</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="08:56:53 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="08:56:53 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='5951'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>35.</td><td>VIJAYAKUMAR - C </td><td>7639349434</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="08:56:37 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="08:56:37 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='5955'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>36.</td><td>VINOTHINI-R</td><td>6369391138</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="09:00:58 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="09:00:58 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12855'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr><tr style=''><td>37.</td><td>YOGESH-S</td><td>8098879615</td><td><form action="" method="post"><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="in_time" value="08:56:25 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td><div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" data-toggle="timepicker" name="out_time" value="08:56:25 AM">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="dripicons-clock"></i></span>
+        </div>
+    </div>
+</div></td><td>
+<input type='hidden' name='staff_id' value='12815'>
+<input type='hidden' name='from' value='20250209'>
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='UPDATE' >
+<input onclick='return confirm("Are You Sure?");' type='submit' name='submit' value='ABSENT' >
+</form></td></tr></table>
+
+
+
+</div></div></div></div>
+
+</div>
+                    <!-- container -->
+
+                </div>
+                <!-- content -->
+
+                <!-- Footer Start -->
+                <footer class="footer">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <script>document.write(new Date().getFullYear())</script> © ZaaGaa.com
+                            </div>
+                            <div class="col-md-6">
+                                <div class="text-md-right footer-links d-none d-md-block">
+                                    <a href="javascript: void(0);">About</a>
+                                    <a href="javascript: void(0);">Support</a>
+                                    <a href="javascript: void(0);">Contact Us</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+                <!-- end Footer -->
+
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- End Page content -->
+            <!-- ============================================================== -->
+
+
+        </div>
+        <!-- END wrapper -->
+
+        <!-- Right Sidebar -->
+        <div class="right-bar">
+
+          <div class="rightbar-title">
+            <a href="javascript:void(0);" class="right-bar-toggle float-right">
+              <i class="dripicons-cross noti-icon"></i>
+            </a>
+            <h5 class="m-0">Live Chat - Under Construction</h5>
+          </div>
+
+          <div class="rightbar-content h-100" data-simplebar>
+
+
+
+            <div class="p-3">...</div> <!-- end padding-->
+
+          </div>
+        </div>
+
+        <div class="rightbar-overlay"></div>
+        <!-- /Right-bar -->
+
+        <!-- bundle -->
+        <script src="../bootstrap/creative/assets/js/vendor.min.js"></script>
+        <script src="../bootstrap/creative/assets/js/app.min.js"></script>
+
+        <!-- third party js -->
+        <script src="../bootstrap/creative/assets/js/vendor/apexcharts.min.js"></script>
+        <script src="../bootstrap/creative/assets/js/vendor/jquery-jvectormap-1.2.2.min.js"></script>
+        <script src="../bootstrap/creative/assets/js/vendor/jquery-jvectormap-world-mill-en.js"></script>
+
+        <!-- third party js ends -->
+
+        <!-- demo app -->
+        <script src="../bootstrap/creative/assets/js/pages/demo.dashboard.js"></script>
+        <!-- end demo js-->
+
+<script src="../bootstrap/creative/assets/js/vendor/typeahead.bundle.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script language='javascript'>
+
+/***************** ESC BUTTON FUNCTION ******************/
+
+$(document).keyup(function(e) {
+
+  if (e.keyCode == 27) {
+
+  if (confirm("Are you sure to Cancel?")) {
+
+
+window.location="./";
+
+
+  }
+ }
+});
+
+/***************** END ESC BUTTON FUNCTION ******************/
+
+/************* NUMERIC ONLY *******************/
+
+$(document).ready(function() {
+    $(".numeric_only").keydown(function (e) {
+        // Allow: backspace, delete, tab, escape, enter and .
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+             // Allow: Ctrl/cmd+A
+            (e.keyCode == 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+             // Allow: Ctrl/cmd+C
+            (e.keyCode == 67 && (e.ctrlKey === true || e.metaKey === true)) ||
+             // Allow: Ctrl/cmd+X
+            (e.keyCode == 88 && (e.ctrlKey === true || e.metaKey === true)) ||
+             // Allow: home, end, left, right
+            (e.keyCode >= 35 && e.keyCode <= 39)) {
+                 // let it happen, don't do anything
+                 return;
+        }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+});
+
+/************* END NUMERIC ONLY *******************/
+
+
+</script>
+
+
+
+
+
+
+<script>
+if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
+}
+</script>
+
+
+
+
+
+
+
+
+<script src="../bootstrap/tableexport.jquery.plugin/tableExport.min.js"></script>
+<script src="../bootstrap/tableexport.jquery.plugin/libs/jsPDF/jspdf.min.js"></script>
+<script src="../bootstrap/tableexport.jquery.plugin/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
+
+
+
+
+                    <div class="container-fluid d-print-none">
+                        <div class="row">
+This page was generated in 0.45 seconds.
+
+                        </div>
+                    </div>
+
+
+
+    </body>
+</html>
