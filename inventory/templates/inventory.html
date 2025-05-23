@@ -1,0 +1,230 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div class="page-title">
+        <h4 class="mb-0">Inventory</h4>
+    </div>
+    <div class="page-btn d-flex gap-2">
+        <a href="#" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#standard-modal">
+            <i data-feather="plus-circle" class="me-2"></i>Add New
+        </a>
+        <a href="{% url 'delete_unused_inventory' %}" class="btn btn-danger"
+           onclick="return confirm('Are you sure you want to delete all unused inventory?');">
+            <i class="fas fa-trash-alt me-2"></i> Delete Unused
+        </a>
+    </div>
+</div>
+
+<div id="standard-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Add Inventory</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" id="action" value="add">
+                <input type="hidden" name="save_edit_id" id="edit" value="">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="inventory_name">Inventory Name:</label>
+                        <input type="text" name="inventory_name" class="form-control" id="inventory_name" autofocus>
+                    </div>
+                    <div class="form-group mt-4">
+                        <label for="shortcode">Short Code</label>
+                        <input type="text" name="shortcode" class="form-control" id="shortcode">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check mt-4 mb-4">
+                            <input class="form-check-input" name="unit_enabled" type="checkbox" value="1" id="unit_status">
+                            <label class="form-check-label" for="unit_status">Unit Status</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" name="company" value="{{ COMPANY.id }}">
+                        <label for="tax_code">Hsn Code:</label>
+                        <select name="tax_code" id="tax_code" class="form-select mb-3">
+
+                            {% for tax in tax_list %}
+                            <option value="{{ tax.id }}">{{ tax.tax_code }} [{{ tax.tax_rate }}%]</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group mt-4">
+                        <label for="default_price">Default Price:</label>
+                        <input type="text" name="default_price" class="form-control" id="default_price">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row mb-3">
+    <div class="col-md-3">
+        <input type="text" id="filterInventoryName" class="form-control" placeholder="Search Inventory Name">
+    </div>
+    <div class="col-md-3">
+        <input type="text" id="filterHsn" class="form-control" placeholder="Search HSN Code">
+    </div>
+<div class="col-md-2">
+    <select id="filterGst" class="form-select">
+        <option value="">All GST Rates</option>
+        {% for gst in gst_rates %}
+            <option value="{{ gst }}">{{ gst }}%</option>
+        {% endfor %}
+    </select>
+</div>
+
+
+
+    <div class="col-md-2">
+        <input type="text" id="filterShortcode" class="form-control" placeholder="Search Shortcode">
+    </div>
+    <div class="col-md-2">
+        <select id="filterUnitStatus" class="form-select">
+            <option value="">All Units</option>
+            <option value="1">Enabled</option>
+            <option value="0">Disabled</option>
+        </select>
+    </div>
+</div>
+
+                <table class="table table-bordered table-centered">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>ID</th>
+                            <th>Inventory Name</th>
+                            <th>Hsn Code</th>
+                            <th>Gst</th>
+                            <th>Shortcode</th>
+                            <th>Unit Status</th>
+                            <th>Price</th>
+                            <th>Stock Count</th>
+                            <th class="text-center" colspan="2">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in inventory_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>#{{ data.id }}</td>
+                            <td>{{ data.inventory_name }}</td>
+                            <td>{{ data.tax_code.tax_code }}</td>
+                            <td>{{ data.tax_code.tax_rate }}%</td>
+                            <td>{{ data.shortcode|default:"-" }}</td>
+                            <td>{{ data.unit_enabled }}</td>
+                            <td>{{ data.default_price|default:"-" }}</td>
+                            <td>{{ data.stock_count|default:"-" }}</td>
+                            <td class="table-action text-center">
+                                <a href="#" id="edit_{{data.id}}" class="action-icon edit-btn">
+                                    <i class="fas fa-lg fa-fw me-2 fa-edit"></i>
+                                </a>
+                            </td>
+                            <td class="table-action text-center">
+                                <a href="{% url 'delete_inventory' data.id %}" class="action-icon">
+                                    <i class="fas fa-lg fa-fw me-2 fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-arrow">
+                <div class="card-arrow-top-left"></div>
+                <div class="card-arrow-top-right"></div>
+                <div class="card-arrow-bottom-left"></div>
+                <div class="card-arrow-bottom-right"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block footer %}
+<script>
+$(document).ready(function () {
+    $('#tax_code').select2({
+        dropdownParent: $('#standard-modal'),
+        width: '100%',
+        placeholder: 'Select HSN Code',
+        allowClear: true
+    });
+
+    $('.edit-btn').on('click', function (e) {
+        e.preventDefault();
+        const id = $(this).attr('id').split('_')[1];
+        $.ajax({
+            url: '{% url "inventory" %}',
+            method: "POST",
+            data: {
+                edit_id: id,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function(data) {
+                $('#standard-modal').modal('show');
+                $('#edit').val(data.id);
+                $('#action').val("edit");
+                $('#inventory_name').val(data.inventory_name || '');
+                $('#shortcode').val(data.shortcode || '');
+                $('#unit_status').prop('checked', data.unit_enabled == 1);
+                $('#tax_code').val(data.tax_code || '').trigger('change');
+                $('#default_price').val(data.default_price || '');
+            }
+        });
+    });
+
+    $('#standard-modal').on('hidden.bs.modal', function () {
+        $('#standard-modal form')[0].reset();
+        $('#action').val('add');
+        $('#edit').val('');
+        $('#unit_status').prop('checked', false);
+        $('#tax_code').val('').trigger('change');
+    });
+});
+</script>
+<script>
+$(document).ready(function () {
+    function applyFilters() {
+    const invName = $('#filterInventoryName').val().toLowerCase();
+    const hsn = $('#filterHsn').val().toLowerCase();
+    const short = $('#filterShortcode').val().toLowerCase();
+    const unit = $('#filterUnitStatus').val();
+    const gst = $('#filterGst').val();
+
+    $('table tbody tr').each(function () {
+        const row = $(this);
+        const name = row.find('td:nth-child(3)').text().toLowerCase();
+        const hsnCode = row.find('td:nth-child(4)').text().toLowerCase();
+        const gstRate = row.find('td:nth-child(5)').text().replace('%', '').trim();
+        const shortCode = row.find('td:nth-child(6)').text().toLowerCase();
+        const unitStatus = row.find('td:nth-child(7)').text().trim();
+
+        const matchName = !invName || name.includes(invName);
+        const matchHsn = !hsn || hsnCode.includes(hsn);
+        const matchGst = !gst || gst === gstRate;
+        const matchShort = !short || shortCode.includes(short);
+        const matchUnit = unit === "" || unit === unitStatus;
+
+        row.toggle(matchName && matchHsn && matchShort && matchUnit && matchGst);
+    });
+}
+
+$('#filterInventoryName, #filterHsn, #filterShortcode, #filterUnitStatus, #filterGst').on('input change', applyFilters);
+
+
+});
+</script>
+{% endblock footer %}

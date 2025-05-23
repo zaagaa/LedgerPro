@@ -1,0 +1,52 @@
+<script>
+
+
+    /******************** NUMERIC ONLY *************************/
+$(function () {
+    $('body').on('keydown', '.numeric_only', function(e) {
+        if (e.shiftKey || e.ctrlKey || e.altKey) {
+            e.preventDefault();
+        } else {
+            var key = e.keyCode;
+            var inputVal = $(this).val();
+            var isDot = (key === 190 || key === 110); // standard or numpad dot
+            var hasDot = inputVal.includes('.');
+
+            if (
+                key === 8 || // backspace
+                key === 46 || // delete
+                key === 13 || // enter
+                (key >= 35 && key <= 40) || // home, end, arrows
+                (key >= 48 && key <= 57) || // top number keys
+                (key >= 96 && key <= 105) // numpad number keys
+            ) {
+                return; // allow these keys
+            }
+
+            if (isDot && !hasDot) {
+                return; // allow only one dot
+            }
+
+            // Block anything else
+            e.preventDefault();
+        }
+    });
+});
+
+
+
+    $(function () {
+    $('body').on('keydown', '.int_numeric_only', function(e) {
+            if (e.shiftKey || e.ctrlKey || e.altKey) {
+                e.preventDefault();
+            } else {
+                var key = e.keyCode;
+                if (!((key == 8) || (key == 46) || (key == 13) || (key >= 35 && key <= 40) || (key >= 48 && key <= 57) || (key >= 96 && key <= 105))) {
+                    e.preventDefault();
+                }
+            }
+        });
+    });
+
+    /******************** END NUMERIC ONLY *************************/
+</script>
