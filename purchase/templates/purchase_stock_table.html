@@ -1,0 +1,388 @@
+{% load purchase_tags %}
+<button class="btn btn-outline-secondary btn-sm mb-2" data-bs-toggle="modal" data-bs-target="#columnModal">
+    ⚙️ Custom Columns
+</button>
+
+<!-- Modal for toggles -->
+<div class="modal fade" id="columnModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Customize Columns</h5></div>
+      <div class="modal-body">
+        {% for col in custom_columns %}
+        <div class="form-check">
+          <input class="form-check-input toggle-column" type="checkbox" value="{{ col.key }}"
+                 id="col_{{ col.key }}" {% if col.enabled %}checked{% endif %}>
+          <label class="form-check-label" for="col_{{ col.key }}">{{ col.label }}</label>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="saveColumns">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<style>
+    .highlight {
+    background-color: yellow;
+    font-weight: bold;
+}
+
+</style>
+<table id="stock_purchase_table" class="table table-bordered table-centered mb-0">
+    <thead>
+    <tr>
+        <th>Sl.</th>
+<th>Inventory</th>
+        {% for col in custom_columns %}
+<th class="custom-column col-{{ col.key }}"{% if not col.enabled %} style="display:none"{% endif %}>
+  {{ col.label }}
+</th>
+{% endfor %}
+
+
+        <th>Buy&nbsp;Price</th>
+        <th>Unit</th>
+        <th>Qty</th>
+        <th class="text-center"><i class="fas fa-print"></i></th>
+        <th class="text-end">Margin</th>
+        <th class="text-end">Sale&nbsp;Price</th>
+        <th class="text-end">Mrp</th>
+        <th class="text-end">Total</th>
+        {% if purchase_data.finish != 1 %}
+        <th class="text-center" style="width:10px;"></th>
+        <th class="text-center" style="width:10px;"></th>
+        {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+
+    {% for data in stock_list %}
+    <tr>
+        <td>{{ forloop.counter }}.</td>
+        <td style="">
+
+
+            <strong>{{ data.inventory.inventory_name }}</strong>
+
+                {% if attribute_data_list %}<br><code>
+                {% for attribute in attribute_data_list %}
+
+                {% if attribute.stock_id == data.id %}
+
+                {{ attribute.attribute.parent.attribute_name }}: {{ attribute.attribute.attribute_name }},
+
+                {% endif %}
+
+                {% endfor %}</code>
+            {% endif %}
+
+
+
+        </td>
+
+        {% for col in custom_columns %}
+<td class="custom-column col-{{ col.key }}"{% if not col.enabled %} style="display:none"{% endif %}>
+  {{ data|get_nested_attr:col.value }}
+</td>
+{% endfor %}
+
+
+        <td class="text-end">{{ data.buy_price|floatformat:2 }}</td>
+        <td class="text-center">{{ data.unit_view }}</td>
+        <td class="text-center">{{ data.qty_view }}</td>
+        <td class="text-center"><input type="checkbox" id="sticker_{{data.id}}" class="sticker-checkbox" {% if data.sticker is None %}checked{% endif %}></td>
+        <td class="text-end">{{ data.margin|floatformat:2 }}%</td>
+        <td class="text-end">{{ data.sale_price|floatformat:2 }}</td>
+        <td class="text-end">{{ data.mrp|floatformat:2 }}</td>
+
+        <td class="text-end">{{ data.row_total|floatformat:2 }}</td>
+        {% if purchase_data.finish != 1 %}
+        <td>
+            <a href="javascript:edit({{ data.id }});" class="action-icon"> <i
+                    class="fas fa-lg fa-fw me-2 fa-edit"></i></a>
+        </td>
+<td>
+            <a onclick="return confirm('Are you Sure to Delete?');" href="javascript:delete_stock_row({{ data.id }});" class="action-icon"> <i
+                    class="fas fa-lg fa-fw me-2 fa-trash-alt"></i></a>
+
+
+        </td>
+        {% endif %}
+    </tr>
+
+    {% endfor %}
+
+    <tr>
+
+        <td class="text-end" colspan="{{enabled_keys_count}}">
+            Total:
+        </td>
+        <td></td>
+        <td class="text-center">{{ total_unit }}</td>
+        <td class="text-center">{{ total_qty }}</td>
+        <td></td>
+        <td class="text-end">{{average_margin}}%</td>
+        <td></td>
+        <td></td>
+        <td class="text-end">{{ total_gross }}</td>
+        {% if purchase_data.finish != 1 %}
+        <td></td>
+        <td></td>
+        {% endif %}
+    </tr>
+
+    <tr style="height: 10px;">
+        {% if row_span == 2 %}
+        <td class="" colspan="{{ enabled_keys_count|add:6 }}" rowspan="3">
+            {% else %}
+            <td class="" colspan="{{ enabled_keys_count|add:6 }}" rowspan="{{ row_span }}">
+            {% endif %}
+
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <table class="table table-bordered table-centered mb-0">
+
+                        <tr>
+                            <th>Gross</th>
+                            <th>{{TAX_CODE_NAME}} Code</th>
+                            <th>{{COMPANY.tax_type}} %</th>
+                            <th>{{COMPANY.tax_type}} Value</th>
+                            <th>Total</th>
+                        </tr>
+
+                        {% for key, value in tax_details.list.items %}
+                        <tr>
+                            <td>{{value.gross}}</td>
+                            <td>{{value.tax_code}}</td>
+                            <td>{{value.tax_rate}}%</td>
+                            <td>{{value.tax_amount}}</td>
+                            <td>{{value.total}}</td>
+                        </tr>
+                        {% endfor %}
+
+                        <tr>
+                            <th>{{tax_details.total_gross}}</th>
+                            <th></th>
+                            <th></th>
+                            <th>{{tax_details.total_tax_amount}}</th>
+                            <th>{{tax_details.total_amount}}</th>
+                        </tr>
+
+                    </table>
+                </div>
+
+
+                <div class="col-lg-6">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-6 align-items-center">
+                            <div class="card default-cover text-decoration-none">
+                                <div class="card-body text-center align-items-center text-inverse m-5px bg-inverse bg-opacity-10">
+
+                                    <h6 class="mb-1">Payable Amount:</h6>
+                                    <h2>{{ total_amount }}</h2>
+
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </td>
+
+
+        {% if purchase_data.discount %}
+        <td>Discount</td>
+        <td class="text-end">{{ total_discount_amount }}</td>
+        {% if purchase_data.finish != 1 %}
+        <td></td>
+        {% endif %}
+        {% else %}
+        <td>{{ COMPANY.tax_type }}</td>
+        <td class="text-end">{{ total_tax_amount }}</td>
+        {% if purchase_data.finish != 1 %}
+        <td></td>
+        <td></td>
+        {% endif %}
+        {% endif %}
+
+
+    </tr>
+
+
+
+
+        {% if purchase_data.discount %}
+
+        <tr style="height: 10px;">
+        <td>Sub-Total</td>
+        <td class="text-end">{{ sub_total }}</td>
+        {% if purchase_data.finish != 1 %}
+        <td></td>
+            <td></td>
+        {% endif %}
+    </tr>
+
+
+    <tr style="height: 10px;">
+        <td>{{ COMPANY.tax_type }}</td>
+        <td class="text-end">{{ total_tax_amount }}</td>
+        {% if purchase_data.finish != 1 %}
+        <td></td>
+        <td></td>
+        {% endif %}
+    </tr>
+        {% endif %}
+
+
+
+    {% if purchase_data.other_charges != 0 %}
+    <tr style="height: 10px;">
+        <td>O.Charges</td>
+        <td class="text-end">{{ purchase_data.other_charges|floatformat:2 }}</td>
+        {% if purchase_data.finish != 1 %}
+        <td></td>
+        <td></td>
+        {% endif %}
+    </tr>
+    {% endif %}
+
+    {% if purchase_data.round_off != 0 %}
+    <tr style="height: 10px;">
+        <td>R.Off</td>
+        <td class="text-end">{{ purchase_data.round_off|floatformat:2 }}</td>
+        {% if purchase_data.finish != 1 %}
+        <td></td>
+        <td></td>
+        {% endif %}
+    </tr>
+    {% endif %}
+
+    <tr style="height: 10px;">
+
+        <td>TOTAL</td>
+        <td class="text-end">{{ total_amount }}</td>
+        {% if purchase_data.finish != 1 %}
+        <td></td>
+        <td></td>
+        {% endif %}
+    </tr>
+
+    {% if row_span == 2 %}
+    <tr style="height: 50px;">
+        <td colspan="2"></td>
+        {% if purchase_data.finish != 1 %}
+        <td></td>
+        <td></td>
+        {% endif %}
+    </tr>
+    {% endif %}
+
+
+    </tbody>
+</table>
+
+
+<script>
+$(document).ready(function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var barcode = urlParams.get('barcode');
+
+    if (barcode) {
+        $('.barcode-view').each(function() {
+            if ($(this).text().trim() === barcode) {
+                $(this).addClass('highlight');
+            }
+        });
+    }
+});
+
+$(document).ready(function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var barcode = urlParams.get('barcode');
+
+    if (barcode) {
+        $('.pre_barcode-view').each(function() {
+            if ($(this).text().trim() === barcode) {
+                $(this).addClass('highlight');
+            }
+        });
+    }
+});
+
+
+$(document).on('change', '.sticker-checkbox', function () {
+id=$(this).attr('id').replace("sticker_","");
+
+    if (!$(this).is(':checked')) {
+    action="unchecked";
+    }else{
+    action="checked";
+    }
+
+       $.ajax({
+            url: '',  // update with your endpoint
+            type: 'POST',
+            data: {
+                'id': id,
+                'sticker_action': action,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'  // Django CSRF token
+            },
+            success: function (response) {
+                //alert(response.updated);
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX error:', error);
+            }
+        });
+
+
+});
+
+
+
+    </script>
+
+
+
+<script>
+$(document).ready(function() {
+    function applyColumnVisibility() {
+        $('.custom-column').hide();  // Hide all
+        $('.toggle-column:checked').each(function() {
+            let key = $(this).val();
+            $('.col-' + key).show();
+        });
+    }
+
+    applyColumnVisibility();
+
+    $('#saveColumns').click(function() {
+        let selected = $('.toggle-column:checked').map(function() {
+            return this.value;
+        }).get();
+
+        $.ajax({
+            url: "{% url 'save_column_preference' %}",
+            method: "POST",
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+            data: {
+                columns: JSON.stringify(selected)
+            },
+            success: function() {
+                $('#columnModal').modal('hide');
+                // Reload the page after saving
+                location.reload();
+            }
+        });
+    });
+});
+</script>
+

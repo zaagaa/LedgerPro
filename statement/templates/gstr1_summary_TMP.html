@@ -1,0 +1,198 @@
+{% extends 'layouts2/main.html' %}
+{% load app_tags %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-2">
+        <div class="d-flex flex-column">
+            <form id="monthForm" method="POST" action="">
+                {% csrf_token %}
+                <div class="d-flex align-items-end gap-2">
+                    <div class="col-auto">
+                        <label for="month" class="form-label mb-0">Month:</label>
+                        <input type="month" class="form-control monthPicker" id="month" name="month" value="{{ month_input }}">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" id="show" class="btn btn-primary">Show</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="d-print-none">
+            <button onclick="printOnlyArea()" class="btn btn-outline-dark">
+                <i class="fas fa-print"></i> Print
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="container my-4" id="printArea">
+                    <div class="text-center mb-4">
+                        <h3 class="fw-bold text-secondary">{{ company.company_name|default:"-" }} - GSTR-1 ({{ month_name|default:"-"|upper }})</h3>
+                        <h5 class="text-muted">GSTIN: {{ company.tax_number|default:"-" }} [Invoice No: {{ min_invoice|default:"-" }} to {{ max_invoice|default:"-" }}] </h5>
+                    </div>
+
+                    <!-- GST Rate Summary -->
+                    <h5 class="fw-bold text-primary">GST Rate-wise Summary</h5>
+                    <table class="table table-bordered text-center">
+                        <thead class="table-light">
+                            <tr>
+                                <th>AMOUNT</th>
+                                <th>GST</th>
+                                <th>IGST</th>
+                                <th>CGST</th>
+                                <th>SGST</th>
+                                <th>TOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in gstr1_rate_summary %}
+                            <tr>
+                                <td>{{ row.taxable|floatformat:2 }}</td>
+                                <td>{{ row.rate|floatformat:0 }}%</td>
+                                <td>{{ row.igst|floatformat:2 }}</td>
+                                <td>{{ row.cgst|floatformat:2 }}</td>
+                                <td>{{ row.sgst|floatformat:2 }}</td>
+                                <td>{{ row.total|floatformat:2 }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr class="fw-bold">
+                                <td>{{ total_taxable|floatformat:2 }}</td>
+                                <td></td>
+                                <td>{{ total_igst|floatformat:2 }}</td>
+                                <td>{{ total_cgst|floatformat:2 }}</td>
+                                <td>{{ total_sgst|floatformat:2 }}</td>
+                                <td>{{ total_actual|floatformat:2 }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <hr class="my-4">
+
+                    <!-- HSN Wise Summary -->
+                    <h5 class="fw-bold text-primary">HSN-Wise Tax Breakup</h5>
+                    <table class="table table-bordered text-center small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>HSN CODE</th>
+                                <th>GST RATE</th>
+                                <th>QTY</th>
+                                <th>TAXABLE (Prorated)</th>
+                                <th>CGST</th>
+                                <th>SGST</th>
+                                <th>IGST</th>
+                                <th>TOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if hsn_data %}
+                                {% for row in hsn_data %}
+<tr>
+<td>
+<a href="#" class="hsn-link text-decoration-none"
+   data-hsn="{{ row.hsn }}"
+   data-rate="{{ row.rate }}"
+   data-month="{{ month_input }}">
+   {{ row.hsn|default:"-" }}
+</a>
+
+</td>
+
+    <td>{{ row.rate|floatformat:0 }}%</td>
+    <td>{{ row.qty }}</td>
+    <td>{{ row.gross|floatformat:2 }}</td>  <!-- ✅ Correct GROSS (pre-GST base) -->
+    <td>{{ row.cgst|floatformat:2 }}</td>
+    <td>{{ row.sgst|floatformat:2 }}</td>
+    <td>{{ row.igst|floatformat:2 }}</td>
+    <td>{{ row.amount|floatformat:2 }}</td> <!-- ✅ TOTAL = gross + taxes -->
+</tr>
+                                {% endfor %}
+<tr class="fw-bold">
+    <td colspan="2">Grand Total</td>
+    <td>{{ hsn_total_qty }}</td>
+    <td>{{ hsn_total_gross|floatformat:2 }}</td>  <!-- ✅ Corrected -->
+    <td>{{ hsn_total_cgst|floatformat:2 }}</td>
+    <td>{{ hsn_total_sgst|floatformat:2 }}</td>
+    <td>{{ hsn_total_igst|floatformat:2 }}</td>
+    <td>{{ hsn_total_amount|floatformat:2 }}</td>
+</tr>
+                            {% else %}
+                                <tr><td colspan="8" class="text-center text-muted">No data available for HSN-wise tax breakup.</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- HSN Invoice Modal -->
+<div class="modal fade" id="hsnInvoiceModal" tabindex="-1" aria-labelledby="hsnInvoiceModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="hsnInvoiceModalLabel">Invoices for HSN: <span id="hsnModalCode"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="hsnInvoiceModalBody">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock content %}
+
+{% block footer %}
+<script>
+function printOnlyArea() {
+    const printContent = document.getElementById("printArea").innerHTML;
+    const originalContent = document.body.innerHTML;
+    document.body.innerHTML = printContent;
+    window.print();
+    document.body.innerHTML = originalContent;
+    location.reload();
+}
+$(document).ready(function() {
+    $('#month').on('change', function() {
+        $('#monthForm').submit();
+    });
+});
+
+$(document).on('click', '.hsn-link', function(e) {
+    e.preventDefault();
+    const hsn = $(this).data('hsn');
+    const rate = $(this).data('rate');
+    const month = $(this).data('month');  // NEW
+
+
+
+    $('#hsnModalCode').text(hsn);
+    $('#hsnInvoiceModalBody').html('<p class="text-muted">Loading...</p>');
+    $('#hsnInvoiceModal').modal('show');
+
+    $.ajax({
+        url: "{% url 'hsn_invoice_details' %}",
+        type: "GET",
+        data: { hsn: hsn, rate: rate, month: month },  // include month
+        success: function(data) {
+            $('#hsnInvoiceModalBody').html(data);
+        },
+        error: function() {
+            $('#hsnInvoiceModalBody').html('<p class="text-danger">Failed to load data.</p>');
+        }
+    });
+});
+
+
+</script>
+
+
+{% endblock footer %}

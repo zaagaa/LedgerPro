@@ -1,0 +1,24 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+<div class="text-center mt-5">
+    <h2>Restarting Server...</h2>
+    <div class="progress mt-4" style="height: 30px;">
+        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+             role="progressbar" style="width: 0%">0%</div>
+    </div>
+</div>
+<script>
+    let width = 0;
+    let interval = setInterval(function () {
+        if (width >= 100) {
+            clearInterval(interval);
+            window.location.href = '/';
+        } else {
+            width += 5;
+            document.getElementById('progressBar').style.width = width + '%';
+            document.getElementById('progressBar').innerText = width + '%';
+        }
+    }, 150);
+</script>
+{% endblock %}
