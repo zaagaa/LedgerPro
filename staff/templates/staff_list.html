@@ -1,0 +1,143 @@
+{% extends 'layouts2/main.html' %}
+{% block content %}
+<h4 class="page-title mb-4">Staff List</h4>
+
+<div class="d-flex justify-content-between mb-3">
+  <div>
+    <a href="{% url 'add_staff' %}" class="btn btn-sm btn-primary">Add Staff</a>
+    <a href="{% url 'rejoin_staff_page' %}" class="btn btn-sm btn-outline-success">Rejoin Staff</a>
+  </div>
+  <div>
+    <div class="dropdown">
+      <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        Customize Columns
+      </button>
+      <ul class="dropdown-menu p-2" style="min-width: 200px;">
+        <li><label><input type="checkbox" class="col-toggle me-1" value="salary" {% if 'salary' in columns %}checked{% endif %}> Salary</label></li>
+        <li><label><input type="checkbox" class="col-toggle me-1" value="esi_number" {% if 'esi_number' in columns %}checked{% endif %}> ESI Number</label></li>
+        <li><label><input type="checkbox" class="col-toggle me-1" value="epf_number" {% if 'epf_number' in columns %}checked{% endif %}> EPF Number</label></li>
+        <li><label><input type="checkbox" class="col-toggle me-1" value="aadhar_number" {% if 'aadhar_number' in columns %}checked{% endif %}> Aadhar</label></li>
+        <li><label><input type="checkbox" class="col-toggle me-1" value="join_date" {% if 'join_date' in columns %}checked{% endif %}> Join Date</label></li>
+        <li><label><input type="checkbox" class="col-toggle me-1" value="exit_date" {% if 'exit_date' in columns %}checked{% endif %}> Exit Date</label></li>
+        <li><label><input type="checkbox" class="col-toggle me-1" value="dob" {% if 'dob' in columns %}checked{% endif %}> DOB</label></li>
+        <li><label><input type="checkbox" class="col-toggle me-1" value="address" {% if 'address' in columns %}checked{% endif %}> Address</label></li>
+        <li><label><input type="checkbox" class="col-toggle me-1" value="city" {% if 'city' in columns %}checked{% endif %}> City</label></li>
+        <li><label><input type="checkbox" class="col-toggle me-1" value="state" {% if 'state' in columns %}checked{% endif %}> State</label></li>
+        <li><label><input type="checkbox" class="col-toggle me-1" value="country" {% if 'country' in columns %}checked{% endif %}> Country</label></li>
+        <li><label><input type="checkbox" class="col-toggle me-1" value="pincode" {% if 'pincode' in columns %}checked{% endif %}> Pincode</label></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card mb-4">
+      <div class="card-body">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>Sl</th>
+              <th>Staff ID</th>
+              <th>Name</th>
+              <th>Mobile</th>
+              {% if 'salary' in columns %}<th>Salary</th>{% endif %}
+              {% if 'esi_number' in columns %}<th>ESI Number</th>{% endif %}
+              {% if 'epf_number' in columns %}<th>EPF Number</th>{% endif %}
+              {% if 'aadhar_number' in columns %}<th>Aadhar</th>{% endif %}
+              {% if 'join_date' in columns %}<th>Join Date</th>{% endif %}
+              {% if 'exit_date' in columns %}<th>Exit Date</th>{% endif %}
+              {% if 'dob' in columns %}<th>DOB</th>{% endif %}
+              {% if 'address' in columns %}<th>Address</th>{% endif %}
+              {% if 'city' in columns %}<th>City</th>{% endif %}
+              {% if 'state' in columns %}<th>State</th>{% endif %}
+              {% if 'country' in columns %}<th>Country</th>{% endif %}
+              {% if 'pincode' in columns %}<th>Pincode</th>{% endif %}
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in staff_list %}
+            <tr {% if s.id == just_rejoined_id %}class="table-success"{% endif %}>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ s.id }}</td>
+              <td>
+                <a href="#" class="staff-detail-link" data-id="{{ s.id }}" data-bs-toggle="modal" data-bs-target="#staffDetailModal">
+                  {{ s.staff_name }}
+                </a>
+              </td>
+              <td>{{ s.mobile }}</td>
+              {% if 'salary' in columns %}<td>{{ s.salary }}</td>{% endif %}
+              {% if 'esi_number' in columns %}<td>{{ s.esi_number }}</td>{% endif %}
+              {% if 'epf_number' in columns %}<td>{{ s.epf_number }}</td>{% endif %}
+              {% if 'aadhar_number' in columns %}<td>{{ s.aadhar_number }}</td>{% endif %}
+              {% if 'join_date' in columns %}<td>{{ s.join_date }}</td>{% endif %}
+              {% if 'exit_date' in columns %}<td>{{ s.exit_date }}</td>{% endif %}
+              {% if 'dob' in columns %}<td>{{ s.dob }}</td>{% endif %}
+              {% if 'address' in columns %}<td>{{ s.address }}</td>{% endif %}
+              {% if 'city' in columns %}<td>{{ s.city }}</td>{% endif %}
+              {% if 'state' in columns %}<td>{{ s.state }}</td>{% endif %}
+              {% if 'country' in columns %}<td>{{ s.country }}</td>{% endif %}
+              {% if 'pincode' in columns %}<td>{{ s.pincode }}</td>{% endif %}
+              <td>
+                <a href="{% url 'edit_staff' s.id %}" class="btn btn-sm btn-primary">Edit</a>
+                <a href="{% url 'discontinue_staff' s.id %}" class="btn btn-sm btn-warning"
+                   onclick="return confirm('Discontinue {{ s.staff_name }}?')">Discontinue</a>
+                {% if request.user.is_superuser %}
+                  <a href="{% url 'delete_staff' s.id %}" class="btn btn-sm btn-danger"
+                     onclick="return confirm('Delete {{ s.staff_name }} permanently?')">Delete</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="20" class="text-center">No active staff available.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Staff Detail Modal -->
+<div class="modal fade" id="staffDetailModal" tabindex="-1" aria-labelledby="staffDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staffDetailModalLabel">Staff Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="staff-detail-content">
+        <div class="text-center p-4">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script>
+$(document).ready(function () {
+  $(".staff-detail-link").click(function () {
+    const staffId = $(this).data("id");
+    $("#staff-detail-content").html('<div class="text-center p-4">Loading...</div>');
+    $.get("{% url 'staff_detail_ajax' %}", { id: staffId }, function (data) {
+      $("#staff-detail-content").html(data);
+    });
+  });
+
+  $(".col-toggle").change(function () {
+    const selected = [];
+    $(".col-toggle:checked").each(function () {
+      selected.push($(this).val());
+    });
+    $.post("{% url 'set_staff_columns' %}", {
+      columns: selected,
+      csrfmiddlewaretoken: '{{ csrf_token }}'
+    }, function () {
+      location.reload();
+    });
+  });
+});
+</script>
+{% endblock %}

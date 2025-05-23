@@ -1,0 +1,151 @@
+{% extends 'layouts2/main.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+
+<h4 class="page-title mb-4">Add Credit to Staff</h4>
+
+<div class="row">
+  <!-- Left column: form -->
+  <div class="col-lg-6 mb-4">
+    <div class="card h-100">
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Select Staff</label>
+            <select class="form-select select2" name="staff" required>
+              <option value="">Select</option>
+              {% for s in staff_list %}
+                <option value="{{ s.id }}">{{ s.staff_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Credit Amount</label>
+            <input type="number" step="0.01" name="amount" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Note</label>
+            <textarea name="note" class="form-control" rows="2"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Add Credit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<div class="col-lg-6 mb-4">
+  <div id="staff-credit-info" class="card h-100 shadow-sm border-start border-4 border-primary d-none">
+    <div class="card-body">
+      <h5 class="card-title mb-4 fw-semibold" id="staff-name-label">Staff Info</h5>
+
+      <div class="mb-3 d-flex justify-content-between align-items-center">
+        <strong class="text-muted">Already Credited This Month:</strong>
+        <span class="fs-4 fw-semibold text-dark">₹<span id="credited-amount">0</span></span>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center">
+        <strong class="text-muted">Eligible Credit Limit:</strong>
+        <span class="fs-4 fw-bold" id="eligible-amount">₹0</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+
+<h5 class="mt-4">Today's Credits ({{ today|date:"d M Y" }})</h5>
+<div class="card">
+  <div class="card-body">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Staff</th>
+          <th>Amount</th>
+          <th>Note</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for credit in credits_today %}
+        <tr>
+          <td>#{{ credit.staff.id }}</td>
+          <td>{{ credit.staff.staff_name }}</td>
+          <td>{{ credit.amount|intcomma }}</td>
+          <td>{{ credit.notes }}</td>
+          <td>{{ credit.time|time:"h:i A" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center">No entries yet.</td></tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2">Total</td>
+          <td colspan="3">₹{{ grand_total|intcomma }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+<script src="{% static 'js/select2.min.js' %}"></script>
+<link href="{% static 'css/select2.min.css' %}" rel="stylesheet" />
+
+<script>
+  $(document).ready(function () {
+    $('.select2').select2();
+
+   $("select[name='staff']").change(function () {
+  const staffId = $(this).val();
+  if (!staffId) {
+    $("#staff-credit-info").addClass("d-none");
+    return;
+  }
+
+  $.ajax({
+    url: "{% url 'staff_credit_info_ajax' %}",
+    data: { staff_id: staffId },
+    success: function (data) {
+      const credited = parseFloat(data.credited);
+      const eligible = parseFloat(data.eligible);
+      const difference = eligible - credited;
+
+      $("#credited-amount").text(credited.toLocaleString('en-IN'));
+
+      const $eligibleSpan = $("#eligible-amount");
+      $eligibleSpan.text("₹" + eligible.toLocaleString('en-IN'));
+
+      // ✅ Always green unless negative
+      if (eligible < 0) {
+        $eligibleSpan.removeClass("text-success").addClass("text-danger");
+      } else {
+        $eligibleSpan.removeClass("text-danger").addClass("text-success");
+      }
+
+      $("#staff-name-label").text("Staff Info - " + data.staff_name);
+      $("#staff-credit-info").removeClass("d-none");
+    },
+    error: function () {
+      $("#staff-credit-info").addClass("d-none");
+    }
+  });
+});
+
+
+  });
+
+  $(function () {
+    document.querySelector("html").setAttribute("data-layout-mode", 'light_mode');
+    document.querySelector("html").setAttribute('data-layout-style', 'modern');
+    document.querySelector("html").setAttribute('data-nav-color', 'light');
+  });
+</script>
+{% endblock %}
+
