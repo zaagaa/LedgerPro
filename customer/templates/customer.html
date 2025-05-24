@@ -1,0 +1,45 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+
+<table class="table table-bordered table-centered mb-0">
+    <thead>
+    <tr>
+        <th>SL.</th>
+        <th>ID</th>
+        <th>Customer Name</th>
+        <th>Mobile</th>
+        <th class="text-center">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+{% for data in customer_list %}
+<tr>
+    <td>{{forloop.counter|add:count_start}}</td>
+    <td>#{{data.id}}</td>
+     <td>{{data.customer_name}}</td>
+     <td>{{data.mobile}}</td>
+        <td class="table-action text-center">
+        <a href="" class="action-icon"> <i
+        class="fas fa-lg fa-fw me-2 fa-trash-alt"></i></a>
+        </td>
+</tr>
+
+
+{% endfor %}
+</tbody>
+</table>
+
+
+<form action="" method="GET"><input type="hidden" name="page" value="{{page}}">
+<div class="row mt-2">
+  <div class="col-sm-6"><p class="float-start"><input type="submit" class="btn btn-primary"  name="button" value="Previous"></p></div>
+  <div class="col-sm-6"><p class="float-end"><input class="btn btn-primary" type="submit" name="button" value="Next"></p></div>
+</div>
+</form>
+
+
+
+
+{% endblock content %}
