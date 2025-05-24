@@ -1,0 +1,63 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+
+<form method="get" class="mb-3">
+    <div class="d-flex justify-content-end">
+        <div class="d-flex gap-2">
+            <input type="text" name="mobile" class="form-control" placeholder="Enter mobile number" value="{{ mobile_filter }}">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{% url 'customer_activities' %}" class="btn btn-secondary">Reset</a>
+        </div>
+    </div>
+</form>
+
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+                <table class="table">
+                    <tr><th>ENTRY TIME</th><th>INVOICE DATE</th><th>INVOICE NUMBER</th><th>BILL AMOUNT</th>
+                        <th>CUSTOMER NAME</th>
+                        <th>MOBILE</th>
+                        <th>POINTS</th><th>BALANCE</th></tr>
+                {% for data in activity_list %}
+                <tr><td>{{data.entry_date|date:"d/m/Y h:i:s A"}}</td>
+{% if not data.invoice.invoice_number %}
+  <td colspan="3" class="text-danger">{{ data.description }}</td>
+{% else %}
+  <td>{{ data.invoice.invoice_date|date:"d/m/Y" }}</td>
+  <td>{{ data.invoice.invoice_number }}</td>
+  <td>{{ data.invoice.total_amount|floatformat:2 }}</td>
+{% endif %}
+
+                    <td>{{data.customer.customer_name}}</td>
+                    <td>{{data.customer.mobile}}</td>
+                    <td style="color: red; font-weight: bold; text-align: right;">{{ data.point|floatformat:2 }}</td>
+<td style="text-align: right;">{{ data.balance|floatformat:2 }}</td>
+                {% endfor %}
+                    </table>
+
+
+
+</div></div></div></div>
+
+
+{% endblock content %}
+
+
+{% block footer %}
+
+<script>
+$(function() {
+
+document.querySelector("html").setAttribute('data-layout-style', 'modern');
+
+});
+</script>
+
+{% endblock footer %}
