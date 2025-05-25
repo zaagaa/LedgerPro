@@ -1,0 +1,149 @@
+{% extends 'layouts2/main.html' %}
+{% load custom_filters %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="mb-3 fw-semibold">📦 Stock Expiry List</h5>
+
+                <form method="get" class="row g-3 mb-4">
+                    <!-- Company Filter -->
+                    <div class="col-md-6">
+                        <label class="form-label">Company</label>
+                        <select name="company" class="form-select" onchange="this.form.submit()">
+                            <option value="all">All Companies</option>
+                            {% for c in companies %}
+                                <option value="{{ c.id }}" {% if selected_company == c.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ c.company_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Month Filter -->
+                    <div class="col-md-6">
+                        <label class="form-label">Month</label>
+                        <select name="month" class="form-select" onchange="this.form.submit()">
+                            <option value="">-- All Months --</option>
+                            {% for val, label in month_options %}
+                                <option value="{{ val }}" {% if selected_month == val %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+
+                <div class="text-end mb-3">
+                    <button onclick="printDiv('printable-area')" class="btn btn-outline-primary btn-sm d-print-none">
+                        🖨️ Print Table
+                    </button>
+                </div>
+
+                <div id="printable-area">
+                    {% if grouped_stocks %}
+                        {% for month, items in grouped_stocks.items %}
+         <h4 class="mt-4 fw-bold text-primary">
+    {{ selected_company_name|default:"All Companies" }} - {{ month }}
+</h4>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm align-middle">
+                                <thead class="table-light text-center">
+                                    <tr>
+                                        <th>S.NO</th>
+                                        <th>PREBARCODE</th>
+                                        <th class="text-start">INVENTORY</th>
+                                        <th>QTY</th>
+                                        <th>MRP</th>
+                                        <th>MFG DATE</th>
+                                        <th>EXP DATE</th>
+                                        <th>DAYS LEFT</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in items %}
+                                    <tr class="text-center {% if row.days.days <= 30 %}table-danger{% endif %}">
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>
+                                            {% if row.pre_barcode %}
+                                                {{ row.pre_barcode }}
+                                            {% else %}
+                                                {{ row.barcode_view }}
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-start">
+                                            {% with attr_list=attribute_map|get_item:row.id %}
+                                                {% if attr_list %}
+                                                    {{ row.inventory.inventory_name }}, {{ attr_list|join:", " }}
+                                                {% else %}
+                                                    {{ row.inventory.inventory_name }}
+                                                {% endif %}
+                                            {% endwith %}
+                                        </td>
+                                        <td>{{ row.qty }}</td>
+                                        <td>{{ row.mrp }}</td>
+                                        <td>{{ row.mfg_date|date:'d-m-Y' }}</td>
+                                        <td>{{ row.exp_date|date:'d-m-Y' }}</td>
+                                        <td>{{ row.days.days }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-warning text-center mt-4">No expiry data for selected filters.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script>
+function printDiv(divId) {
+    var printContents = document.getElementById(divId).innerHTML;
+    var originalContents = document.body.innerHTML;
+
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+    location.reload(); // To restore interactivity
+}
+</script>
+
+<style>
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+
+    #printable-area, #printable-area * {
+        visibility: visible !important;
+    }
+
+    #printable-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
+    .table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+    }
+
+    .table th, .table td {
+        font-size: 12px !important;
+        border: 1px solid #000 !important;
+    }
+
+    .d-print-none {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}
