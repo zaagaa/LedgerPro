@@ -1,0 +1,98 @@
+{% extends 'layouts2/main.html' %}
+{% load custom_tags %}
+
+{% block content %}
+
+<h4 class="page-title mb-4">Bill List</h4>
+
+<div class="row">
+
+
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+<form class="row g-3" method="POST" action="">
+    {% csrf_token %}
+
+  <div class="col-auto">
+    <label for="invoice_date" class="">Bill Date:</label>
+    <input onchange="this.form.submit();" type="text" class="form-control datepicker" id="invoice_date" name="invoice_date" placeholder="" value="{{form_invoice_date}}">
+  </div>
+
+
+</form>
+
+                <table class="table">
+
+                     <tr><th>SL</th><th>BIll DATE & TIME</th><th>BIll NO.</th>
+                         <th class="text-end">SALE</th>
+                         <th class="text-end">DISCOUNT</th>
+                         <th class="text-end">ROUND OFF</th>
+                         <th class="text-end">PAYABLE</th>
+                         <th class="text-end">CARD</th>
+                         <th class="text-end">UPI</th>
+                         <th class="text-end">CREDIT</th>
+
+                         <th class="text-end">TOTAL CASH</th></tr>
+
+            {% for data in bill_list %}
+
+                    <tr><td>{{forloop.counter}}</td><td>{{ data.invoice_date|date:"d/m/Y H:i:s A" }}</td><td>{{data.invoice_number}}</td>
+                        <td class="text-end">{{0|addition:data.total_amount|addition:data.discount_value}}</td>
+                        <td class="text-end">{{data.discount_value|default_if_none:"-"}}</td>
+                        <td class="text-end">{{data.round_off|default_if_none:"-"}}</td>
+                        <td class="text-end">{{data.total_amount}}</td>
+                        <td class="text-end">{{data.card|default_if_none:"-"}}</td>
+                        <td class="text-end">{{data.upi|default_if_none:"-"}}</td>
+                        <td class="text-end">{{data.credit|default_if_none:"-"}}</td>
+
+
+                    <td class="text-end">{{data.total_amount|subtract:data.card|subtract:data.upi|subtract:data.credit}}</td></tr>
+
+
+             {% endfor %}
+
+                    <tr><th></th><th></th><th></th><th class="text-end">{{total}}</th>
+                        <th></th><th></th><th class="text-end">{{total_amount.payable}}</th>
+                    <th class="text-end">{{total_amount.card}}</th>
+                        <th class="text-end">{{total_amount.upi}}</th><th class="text-end">{{total_amount.credit}}</th>
+                    <th class="text-end">{{total_amount.payable|subtract:total_amount.card|subtract:total_amount.upi|subtract:total_amount.credit}}</th></tr>
+
+                    </table>
+
+<div class="d-flex justify-content-center">
+<table>
+    <tr><th>TOTAL CASH</th><th>: {{cash_total}}</th></tr>
+    <tr><th>EXPENSES</th><th>: {{expenses}}</th></tr>
+    <tr><th>CASH BALANCE</th><th>: {{cash_total|subtract:expenses}}</th></tr>
+</table>
+</div>
+
+            </div>
+            <!-- BEGIN card-arrow -->
+            <div class="card-arrow">
+                <div class="card-arrow-top-left"></div>
+                <div class="card-arrow-top-right"></div>
+                <div class="card-arrow-bottom-left"></div>
+                <div class="card-arrow-bottom-right"></div>
+            </div>
+            <!-- END card-arrow -->
+        </div>
+    </div>
+
+
+</div>
+
+
+{% endblock content %}
+
+{% block footer %}
+<script>
+$(function() {
+document.querySelector("html").setAttribute("data-layout-mode", 'light_mode');
+document.querySelector("html").setAttribute('data-layout-style', 'modern');
+document.querySelector("html").setAttribute('data-nav-color', 'light');
+});
+</script>
+{% endblock footer %}

@@ -1,0 +1,18 @@
+{% extends "layouts2/main.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6 text-center">
+        <div class="card border-0 shadow-lg mt-5">
+            <div class="card-body py-5">
+                <h1 class="display-1 fw-bold text-danger">404</h1>
+                <h4 class="mb-3">Page Not Found</h4>
+                <p class="text-muted mb-4">Sorry, the page you are looking for doesn't exist or has been moved.</p>
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">
+                    <i class="bi bi-house-door-fill me-1"></i> Go to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
