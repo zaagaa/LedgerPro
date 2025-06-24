@@ -1,0 +1,72 @@
+ 
+[24-04-2025 23:27:33.96] 🔄 Script started 
+[24-04-2025 23:27:33.96] 📄 Reading BACKUP_DIR from: C:\Users\PERSONAL\Desktop\BusinessApp\backup\config.py 
+[24-04-2025 23:27:34.38] 🐞 DEBUG BACKUP_FOLDER = D:\backup 
+[24-04-2025 23:27:34.38] 📁 BACKUP_FOLDER: D:\backup 
+[24-04-2025 23:27:34.38] 📂 Entered backup folder: D:\backup 
+[24-04-2025 23:27:34.40] 🔄 Zipping ledger_pro_backup_2025-04-24_23-27-27.sql 
+[24-04-2025 23:27:34.40] 🗑️ Deleted ledger_pro_backup_2025-04-24_23-27-27.sql 
+[24-04-2025 23:27:50.46] 🔚 Finished processing 
+ 
+[02-06-2025  5:45:50.52] 🔄 Script started 
+[02-06-2025  5:45:50.53] 📄 Reading BACKUP_DIR from: C:\Users\PERSONAL\Desktop\BusinessApp_uuid\backup\config.py 
+[02-06-2025  5:45:51.29] 🐞 DEBUG BACKUP_FOLDER = D:\BACKUP_POST_SQL 
+[02-06-2025  5:45:51.31] 📁 BACKUP_FOLDER: D:\BACKUP_POST_SQL 
+[02-06-2025  5:45:51.32] 📂 Entered backup folder: D:\BACKUP_POST_SQL 
+[02-06-2025  5:45:51.32] 🔄 Zipping ledger_pro_backup_2025-06-02_05-45-30.sql 
+[02-06-2025  5:45:51.32] 🗑️ Deleted ledger_pro_backup_2025-06-02_05-45-30.sql 
+[02-06-2025  5:46:50.00] 🔚 Finished processing 
+ 
+[02-06-2025  7:01:25.47] 🔄 Script started 
+[02-06-2025  7:01:25.49] 📄 Reading BACKUP_DIR from: C:\Users\PERSONAL\Desktop\BusinessApp_uuid\backup\config.py 
+[02-06-2025  7:01:27.17] 🐞 DEBUG BACKUP_FOLDER = D:\BACKUP_POST_SQL 
+[02-06-2025  7:01:27.20] 📁 BACKUP_FOLDER: D:\BACKUP_POST_SQL 
+[02-06-2025  7:01:27.21] 📂 Entered backup folder: D:\BACKUP_POST_SQL 
+[02-06-2025  7:01:27.43] 🔄 Zipping ledger_pro_backup_2025-06-02_07-01-03.sql 
+[02-06-2025  7:01:27.43] 🗑️ Deleted ledger_pro_backup_2025-06-02_07-01-03.sql 
+[02-06-2025  7:02:38.85] 🔚 Finished processing 
+ 
+[02-06-2025  9:56:27.12] 🔄 Script started 
+[02-06-2025  9:56:27.13] 📄 Reading BACKUP_DIR from: H:\BusinessApp\backup\config.py 
+[02-06-2025  9:56:27.42] 🐞 DEBUG BACKUP_FOLDER = D:\BACKUP_POST_SQL 
+[02-06-2025  9:56:27.42] 📁 BACKUP_FOLDER: D:\BACKUP_POST_SQL 
+[02-06-2025  9:56:27.42] 📂 Entered backup folder: D:\BACKUP_POST_SQL 
+[02-06-2025  9:56:27.43] 🔄 Zipping ledger_pro_backup_2025-06-02_09-49-58.sql 
+[02-06-2025  9:56:27.43] 🗑️ Deleted ledger_pro_backup_2025-06-02_09-49-58.sql 
+[02-06-2025  9:56:31.83] 🔚 Finished processing 
+ 
+[02-06-2025 10:50:04.90] 🔄 Script started 
+[02-06-2025 10:50:04.91] 📄 Reading BACKUP_DIR from: H:\BusinessApp\backup\config.py 
+[02-06-2025 10:50:05.51] 🐞 DEBUG BACKUP_FOLDER = D:\BACKUP_POST_SQL 
+[02-06-2025 10:50:05.51] 📁 BACKUP_FOLDER: D:\BACKUP_POST_SQL 
+[02-06-2025 10:50:05.51] 📂 Entered backup folder: D:\BACKUP_POST_SQL 
+[02-06-2025 10:50:05.52] 🔄 Zipping ledger_pro_backup_2025-06-02_10-49-59.sql 
+[02-06-2025 10:50:05.52] 🗑️ Deleted ledger_pro_backup_2025-06-02_10-49-59.sql 
+[02-06-2025 10:56:12.00] 🔚 Finished processing 
+ 
+[02-06-2025 10:56:26.31] 🔄 Script started 
+[02-06-2025 10:56:26.31] 📄 Reading BACKUP_DIR from: H:\BusinessApp\backup\config.py 
+[02-06-2025 10:56:26.63] 🐞 DEBUG BACKUP_FOLDER = D:\BACKUP_POST_SQL 
+[02-06-2025 10:56:26.63] 📁 BACKUP_FOLDER: D:\BACKUP_POST_SQL 
+[02-06-2025 10:56:26.63] 📂 Entered backup folder: D:\BACKUP_POST_SQL 
+[02-06-2025 10:56:26.63] 🔄 Zipping ledger_pro_backup_2025-06-02_10-56-19.sql 
+[02-06-2025 10:56:26.63] ⚠️ Compression failed for ledger_pro_backup_2025-06-02_10-56-19.sql 
+[02-06-2025 10:56:27.48] 🔚 Finished processing 
+ 
+[02-06-2025 10:57:32.07] 🔄 Script started 
+[02-06-2025 10:57:32.07] 📄 Reading BACKUP_DIR from: H:\BusinessApp\backup\config.py 
+[02-06-2025 10:57:32.31] 🐞 DEBUG BACKUP_FOLDER = E:\BACKUP_POST_SQL 
+[02-06-2025 10:57:32.31] 📁 BACKUP_FOLDER: E:\BACKUP_POST_SQL 
+[02-06-2025 10:57:32.31] 📂 Entered backup folder: E:\BACKUP_POST_SQL 
+[02-06-2025 10:57:32.31] 🔄 Zipping ledger_pro_backup_2025-06-02_10-57-13.sql 
+[02-06-2025 10:57:32.31] 🗑️ Deleted ledger_pro_backup_2025-06-02_10-57-13.sql 
+[02-06-2025 10:58:21.49] 🔚 Finished processing 
+ 
+[02-06-2025 11:50:36.86] 🔄 Script started 
+[02-06-2025 11:50:36.86] 📄 Reading BACKUP_DIR from: H:\BusinessApp\backup\config.py 
+[02-06-2025 11:50:37.14] 🐞 DEBUG BACKUP_FOLDER = E:\BACKUP_POST_SQL 
+[02-06-2025 11:50:37.14] 📁 BACKUP_FOLDER: E:\BACKUP_POST_SQL 
+[02-06-2025 11:50:37.14] 📂 Entered backup folder: E:\BACKUP_POST_SQL 
+[02-06-2025 11:50:37.14] 🔄 Zipping ledger_pro_backup_2025-06-02_11-49-59.sql 
+[02-06-2025 11:50:37.14] 🗑️ Deleted ledger_pro_backup_2025-06-02_11-49-59.sql 
+[02-06-2025 11:52:09.16] 🔚 Finished processing 
