@@ -1,0 +1,1279 @@
+{% extends 'layouts2/main.html' %}
+
+
+{% block content %}
+
+<style>
+    .blur-background {
+      position: fixed;
+      inset: 0;
+      backdrop-filter: blur(2px);
+      z-index: 1040;
+    }
+
+    .focus-balance {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1050;
+      padding: 2rem 3rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    /* Background blink animation */
+    @keyframes bg-blink {
+      0%, 100% {
+        background-color: white;
+      }
+      50% {
+        background-color: #ffe6e6;
+      }
+    }
+
+    .blink-background {
+      animation: bg-blink 2s ease-in-out infinite;
+    }
+
+    /* Balance text styling */
+    .text-danger-custom {
+      color: red;
+      font-weight: 900;
+      font-size: 4rem;
+      font-family: 'Arial Black', 'Impact', sans-serif;
+    }
+</style>
+
+<style>
+    <!--    input.LP_input {-->
+
+    <!--        /* font-size: 21px;-->
+
+    <!--        padding: 0px;-->
+    <!--        margin: 0px;-->
+    <!--        padding-left: 10px;-->
+    <!--        /* font-weight:bold; */-->
+
+    <!--        /* vertical-align: baseline; */-->
+
+    <!--    }-->
+
+
+    <!--input.LP_input:focus {-->
+    <!--  border-color: red;-->
+    <!--  outline: red;-->
+    <!--  background-color : #fff700;-->
+    <!--}-->
+
+    table#billing_table  {
+
+    td {
+      width: 10ch;
+      white-space: nowrap;
+    }
+
+    td:nth-child(3) {
+      width: 100%;
+      max-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    }
+
+
+
+
+
+
+
+
+    input.LP_input {
+        background: aqua;
+        border: 1px solid #DDD;
+        border-radius: 5px;
+        color: black;
+        float: left;
+        padding: 2px 5px;
+        outline: none;
+        font-size:20px;
+    }
+
+    input.LP_input:hover { background: lime; color: black; }
+    input.LP_input:active { background: lime !important; color: black; }
+    input.LP_input:focus { background: yellow; color: black; }
+
+
+</style>
+
+<div id="table_content" class="row overflow-auto" style="max-height: 60vh;">
+    <div class="col-lg-12">
+
+
+        {% if finish == 0 %}
+        <table class="table  mb-0" id="billing_table">
+            <thead>
+            <tr>
+                <th scope="col">Sl.</th>
+                <th scope="col">Code</th>
+                <th scope="col">Description</th>
+                <th scope="col">{{ COMPANY.tax_type }}</th>
+                <th scope="col">Dis</th>
+                <th scope="col">Unit</th>
+                <th scope="col">Qty</th>
+                <th scope="col">Price</th>
+                <th scope="col">[v]</th>
+                <th scope="col">Total</th>
+                <th scope="col">MRP</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="tr_clone">
+                <td scope="row" class="row_sl">1</td>
+                <td><input type="text" class="inventory form-control text-theme LP_input" style="width:250px;"
+                           placeholder="Barcode or Inventory"></td>
+                <td class="mt-4"><input type="text" class="form-control text-theme description LP_input"
+                                        style="width:100%;" readonly>
+
+                    <input type="hidden"
+                           class="inventory_id"><input
+                            type="hidden" class="stock_id"></td>
+                <td><input type="text" class="form-control text-theme tax_rate LP_input" style="width:75px;"
+                           placeholder="{{ COMPANY.tax_type }}" readonly>
+                <input type="hidden"
+                           class="tax_slab">
+                </td>
+                <td><input type="text" class="row_discount form-control text-theme LP_input" style="width:75px;"
+                           placeholder="Dis"><input type="hidden" class="row_discount_value">
+                </td>
+
+                <td><input type="text" class="unit form-control text-theme numeric_only LP_input"
+                           style="width:75px;"
+                           placeholder="Unit"></td>
+                <td><input type="text" class="qty form-control text-theme int_numeric_only LP_input"
+                           style="width:75px;"
+                           placeholder="Qty"></td>
+                <td><input type="text" class="price form-control text-theme numeric_only LP_input"
+                           style="width:100px;"
+                           placeholder="Price"></td>
+                <td>
+                    <input class="verify" type="checkbox">
+                </td>
+                <td class="amount">0.00</td>
+                <td><select class="mrp">
+                    <option>MRP</option>
+                </select></td>
+
+            </tr>
+
+            </tbody>
+        </table>
+        {% else %}
+        <h1 class="text-center">CASH COUNTER CLOSED!</h1>
+        {% endif %}
+
+
+        <div id="headline"></div>
+
+        <div id="discount"></div>
+
+        <div id="bill_balance"></div>
+
+        <input type="hidden" id="round_off">
+        <input type="hidden" id="total_discount_value">
+        <input type="hidden" id="total_row_wise_discount_value">
+
+
+    </div>
+
+
+</div>
+
+<style type="text/css">
+    @media print {
+        @page {
+            margin: 0;
+        }
+
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        body * {
+            visibility: hidden;
+        }
+
+        #printable, #printable * {
+            visibility: visible;
+        }
+
+        #printable {
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        #printable_content {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .table {
+            margin-top: 0 !important;
+        }
+    }
+</style>
+
+
+<div id="printable">
+    <div id="printable_content">
+        <div id="print_data">
+
+
+        </div>
+    </div>
+</div>
+
+
+
+<br><br><br><br>
+
+<div class="fixed-bottom w-100" style="margin: 0; padding: 0;">
+    <div class="d-flex justify-content-center pb-2">
+        <div class="card shadow-lg px-4 py-2 m-0"
+             style="background: linear-gradient(90deg, #001F3F, #003366); border: none; border-radius: 50px; max-width: 90%;">
+            <div class="card-body p-2">
+                <h1 class="text-center m-0 text-white"
+                    style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+          <span class="px-3">
+            <span style="opacity: 0.7;">UNIT:</span>
+            <span id="total_unit"
+                  style="font-family: 'Arial Black', 'Impact', sans-serif; font-size: 3rem; font-weight: bold; color: #ff4d4d;">0.00</span>
+          </span>
+                    <span class="px-3">
+            <span style="opacity: 0.7;">QTY:</span>
+            <span id="total_qty"
+                  style="font-family: 'Arial Black', 'Impact', sans-serif; font-size: 3rem; font-weight: bold; color: #ff4d4d;">0</span>
+          </span>
+                    <span class="px-3">
+            <span style="opacity: 0.7;">AMOUNT:</span>
+            <span id="total_amount"
+                  style="font-family: 'Arial Black', 'Impact', sans-serif; font-size: 3rem; font-weight: bold; color: #ff4d4d;">0.00</span>
+          </span>
+                </h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+
+{% block footer %}
+
+<script>
+
+    /************* COLLECT DATA TO DATABASE ***************/
+    function complete() {
+
+        var inventory = $('.inventory').map((_, el) => el.value).get()
+        var inventory_id = $('.inventory_id').map((_, el) => el.value).get()
+        var unit = $('.unit').map((_, el) => el.value).get()
+        var qty = $('.qty').map((_, el) => el.value).get()
+        var price = $('.price').map((_, el) => el.value).get()
+        var stock_id = $('.stock_id').map((_, el) => el.value).get()
+        var tax_rate = $('.tax_rate').map((_, el) => el.value).get()
+        var row_discount = $('.row_discount').map((_, el) => el.value).get()
+        var row_discount_value = $('.row_discount_value').map((_, el) => el.value).get()
+        if ($('#discount_value').length) {
+            var discount = $('#discount_value').val();
+        } else { var discount = ''; }
+
+        var over_all_discount_value=0
+        if($('#total_discount_value').val()==''){$('#total_discount_value').val(0)}
+        if($('#total_row_wise_discount_value').val()==''){$('#total_row_wise_discount_value').val(0)}
+        if ($.isNumeric($('#total_discount_value').val()) && $.isNumeric($('#total_row_wise_discount_value').val())) {
+        var over_all_discount_value=parseFloat($('#total_discount_value').val())+parseFloat($('#total_row_wise_discount_value').val());
+        }
+
+
+
+
+
+        if ($('#cash_balance').length) { var cash_balance = $('#cash_balance').val(); } else { var cash_balance = ''; }
+        if ($('#card_balance').length) { var card_balance = $('#card_balance').val(); } else { var card_balance = ''; }
+        if ($('#upi_balance').length) { var upi_balance = $('#upi_balance').val(); } else { var upi_balance = ''; }
+        if ($('#credit_balance').length) { var credit_balance = $('#credit_balance').val(); } else { var credit_balance = ''; }
+
+        if ($('#headline_value').length) { var headline = $('#headline_value').val(); } else { var headline = ''; }
+        var total_discount_value=$('#total_discount_value').val();
+        var total_amount = $('#total_amount').text();
+        var round_off = $('#round_off').val();
+
+        $.ajax(
+            {
+                type: "POST",
+                url: "{% url 'pos_complete' %}",
+                data: {
+                    'inventory': inventory,
+                    'inventory_id': inventory_id,
+                    'tax_rate': tax_rate,
+                    'unit': unit,
+                    'qty': qty,
+                    'price': price,
+                    'stock_id': stock_id,
+                    'row_discount': row_discount,
+                    'row_discount_value': row_discount_value,
+                    'total_discount_value': total_discount_value,
+                    'discount': discount,
+                    'cash_balance': cash_balance,
+                    'card_balance': card_balance,
+                    'upi_balance': upi_balance,
+                    'credit_balance': credit_balance,
+                    'headline': headline,
+                    'total_amount': total_amount,
+                    'round_off': round_off,
+                    'over_all_discount_value': over_all_discount_value,
+                    'total_discount_value': total_discount_value,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                success: function (response) {
+
+                $('#total_row_wise_discount_value').val(0)
+                $('#total_discount_value').val(0)
+
+                    $("#print_data").html("")
+                    var html = '';
+
+
+
+
+                    //customPrint();
+
+
+                    {% if request.user.windows_printing %}
+                    printInvoice(response.invoice_id)
+                    {% else %}
+                    eval(response.pos_template);
+                    $("#print_data").append(html)
+                    window.print();
+                    {% endif %}
+
+
+
+
+
+                    $("#print_data").html("")
+
+
+  $("#balance_content").html(`<div class="blur-background"></div>
+  <div class="focus-balance blink-background">
+    <h1 class="mt-2" style="font-size: 3.5rem;">
+      Balance: <span id="balance_showx" class="text-danger-custom">`+ $("#balance_show").html()+`</span>
+    </h1>
+  </div>`)
+
+
+
+
+
+
+
+
+
+  /*
+
+                    $("#balance_content").html(`<div class="blur-background"></div>
+  <div class="focus-balance text-center">
+
+    <h1 class="mt-2" style="font-size: 3.5rem;">
+      Balance: <span id="balance_showx" class="text-danger-custom blink-smooth">`+ $("#balance_show").html()+`</span>
+    </h1>
+  </div>`)
+
+  */
+
+
+
+
+                    console.log(response);
+
+
+
+
+
+                },
+                failure: function (response) {
+                    alert("Refresh the Page!");
+                },
+                error: function (response) {
+                    alert("Refresh the Page!");
+                }
+
+            })
+
+
+        $("#billing_table > tbody").children('tr:not(:first)').remove();
+        $("#billing_table > tbody").find('input').val('');
+        $('.description').val('');
+        $('.amount').html('0.00');
+        $('.inventory_id').val('');
+        $('.price').attr('readonly', false);
+        if ($("#discount_value").length) { $("#discount").html(""); }
+        if ($("#headline_value").length) { $("#headline").html(""); }
+        $(".inventory").focus();
+
+    }
+    /************* END COLLECT DATA TO DATABASE ***************/
+
+
+
+$(document).ready(function () {
+    $('body').on("keydown", function (e) {
+        // Only continue if #balance_showx exists
+        if ($('#balance_showx').length > 0) {
+            // Get the key value
+            let key = e.key;
+
+            // Allow only printable characters (skip Ctrl, Shift, etc.)
+            if (key.length === 1 || key === "Enter") {
+                // Clear other fields
+                $("#bill_balance").text("");
+                $("#total_unit").text("0.00");
+                $("#total_qty").text("0");
+                $("#total_amount").text("0.00");
+
+                // Focus the first inventory input and insert the key
+                let $input = $('input.inventory:first');
+                $input.focus();
+
+                // Insert the character at the current caret position
+                let currentVal = $input.val();
+                let pos = $input[0].selectionStart;
+                let newVal = currentVal.slice(0, pos) + key + currentVal.slice(pos);
+                if(key !== "Enter"){$input.val(newVal);}
+
+                // Move caret forward by 1
+                $input[0].setSelectionRange(pos + 1, pos + 1);
+
+                // Prevent default to stop double entry
+                e.preventDefault();
+            }
+        }
+    });
+});
+
+
+
+    $('body').on("keydown", '.inventory:input[type="text"]', function (e) {
+
+
+
+
+        if (event.keyCode == 13 && $('input.inventory:last').val() == '0') {
+            //complete();
+            bill_balance()
+        }else{$('#bill_balance').html("");}
+
+
+
+
+
+
+    });
+
+
+
+
+    /*************** BILL BALANCE ***************/
+    function bill_balance() {
+
+        content = `<div class="h-100 d-flex align-items-center justify-content-center mt-4">
+
+                    <table cellpadding="10" cellspacing="5">
+
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">CASH</span>
+                                        </div>
+                                        <input type="text" id="cash_balance" style="width:150px;" class="form-control LP_input balance" placeholder="0.00" aria-label="Username"
+                                               aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+
+                            </td>
+                            <td>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">CARD</span>
+                                        </div>
+                                        <input type="text" id="card_balance" style="width:150px;" class="form-control LP_input balance" placeholder="0.00" aria-label="Username"
+                                               aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+
+
+                            </td>
+
+                            <td>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">UPI</span>
+                                        </div>
+                                        <input type="text" id="upi_balance" style="width:150px;" class="form-control LP_input balance" placeholder="0.00" aria-label="Username"
+                                               aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+
+
+                            </td>
+
+                            <td>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">CREDIT</span>
+                                        </div>
+                                        <input type="text" id="credit_balance" style="width:150px;" class="form-control LP_input balance" placeholder="0.00" aria-label="Username"
+                                               aria-describedby="basic-addon1" readonly>
+                                    </div>
+                                </div>
+
+
+                            </td>
+                        </tr>
+
+                    </table>
+
+
+                </div>
+
+
+<span id="balance_content"><h1 class="mt-2" style="font-size: 3.5rem; text-align: center;">
+  Balance: <span class="text-danger" style="font-weight: 900; font-size: 4rem; font-family: 'Arial Black', 'Impact', sans-serif;" id="balance_show">500</span>
+</h1></span>
+
+
+
+
+`;
+
+        $('#bill_balance').html(content);
+        $("#cash_balance").focus();
+
+        balance = parseFloat($("#cash_balance").text());
+
+    }
+    /*************** END BILL BALANCE ***************/
+
+
+
+
+    $("#app").addClass("app-sidebar-collapsed"); //TO HIDE SIDEBAR
+
+
+
+
+    /****************** CALCULATE ****************/
+
+    function calculate(row) {
+
+        /********** ROW WISE TOTAL *******/
+        var unit = parseFloat(row.find('.unit').val());
+        var qty = parseFloat(row.find('.qty').val());
+
+        var tax_slab=row.find('.tax_slab').val()
+
+        /******* ROW WISE DISCOUNT ********/
+        var row_discount = row.find('.row_discount').val();
+        if (row_discount.length == 0) {
+            var row_discount = 0
+        }
+        var row_discount_percent = 0
+        if (row_discount.toString().indexOf("%") > 0) {
+            var row_discount_percent = 1
+            var row_discount = parseFloat(row_discount.replace("%", ""));
+            var row_discount = (row.find('.price').val() * row_discount / 100)
+            row.find('.row_discount_value').val(row_discount*unit*qty);
+            var price = parseFloat(row.find('.price').val() - row_discount);
+        } else {
+            row.find('.row_discount_value').val(row_discount*unit*qty);
+            var price = parseFloat(row.find('.price').val() - parseFloat(row_discount));
+        }
+        /******* END ROW WISE DISCOUNT ********/
+
+
+
+        if (!$.isNumeric(price)) { price = 0 }
+        var amount = (unit * qty * price).toFixed(2);
+        if ($.isNumeric(amount)) { row.find('.amount').html(amount); }
+        if(tax_slab.includes("-")) {
+        tax_slab=tax_slab.split("-")
+        var trigger_amount=tax_slab[0]
+        var new_tax=tax_slab[1]
+        var pre_tax=tax_slab[2]
+        if(trigger_amount<price){row.find('.tax_rate').val(new_tax);}else{row.find('.tax_rate').val(pre_tax);}
+        }
+        /********** END ROW WISE TOTAL *******/
+
+
+        /**** TOTAL ROW WISE DISCOUNT VALUE ***/
+        var sum = 0;
+        $('.row_discount_value').each(function () {
+            if ($.isNumeric($(this).val())) { sum += parseFloat($(this).val()); }
+        });
+        $("#total_row_wise_discount_value").val(sum.toFixed(2));
+        /**** END TOTAL ROW WISE DISCOUNT VALUE ***/
+
+        /**** TOTAL UNIT ***/
+        var sum = 0;
+        $('.unit').each(function () {
+            if ($.isNumeric($(this).val())) { sum += parseFloat($(this).val()); }
+        });
+        $("#total_unit").text(sum.toFixed(2));
+        /**** TOTAL UNIT ***/
+
+        /**** TOTAL QTY ***/
+        var sum = 0;
+        $('.qty').each(function () {
+            if ($.isNumeric($(this).val())) { sum += parseFloat($(this).val()); }
+        });
+        $("#total_qty").text(sum);
+        /**** TOTAL QTY ***/
+
+        total_amount()
+
+    }
+
+    /**************** END CALCULATE *****************/
+
+
+    /************* TOTAL AMOUNT *********/
+
+    function total_amount() {
+    let sum = 0;
+
+    // Sum all numeric values from .amount elements
+    $('.amount').each(function () {
+        const val = parseFloat($(this).text());
+        if (!isNaN(val)) sum += val;
+    });
+
+
+
+    let discount = $("#discount_value").val() || "0";
+    let discount_amount = 0;
+
+    // Apply discount
+    if (discount.includes("%")) {
+        const percent = parseFloat(discount.replace("%", ""));
+        if (!isNaN(percent)) {
+            discount_amount = (sum * percent) / 100;
+        }
+    } else {
+        discount_amount = parseFloat(discount);
+        if (isNaN(discount_amount)) discount_amount = 0;
+    }
+
+    if(sum<discount_amount && discount_amount!=0){
+    $("#discount_value").val('');
+    alert("Discount Not Allowed More Than Total!");
+    discount_amount=0;
+    //calculate(row);
+
+    }
+
+
+    $("#total_discount_value").val(discount_amount.toFixed(2));
+    sum -= discount_amount;
+
+    // Round-off logic
+    sum = parseFloat(sum.toFixed(2));
+    const round_off_setting = parseInt('{{SETTING.pos_round_off}}'); // Server-side variable
+    const decimal = parseInt((sum % 1 * 100).toFixed(0)); // Extract decimal part as integer
+    let decimal_part = 0;
+
+    if (decimal > 0 && !isNaN(round_off_setting)) {
+        if (round_off_setting >= decimal) {
+            decimal_part = (decimal / 100) * -1;
+            sum = Math.floor(sum);
+        } else {
+            decimal_part = (100 - decimal) / 100;
+            sum = Math.ceil(sum);
+        }
+        sum = sum.toFixed(2);
+        $("#round_off").val(decimal_part.toFixed(2));
+    } else {
+        $("#round_off").val("0.00");
+    }
+
+    // Update total amount
+    $("#total_amount").text(sum);
+}
+
+
+    function total_amount_OLD() {
+        var sum = 0;
+        $('.amount').each(function () {
+            if ($.isNumeric($(this).text())) { sum += parseFloat($(this).text()); }
+        });
+
+        if ($("#discount_value").length) {
+
+            /******* DISCOUNT ********/
+            var discount = $("#discount_value").val();
+            if (discount.length == 0) {
+                var discount = 0
+            }
+            var discount_percent = 0
+            if (discount.toString().indexOf("%") > 0) {
+                var discount_percent = 1
+                var discount = parseFloat(discount.replace("%", ""));
+                var discount = (sum * discount / 100)
+                $("#total_discount_value").val(discount);
+                var sum = parseFloat(sum - discount);
+            } else {
+                sum = sum - discount;
+                $("#total_discount_value").val(discount);
+            }
+            /******* END DISCOUNT ********/
+
+
+        }
+
+        sum=sum.toFixed(2)
+
+        var round_off='{{SETTING.pos_round_off}}';
+
+        decimal=sum.substring(sum.indexOf(".")+1, sum.length)
+
+        var round_off=parseInt(round_off);
+
+        if(decimal>0){
+
+            if(round_off>=decimal){
+                sum=Math.trunc(sum).toFixed(2);
+                var decimal_part=(decimal/100)*-1
+            }
+            if(round_off<decimal){
+                var decimal_part=(100-decimal)/100;
+                sum=(parseFloat(sum)+parseFloat(decimal_part)).toFixed(2);
+            }
+
+        }
+
+        $("#round_off").val(decimal_part);
+
+        $("#total_amount").text(sum);
+        /**** TOTAL AMOUNT ***/
+
+    }
+
+    if ($(this).hasClass("calculate")) { }
+    /************* EMD TOTAL AMOUNT *********/
+
+
+    /********** AUTO COMPLETE FOR INVENTORY ***********/
+    $('body').on("keypress", '.inventory:input[type="text"]', function (e) {
+        var inventory_list = [
+            {% for list in inventory_list %}
+            "{{ list.inventory_name }}",
+        {% endfor %}
+            ];
+    $(".inventory").autocomplete({
+        source: inventory_list,
+        minLength: 2
+    });
+          } );
+    /********** END AUTO COMPLETE FOR INVENTORY ***********/
+
+
+    /***************** ESC BUTTON FUNCTION ******************/
+    $(document).keyup(function (e) {
+        if (e.keyCode == 27) {
+            if (confirm("Are you sure to Cancel?")) {
+                window.location = "./";
+            }
+        }
+    });
+    /***************** END ESC BUTTON FUNCTION ******************/
+
+    /************ F4 HEADLINE *************/
+    $(document).keyup(function (e) {
+        if (e.keyCode == 115) {
+
+            content=`<div class="h-100 d-flex align-items-center justify-content-center mt-4">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text text-theme" id="basic-addon1">Headline</span>
+                                </div>
+                                <input type="text" id="headline_value" class="form-control total_update" style="width: 500px;"
+                                       placeholder="This Headline Printed on Top of the Bill" aria-label="Username"
+                                       aria-describedby="basic-addon1">
+                            </div>
+                        </div>
+                    </div>`;
+
+            if ($("#headline").text() == '') {
+            $("#headline").html(content);
+            $("#headline_value").focus();
+            } else {
+            $("#headline").text('');
+            }
+
+
+        }});
+    /************ END F4 HEADLINE *************/
+
+
+    /***************** DISCOUNT F8 FUNCTION ******************/
+    $(document).keyup(function (e) {
+        if (e.keyCode == 119) {
+
+
+            var content = `                   <div class="h-100 d-flex align-items-center justify-content-center mt-4">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text text-theme" id="basic-addon1">Discount</span>
+                                </div>
+                                <input type="text" id="discount_value" class="form-control total_update" style="width: 250px;"
+                                       placeholder="Enter Discount Amount or Percent" aria-label="Username"
+                                       aria-describedby="basic-addon1">
+                            </div>
+                        </div>
+                    </div>`;
+
+            if ($("#discount").text() == '') {
+                $("#discount").html(content);
+                $("#discount_value").focus();
+            } else {
+                $("#discount").text('');
+            }
+
+        }
+    });
+    /***************** END DISCOUNT F8 FUNCTION ******************/
+
+    /******** ON FOCUS ********* SELECT ******/
+    $('body').on("focus", "input[type=text]", function (e) {
+        $(this).select();
+    });
+    /******** END ON FOCUS ********* SELECT ******/
+
+
+    /*********** JUMP & CALCULATION *************/
+    $('body').on("keyup", "input", function (e) {
+
+        if ($(this).hasClass("balance")) {
+
+
+
+            var cash_balance = parseFloat($("#cash_balance").val()) || 0;
+            var card_balance = parseFloat($("#card_balance").val()) || 0;
+            var upi_balance = parseFloat($("#upi_balance").val()) || 0;
+            var total_amountx = parseFloat($("#total_amount").text()) || 0;
+
+            // ADDITIONAL CONDITION: Only check if current field is 'card_balance'
+            if ($(this).attr('id') === "card_balance") {
+                if (card_balance > (total_amountx - (upi_balance + cash_balance))) {
+                    //$("#card_balance").val("");
+                    if (event.keyCode == 13) {$("#card_balance").select();}
+                    //$("#card_balance").focus();
+                    return;
+                }
+            }
+
+            if ($(this).attr('id') === "upi_balance") {
+                if (upi_balance > (total_amountx - (card_balance + cash_balance))) {
+                    //$("#upi_balance").val("");
+                    if (event.keyCode == 13) {$("#upi_balance").select();}
+                    //$("#upi_balance").focus();
+                    return;
+                }
+            }
+
+
+            var sum = 0;
+            $('.balance').each(function () {
+                if ($.isNumeric($(this).val())) { sum += parseFloat($(this).val()); }
+            });
+            balance = sum - $("#total_amount").text();
+            $("#balance_show").text(balance);
+
+            if (event.keyCode == 13) {
+
+                if (sum!=0 && balance >= 0 && $('.inventory').length>1) {
+                    complete();
+                    $(".balance").prop("readonly", true);
+                } else { $(this).select(); }
+
+            }
+        }
+
+        if ($(this).hasClass("total_update")) {
+            total_amount()
+            if (event.keyCode == 13) {
+                $('html, body').animate({scrollTop: $('html, body').height()}, 'slow');
+                $('#table_content').animate({scrollTop: $('html, body').height()}, 'slow');
+
+                $(".inventory").focus();
+
+
+            }
+        }
+
+        var row = $(this).closest('tr');
+
+        if ($(this).hasClass("unit") || $(this).hasClass("qty") || $(this).hasClass("price") || $(this).hasClass("row_discount")) {
+            calculate(row);
+
+
+        }
+
+
+
+        if (event.keyCode == 13) {
+
+
+
+
+
+            /************ INVENTORY PROCESS ***********/
+            if ($(this).hasClass("inventory")) {
+
+
+                var query = $(this).val()
+
+                if(query=='.'){$(this).select();return;}
+
+
+                //if (query.indexOf('+') > -1) {
+                if (query.charAt(0) === '+') {
+                    var val = query.replace("+", "")
+                    if(val==''){return;}
+                    $('.qty').eq(row.index() - 1).val(val)
+                    calculate(row.prev());
+                    $(this).val("");
+                    return
+                }
+
+                //if (query.indexOf('-') > -1) {
+                if (query.charAt(0) === '-') {
+                    // var val=query.replace("-","")
+                    if(query=='-'){return;}
+                    $('.qty').eq(row.index() - 1).val(query)
+                    calculate(row.prev());
+                    $(this).val("");
+                    return
+                }
+
+                //if (query.indexOf('%') > -1) {
+                if (query.endsWith('%')) {
+                    // var val=query.replace("-","")
+                    $('.row_discount').eq(row.index() - 1).val(query)
+                    calculate(row.prev());
+                    $(this).val("");
+                    return
+                }
+
+
+                if (query.length <= 2) {
+                    //return
+                }
+
+
+                /************** CLONE TABLE ROW **********/
+
+                if ($(this).closest("tr").is(":last-child") && $(this).val() != '' && $(this).val() != '0') {
+                    var $tr = $(this).closest('.tr_clone');
+                    var $clone = $tr.clone();
+                    $clone.find(':text').val('');
+                    $clone.find('.inventory_id').val('');
+                    $clone.find('.description').val('');
+                    $clone.find('.amount').html('0.00');
+                    $clone.find('.verify').prop('checked', false);
+                    $tr.after($clone);
+
+                    /******* SET SERIAL ********/
+                    var rowx = $('#billing_table').find('tr').last()
+                    var sl = $("#billing_table").find("tr").length - 1
+                    rowx.find('.row_sl').html(sl);
+                    /******* SET SERIAL ********/
+
+                    //Scroll Up After Create a Row
+                    $("#table_content").animate({
+                        scrollTop: $("#table_content").get(0).scrollHeight
+                    }, 0);
+                }
+
+                /************** END CLONE TABLE ROW **********/
+
+
+
+                $.ajax(
+                    {
+                        type: "GET",
+                        url: "{% url 'barcode_query' %}",
+                        data: {
+                            q: query
+                        },
+                        success: function (data) {
+
+                            //alert(data.error)
+
+                            pre_inventory_id=row.find('.inventory_id').val();
+
+                            if (typeof data.description === "undefined") {
+                                row.find('.inventory').focus();
+                                event.preventDefault();
+                                return true
+                            } else {
+
+                                if (data.stock_id) {
+
+                                    if(pre_inventory_id!=data.inventory_id || pre_inventory_id==''){
+                                        if (data.mrp && Array.isArray(data.mrp)) {
+                                        row.find('.mrp').empty();
+                                            for (var i = 0; i < data.mrp.length; i++) {
+                                                var mrpValue = data.mrp[i];
+
+                                                if (mrpValue !== "None" && mrpValue) {
+
+                                                    row.find('.mrp').append('<option value="' + mrpValue.stock_id + '_' + mrpValue.sale_price + '_' + mrpValue.mrp + '">' + mrpValue.mrp + '</option>');
+                                                } else {
+                                                    row.find('.mrp').append('<option>MRP</option>');
+                                                }
+                                            }
+                                        }
+                                    row.find('.price').val(data.price).attr('readonly', true);
+                                    row.find('.unit').val(1);
+                                    row.find('.qty').val(1);
+                                    }
+
+
+                                    row.next().find('.inventory').focus();
+                                } else {
+
+                                    if(pre_inventory_id!=data.inventory_id || pre_inventory_id=='' || row.find('.price').val()==''){
+
+                                                if (data.unit_enabled == 1) {
+                                                    row.find('.unit').attr('readonly', false);
+                                                    row.find('.unit').focus();
+                                                    row.find('.price').attr('readonly', false);
+                                                }else{
+                                                        row.find('.unit').attr('readonly', true);
+                                                        row.find('.unit').val(1);
+                                                        row.find('.qty').val(1);
+
+                                                        if(data.price){
+                                                            row.find('.price').val(data.price).attr('readonly', false);
+                                                            row.next().find('.inventory').focus();
+                                                        }else{
+                                                            row.find('.price').attr('readonly', false);
+                                                            row.find('.price').focus();
+                                                        }
+
+                                                }
+
+                                    }else{
+                                    row.next().find('.inventory').focus();
+                                    }
+                                }
+
+                                row.find('.inventory_id').val(data.inventory_id);
+                                row.find('.description').val(data.description);
+                                row.find('.stock_id').val(data.stock_id);
+                                row.find('.tax_rate').val(data.tax_rate);
+                                row.find('.tax_slab').val(data.tax_slab);
+                                calculate(row);
+                                //row.find('.tax_rate').val(data.tax_rate);
+                            }
+
+                        },
+                        failure: function (response) {
+                            alert(1);
+                        },
+                        error: function (response) {
+                            row.find('.inventory').focus();
+                            event.preventDefault();
+                            return true
+                        }
+
+                    })
+
+
+            }
+            /************ END INVENTORY PROCESS ***********/
+
+
+            calculate(row);
+
+
+            var jump = 1;
+            textboxes = $("input:text");
+            debugger;
+            currentBoxNumber = textboxes.index(this);
+
+            /******** STOP EMPTY JUMP ****/
+            if ($(this).val() == '') {
+                event.preventDefault();
+                return false
+            }
+            /******** END STOP EMPTY JUMP ****/
+
+            /******** AFTER INVENTORY JUMP ****/
+            if ($(this).hasClass("inventory")) {
+                event.preventDefault();
+                return false
+                var jump = 3;
+            }
+            /******** END AFTER INVENTORY JUMP ****/
+
+            /******** AFTER UNIT JUMP ****/
+            if ($(this).hasClass("unit")) {
+                if($(this).val()=="."){$(this).select();return;}
+                if($(this).closest('tr').find('.qty').val()==''){
+                $(this).closest('tr').find('.qty').val(1);
+                var jump = 1;
+                }
+            }
+            /******** END AFTER UNIT JUMP ****/
+
+
+            /******* JUMP ****/
+            if (textboxes[currentBoxNumber + jump] != null) {
+                nextBox = textboxes[currentBoxNumber + jump]
+                nextBox.focus();
+                nextBox.select();
+                event.preventDefault();
+                return false
+            }
+            /******* JUMP ****/
+        }
+    });
+    /*********** END JUMP & CALCULATION *************/
+
+    /*********** SET TABLE OVERFLOW HEIGHT **********/
+    var height = $(document).height() - 240;
+    $("#table_content").css("max-height", height);
+    /*********** END SET TABLE OVERFLOW HEIGHT **********/
+
+    $(document).on('change', '.mrp', function() {
+    var row = $(this).closest('tr');
+    var selectedValue = $(this).val();
+    var parts = selectedValue.split('_');
+
+        var stock_id = parts[0];
+        var sale_price = parts[1];
+        var mrp = parts[2];
+
+        row.find('.price').val(sale_price);
+        row.find('.stock_id').val(stock_id);
+
+        calculate(row);
+
+
+    });
+
+
+$(document).on('input', '.row_discount', function () {
+    let val = $(this).val();
+
+
+
+    // Remove all invalid characters (only allow digits, dot, percent)
+    val = val.replace(/[^0-9.%]/g, '');
+
+    // Split off percent if it's at the end
+    let hasPercent = false;
+    if (val.endsWith('%')) {
+        hasPercent = true;
+        val = val.slice(0, -1); // remove %
+    }
+
+    // Allow only one dot
+    let parts = val.split('.');
+    if (parts.length > 2) {
+        parts = [parts[0], parts.slice(1).join('').replace(/\./g, '')];
+    }
+
+    // Prevent starting with just dot (like ".")
+    val = parts[0];
+    if (parts[1] !== undefined) {
+        if (val.length > 0) {
+            val += '.' + parts[1];
+        }
+    }
+
+    // Add back % at the end if it was present
+    if (hasPercent) {
+        val += '%';
+    }
+
+    $(this).val(val);
+});
+
+// 🔁 On blur: clear if only dot
+$(document).on('blur', '.row_discount', function () {
+    if ($(this).val() === '.' || $(this).val() === '') {
+        $(this).val('');
+    }
+
+    var $row = $(this).closest('tr');
+    var priceVal = $row.find('.price').val();
+    const discountVal = $row.find('.row_discount_value').val();
+
+    if(parseFloat(priceVal)<parseFloat(discountVal)){$row.find('.row_discount_value').val('');$(this).val('');alert("Discount Not Allowed More than "+priceVal);$(this).focus();calculate($row);}
+
+});
+
+
+
+    $('.inventory').focus();
+</script>
+
+<script>
+    $(function() {
+
+    document.querySelector("html").setAttribute('data-layout-style', 'modern');
+
+    });
+</script>
+
+
+
+
+<script>
+
+function printInvoice(invoice_id) {
+
+fetch(`/pos/proxy-print/${invoice_id}/`)
+  .then(res => res.json())
+  .then(data => {
+      if (data.status === "success") {
+          //alert(" " + data.message);
+      }
+  })
+
+}
+</script>
+
+
+
+{% endblock footer %}
