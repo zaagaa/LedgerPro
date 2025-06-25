@@ -1,0 +1,705 @@
+{% load static %}
+<!DOCTYPE html>
+
+
+<html data-verified="{{ request.session.verified|yesno:'1,0' }}">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <meta name="description" content="POS - Bootstrap Admin Template">
+    <meta name="keywords"
+          content="admin, estimates, bootstrap, business, corporate, creative, management, minimal, modern,  html5, responsive">
+    <meta name="author" content="Dreamguys - Bootstrap Admin Template">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="django-app" content="true">
+
+
+    <title>{{ page_title }}</title>
+
+ <script>
+if({{user.dark_mode}}==1){
+document.querySelector("html").setAttribute("data-layout-mode", 'dark_mode');
+}else{
+document.querySelector("html").setAttribute("data-layout-mode", 'light_mode');
+}
+</script>
+
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'bootstrap/assets/img/favicon.png' %}">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'bootstrap/assets/css/bootstrap.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'bootstrap/assets/plugins/select2/css/select2.min.css' %}">
+
+    <!-- animation CSS -->
+    <link rel="stylesheet" href="{% static 'bootstrap/assets/css/animate.css' %}">
+
+    <!-- Datatable CSS -->
+    <link rel="stylesheet" href="{% static 'bootstrap/assets/css/dataTables.bootstrap5.min.css' %}">
+
+    <!-- Fontawesome CSS -->
+    <link rel="stylesheet" href="{% static 'bootstrap/assets/plugins/fontawesome/css/fontawesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/assets/plugins/fontawesome/css/all.min.css' %}">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'bootstrap/assets/css/style.css' %}">
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+
+
+    <link href="{% static 'bootstrap/assets/plugins/summernote/summernote-bs4.min.css' %}" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'bootstrap/assets/css/dataTables.bootstrap5.min.css' %}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+
+    {% include 'layouts2/header.html' %}
+    {% block header %}{% endblock header %}
+  <style>
+
+
+
+        body.blur-active > *:not(#lockScreen):not(.modal-backdrop) {
+            filter: blur(5px);
+            pointer-events: none;
+        }
+
+ #lockScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#lockScreen form {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    max-width: 300px;
+    width: 100%;
+}
+
+    </style>
+</head>
+<body>
+{% block body %}{% endblock body %}
+<div id="global-loader">
+    <div class="whirly-loader"></div>
+</div>
+<!-- Main Wrapper -->
+<div class="main-wrapper">
+
+    <!-- Header -->
+    <div class="header no-print">
+
+        <!-- Logo -->
+        <div class="header-left active">
+            <a href="{% url 'dashboard' %}" class="logo logo-normal">
+                <img src="{% static 'bootstrap/assets/img/logo.png' %}" alt="">
+            </a>
+            <a href="{% url 'dashboard' %}" class="logo logo-white">
+                <img src="{% static 'bootstrap/assets/img/logo-white.png' %}" alt="">
+            </a>
+            <a href="{% url 'dashboard' %}" class="logo-small">
+                <img src="{% static 'bootstrap/assets/img/logo-small.png' %}" alt="">
+            </a>
+            <a id="toggle_btn" href="javascript:void(0);">
+                <i data-feather="chevrons-left" class="feather-16"></i>
+            </a>
+        </div>
+        <!-- /Logo -->
+
+        <a id="mobile_btn" class="mobile_btn" href="#sidebar">
+					<span class="bar-icon">
+						<span></span>
+						<span></span>
+						<span></span>
+					</span>
+        </a>
+
+        <!-- Header Menu -->
+        <ul class="nav user-menu">
+
+            <!-- Search -->
+            <li class="nav-item nav-searchinputs">
+
+
+            </li>
+            <!-- /Search -->
+
+
+            <!-- Select Store -->
+            <li class="nav-item dropdown has-arrow main-drop select-store-dropdown">
+                <a href="javascript:void(0);" class="dropdown-toggle nav-link select-store"
+                   data-bs-toggle="dropdown">
+							<span class="user-info">
+								<span class="user-letter">
+									<img src="{% static 'bootstrap/assets/img/store/store-01.png' %}" alt="Store Logo"
+                                         class="img-fluid">
+								</span>
+								<span class="user-detail">
+									<span class="user-name"><nobr>{{ COMPANY.company_name }}</nobr></span>
+								</span>
+							</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+
+                    {% for company in COMPANY_LIST %}
+
+                    {% if COMPANY.id != company.id %}
+
+                    <a href="{% url 'dashboard_company' company.id %}" class="dropdown-item">
+                        <img src="{% static 'bootstrap/assets/img/store/store-01.png' %}" alt="Store Logo"
+                             class="img-fluid">
+                        <nobr>{{ company.company_name }}</nobr>
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+
+
+                </div>
+            </li>
+            <!-- /Select Store -->
+
+            <!-- Flag -->
+            <li class="nav-item dropdown has-arrow flag-nav nav-item-box">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="javascript:void(0);"
+                   role="button">
+                    <img src="{% static 'bootstrap/assets/img/flags/us.png' %}" alt="Language" class="img-fluid">
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a href="javascript:void(0);" class="dropdown-item active">
+                        <img src="{% static 'bootstrap/assets/img/flags/us.png' %}" alt="" height="16"> English
+                    </a>
+                    <a href="javascript:void(0);" class="dropdown-item">
+                        <img src="{% static 'bootstrap/assets/img/flags/fr.png' %}" alt="" height="16"> French
+                    </a>
+                    <a href="javascript:void(0);" class="dropdown-item">
+                        <img src="{% static 'bootstrap/assets/img/flags/es.png' %}" alt="" height="16"> Spanish
+                    </a>
+                    <a href="javascript:void(0);" class="dropdown-item">
+                        <img src="{% static 'bootstrap/assets/img/flags/de.png' %}" alt="" height="16"> German
+                    </a>
+                </div>
+            </li>
+            <!-- /Flag -->
+
+            <li class="nav-item nav-item-box">
+                <a href="javascript:void(0);" id="btnFullscreen">
+                    <i data-feather="maximize"></i>
+                </a>
+            </li>
+            <li class="nav-item nav-item-box">
+                <a href="#">
+                    <i data-feather="mail"></i>
+                    <span class="badge rounded-pill">1</span>
+                </a>
+            </li>
+            <!-- Notifications -->
+            <li class="nav-item dropdown nav-item-box">
+    <a href="javascript:void(0);" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
+        <i data-feather="bell"></i>
+        {% if unread_count %}
+        <span class="badge rounded-pill">{{ unread_count }}</span>
+        {% endif %}
+    </a>
+    <div class="dropdown-menu notifications">
+        <div class="topnav-dropdown-header">
+            <span class="notification-title">Notifications</span>
+            <a href="{% url 'clear_notifications' %}" class="clear-noti">Clear All</a>
+        </div>
+        <div class="noti-content">
+            <ul class="notification-list">
+                {% for noti in notifications %}
+                <li class="notification-message">
+                    <a href="{{ noti.url }}">
+                        <div class="media d-flex">
+                            <span class="avatar flex-shrink-0">
+                                {% if noti.image %}
+                                    <img src="{{ noti.image.url }}" alt="">
+                                {% else %}
+                                    <img src="{% static 'bootstrap/assets/img/profiles/default.jpg' %}" alt="">
+                                {% endif %}
+                            </span>
+                            <div class="media-body flex-grow-1">
+                                <p class="noti-details">{{ noti.message }}</p>
+                                <p class="noti-time"><span class="notification-time">{{ noti.time_ago }}</span></p>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                {% empty %}
+                <li class="text-center p-2">No notifications</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="topnav-dropdown-footer">
+            <a href="{% url 'all_notifications' %}">View all Notifications</a>
+        </div>
+    </div>
+</li>
+
+            <!-- /Notifications -->
+
+
+
+{% if is_impersonating %}
+  <li class="nav-item">
+    <form action="{% url 'revert_impersonation' %}" method="POST" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-sm btn-danger nav-link text-white" style="margin-top: 5px;">
+        Back to Superuser
+      </button>
+    </form>
+  </li>
+{% endif %}
+
+
+
+
+
+            <li class="nav-item nav-item-box">
+                <a href="javascript:change_mode();"><i data-feather="sun"></i></a>
+            </li>
+            <li class="nav-item dropdown has-arrow main-drop">
+                <a href="javascript:void(0);" class="dropdown-toggle nav-link userset" data-bs-toggle="dropdown">
+							<span class="user-info">
+								<span class="user-letter">
+									<img src="{% static 'bootstrap/assets/img/profiles/avator1.jpg' %}" alt=""
+                                         class="img-fluid">
+								</span>
+								<span class="user-detail">
+									<span class="user-name">{{user.username}}</span>
+									<span class="user-role">{{user.get_position_display}}</span>
+								</span>
+							</span>
+                </a>
+                <div class="dropdown-menu menu-drop-user">
+                    <div class="profilename">
+                        <div class="profileset">
+									<span class="user-img"><img
+                                            src="{% static 'bootstrap/assets/img/profiles/avator1.jpg' %}" alt="">
+										<span class="status online"></span></span>
+                            <div class="profilesets">
+                                <h6>{{user.username}}</h6>
+                                <h5>{{user.get_position_display}}</h5>
+                            </div>
+                        </div>
+
+
+
+
+                        <hr class="m-0">
+                        <a class="dropdown-item" href="{% url 'profile' %}"> <i class="me-2" data-feather="user"></i> My
+                            Profile</a>
+                        <a class="dropdown-item" href="#"><i class="me-2"
+                                                                                 data-feather="settings"></i>Settings</a>
+                        <hr class="m-0">
+                        <a class="dropdown-item logout pb-0" href="{% url 'logout' %}"><img
+                                src="{% static 'bootstrap/assets/img/icons/log-out.svg' %}" class="me-2" alt="img">Logout</a>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <!-- /Header Menu -->
+
+        <!-- Mobile Menu -->
+        <div class="dropdown mobile-user-menu">
+            <a href="javascript:void(0);" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+               aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
+            <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" href="#">My Profile</a>
+                <a class="dropdown-item" href="#">Settings</a>
+                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+            </div>
+        </div>
+        <!-- /Mobile Menu -->
+    </div>
+    <!-- /Header -->
+
+
+
+{% if request.user.is_superuser or request.user.position == 0 %}
+{% include 'layouts2/sidebar.html' %}
+{% elif request.user.position == 1 %}
+{% include 'layouts2/sidebar.html' %}
+
+{% elif request.user.position == 4 %}
+{% include 'layouts2/sidebar_position_4.html' %}
+{% else %}
+{# Optional fallback sidebar #}
+{% include 'layouts2/sidebar.html' %}
+{% endif %}
+
+
+    <!-- Sidebar -->
+    {% include 'layouts2/pos_sidebar.html' %}
+    <!-- /Sidebar -->
+
+
+
+
+    {% if '/stock/purchase/add_stock/' in request.path %}
+    <div class="page-wrapper" style="padding: 0px 0 0;">
+    {% else %}
+    <div class="page-wrapper">
+    {% endif %}
+
+        <div class="content">
+
+
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            {% autoescape off %}{{ message }}{% endautoescape %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+            {% block content %}{% endblock content %}
+
+
+
+        </div>
+    </div>
+
+</div>
+<!-- /Main Wrapper -->
+
+{% block modal %}{% endblock modal %}
+
+
+<div id="lockScreen" style="display:none;">
+    <form id="lockForm">
+        <h5 class="text-center mb-3">Session Locked</h5>
+        <input type="password" class="form-control mb-3" placeholder="Enter password" name="password" required autofocus>
+        <button type="submit" class="btn btn-warning w-100">Unlock</button>
+    </form>
+</div>
+
+
+
+
+
+<script src="{% static 'bootstrap/assets/plugins/jquery/dist/jquery.min.js' %}"></script>
+<script src="{% static 'bootstrap/assets/plugins/jquery-ui-dist/jquery-ui.min.js' %}"></script>
+
+
+<!-- jQuery -->
+<!--<script src="{% static 'bootstrap/assets/js/jquery-3.7.1.min.js' %}"></script>-->
+
+<!-- Feather Icon JS -->
+<script src="{% static 'bootstrap/assets/js/feather.min.js' %}"></script>
+
+<!-- Slimscroll JS -->
+<script src="{% static 'bootstrap/assets/js/jquery.slimscroll.min.js' %}"></script>
+
+<!-- Bootstrap Core JS -->
+<script src="{% static 'bootstrap/assets/js/bootstrap.bundle.min.js' %}"></script>
+
+<!-- Custom JS -->
+
+<script src="{% static 'bootstrap/assets/js/script.js' %}"></script>
+
+<script src="{% static 'bootstrap/assets/plugins/select2/js/select2.min.js' %}"></script>
+
+<script src="{% static 'bootstrap/assets/plugins/summernote/summernote-bs4.min.js' %}"></script>
+
+<!-- Datatable JS -->
+<script src="{% static 'bootstrap/assets/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'bootstrap/assets/js/dataTables.bootstrap5.min.js' %}"></script>
+<script src="{% static 'bootstrap/assets/plugins/flatpickr/flatpickr.js' %}"></script>
+
+    <script type="text/javascript">
+        $(function() {
+            $('.monthPicker1').datepicker( {
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'MM yy',
+            onClose: function(dateText, inst) {
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+            }
+            });
+        });
+    </script>
+
+<script type="text/javascript">
+    $(function () {
+        $('.monthPicker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'MM yy', // ⬅️ Show "April 2025"
+            onClose: function (dateText, inst) {
+                var month = inst.selectedMonth + 1;
+                var year = inst.selectedYear;
+
+                if (month < 10) month = '0' + month;
+
+                // This sets display as "April 2025"
+                var displayVal = $.datepicker.formatDate('MM yy', new Date(year, inst.selectedMonth, 1));
+                $(this).val(displayVal);
+
+                // This replaces value before submission to "202504"
+                $(this).data('submit-value', year + '' + month);
+            },
+            beforeShow: function (input, inst) {
+                $(inst.dpDiv).addClass('month-year-picker');
+            }
+        });
+
+        // Modify value right before form submit
+        $('form').on('submit', function () {
+            const $input = $('.monthPicker');
+            const raw = $input.data('submit-value');
+            if (raw) {
+                //$input.val(raw); // change value to "202504"
+            }
+        });
+    });
+</script>
+
+
+    <style>
+.month-year-picker .ui-datepicker-calendar {
+    display: none;
+}
+</style>
+
+
+
+
+<script>
+    $(function() {
+   $( ".datepicker" ).datepicker({
+       dateFormat: 'dd/mm/yy',
+     changeMonth: true,
+     changeYear: true
+   });
+ });
+
+
+//$( ".datepicker" ).datepicker({format: "dd/mm/yyyy", autoclose: true });
+
+$('input').attr('autocomplete','off');
+
+$(function() {
+document.querySelector("html").setAttribute('data-layout-style', 'default');
+});
+</script>
+
+{% block footer %}
+{% endblock footer %}
+
+<!-- BEGIN #footer -->
+{% include 'layouts2/footer.html' %}
+<!-- END #footer -->
+
+
+<script>
+    if ( window.history.replaceState ) {
+      window.history.replaceState( null, null, window.location.href );
+    }
+
+function change_mode(){
+
+    val=document.querySelector("html").getAttribute('data-layout-mode');
+
+    if(val=='light_mode'){
+    document.querySelector("html").setAttribute("data-layout-mode", 'dark_mode');
+    update_data('authentication', 'User', {{user.id}}, 'dark_mode', 1);
+    }else{
+    document.querySelector("html").setAttribute("data-layout-mode", 'light_mode');
+    update_data('authentication', 'User', {{user.id}}, 'dark_mode', 0);
+    }
+
+}
+
+
+
+
+/*********** COMMON UPDATE ***************/
+function update_data(app_name, model_name, id, field, value){
+
+    $.ajax({
+        url: '{% url 'update'  %}',
+        method: "POST",
+        data: {
+            app_name: app_name,
+            model_name: model_name,
+            id: id,
+            field: field,
+            value: value,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+        },
+        success: function(data) {
+
+            return 1
+        },
+        error: function(error) {
+            return 0
+
+        }
+    });
+
+}
+/*********** END COMMON UPDATE ***************/
+
+
+
+/********* CODE FOR ELECTRON *********/
+function customPrint() {
+  const isElectron = navigator.userAgent.toLowerCase().includes('myelectronapp');
+
+  if (isElectron && window.electron?.ipcRenderer) {
+    const element = document.getElementById('print_dos');
+    const htmlContent = element?.value || '';
+
+
+    if (htmlContent.trim()) {
+      window.electron.ipcRenderer.send('electron-dos-print', htmlContent);
+      console.log('🖨️ Print request sent to Electron main process');
+    } else {
+      alert('❌ No content to print.');
+    }
+  } else {
+    console.log("🌐 Web environment. Opening browser print dialog.");
+    window.print();
+  }
+}
+
+
+
+
+
+
+/********* END CODE FOR ELECTRON *********/
+
+
+</script>
+
+{% if "/pos/" not in request.path and "/points/" not in request.path %}
+<script>
+  $(document).ready(function () {
+    let timer;
+    const LOCK_KEY = 'last_active_time';
+
+    {% with lock_minutes=SETTING.auto_screen_lock_time %}
+    const LOCK_TIMEOUT = {{ lock_minutes }} * 60 * 1000;
+    {% endwith %}
+
+    function shouldLock() {
+        const lastActive = localStorage.getItem(LOCK_KEY);
+        return lastActive && (Date.now() - parseInt(lastActive)) > LOCK_TIMEOUT;
+    }
+
+    function showLockScreen() {
+        $("#lockScreen").fadeIn();
+        $("body").addClass("blur-active");
+        $("#lockScreen input[name='password']").val("").focus();
+        setTimeout(function () {
+            $('#pendingTasksModal').modal('hide');
+            $("#lockScreen input[name='password']").val("").focus();
+        }, 1000);
+    }
+
+    function hideLockScreen() {
+        $("#lockScreen").fadeOut();
+        $("body").removeClass("blur-active");
+        $("#lockForm")[0].reset();
+    }
+
+    function resetTimer() {
+        clearTimeout(timer);
+        localStorage.setItem(LOCK_KEY, Date.now().toString());
+        timer = setTimeout(showLockScreen, LOCK_TIMEOUT);
+    }
+
+    if (shouldLock()) {
+        showLockScreen();
+    } else {
+        resetTimer();
+    }
+
+    $(document).on('mousemove keypress click scroll', function () {
+        if (!$("#lockScreen").is(":visible")) {
+            resetTimer();
+        }
+    });
+
+    $("#lockForm").on("submit", function (e) {
+        e.preventDefault();
+        const password = $(this).find("input[name='password']").val();
+
+        $.ajax({
+            url: "{% url 'verify_password' %}",
+            method: "POST",
+            headers: {"X-CSRFToken": "{{ csrf_token }}"},
+            data: {password: password},
+            success: function (res) {
+                if (res.status === "ok") {
+                    hideLockScreen();
+                    resetTimer();
+                } else {
+                    alert("Wrong password. Logging out.");
+                    window.location.href = "{% url 'logout' %}";
+                }
+            },
+            error: function () {
+                alert("Something went wrong.");
+                window.location.href = "{% url 'logout' %}";
+            }
+        });
+    });
+  });
+</script>
+{% endif %}
+
+
+{% if page_loading_time != 0 %}
+<script>
+  window.addEventListener('load', function () {
+    const browserLoad = (performance.now() / 1000).toFixed(2);
+    const serverText = document.querySelector('.load-time-server')?.dataset.time || '-';
+
+    const container = document.createElement('div');
+    container.className = 'd-flex justify-content-end mt-4 mb-3';
+    container.style.fontSize = '0.75rem';
+    container.style.paddingRight = '20px';  // <-- right padding added
+
+    container.innerHTML = `
+      <span class="badge bg-primary me-1" style="padding: 0.3em 0.6em;">
+        Server Load: ${serverText}s
+      </span>
+      <span class="badge bg-success" style="padding: 0.3em 0.6em;">
+        App Load: ${browserLoad}s
+      </span>
+    `;
+
+    document.body.appendChild(container);
+  });
+</script>
+{% endif %}
+
+
+
+
+
+
+</body>
+</html>
