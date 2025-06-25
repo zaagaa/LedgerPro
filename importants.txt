@@ -1,0 +1,66 @@
+git reset --hard
+git clean -fd
+git pull origin client3
+
+pip-chill > requirements.txt
+
+
+Greater than:
+
+Person.objects.filter(age__gt=20)
+
+Greater than or equal to:
+
+Person.objects.filter(age__gte=20)
+
+Less than:
+
+Person.objects.filter(age__lt=20)
+
+Less than or equal to:
+
+Person.objects.filter(age__lte=20)
+
+mkvirtualenv venv
+
+pyarmor gen --pack onedir manage.py
+
+pyinstaller --onefile --noconsole --icon=logo.ico launcher.py
+
+python manage.py truncate --apps tax_code --models tax_code
+
+
+invoice_discount_percent=abs(float(((float(total_amount) - float(total_discount)) / (float(total_amount)) * 100) - 100))
+
+d-flex justify-content-center
+
+ justify-content-center
+
+</div></div><div class="card"><div class="card-body">
+
+python manage.py runserver 0.0.0.0:8000
+
+<div class="d-flex justify-content-end">
+
+
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+
+to create requirements.txt file:
+pip freeze > requirements.txt
+
+
+if request.POST.get('add_staff'):
+    updated_request = request.POST.copy()
+    updated_request.pop("add_staff", None)
+
+    form = Staff_Form(updated_request)
+    if form.is_valid():
+        bbb = form.save(commit=False)
+        bbb.company_id = request.COOKIES.get('company_id')
+        bbb.save()
+
+
+
+mfg_date = mfg_date.replace("/", "-")
+mfg_date = datetime.datetime.strptime(mfg_date, "%d-%m-%Y")

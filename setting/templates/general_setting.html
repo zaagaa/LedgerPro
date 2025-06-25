@@ -1,0 +1,126 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+<h4 class="page-title mb-4">General Setting</h4>
+
+<div class="row">
+    <div class="col-lg-12">
+        <!-- GENERAL SETTINGS CARD -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <table class="table table-bordered table-centered mb-0">
+                        <thead>
+                            <tr>
+                                <th>Setting</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr>
+                                <td>Barcode Method</td>
+                                <td><input class="form-control" type="text" name="SETTING.barcode_method"
+                                           value="{{ SETTING.barcode_method }}"></td>
+                            </tr>
+
+                            <tr>
+                                <td>Round Off</td>
+                                <td>
+                                    <input class="form-control" type="text" name="SETTING.pos_round_off"
+                                           value="{{ SETTING.pos_round_off }}">
+                                    <code>
+                                        Example:<br>
+                                        {% if SETTING.pos_round_off != '0' %}
+                                        If Grand Total is 100.{{ SETTING.pos_round_off }} it goto 100.00<br>
+                                        If Grand Total is 100.{{ SETTING.pos_round_off|add:1 }} goto 101.00
+                                        {% else %}
+                                        If Grand Total is 100.00 it goto 100.00<br>
+                                        If Grand Total is 100.45 goto 100.45
+                                        {% endif %}
+                                    </code>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Currency Symbol</td>
+                                <td><input class="form-control" type="text" name="SETTING.currency_symbol"
+                                           value="{{ SETTING.currency_symbol }}"></td>
+                            </tr>
+
+                            <tr>
+                                <td>Currency Decimal</td>
+                                <td><input class="form-control" type="text" name="SETTING.currency_decimal"
+                                           value="{{ SETTING.currency_decimal }}"></td>
+                            </tr>
+
+                            <tr>
+                                <td>Auto Screen Lock Time (in minutes)</td>
+                                <td>
+                                    <input class="form-control" type="number" name="SETTING.auto_screen_lock_time"
+                                           value="{{ SETTING.auto_screen_lock_time }}" min="1" max="480">
+                                    <small class="text-muted">Default is 5 minutes. You can change it (1 to 480 minutes).</small>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Staff API URL</td>
+                                <td>
+                                    <input class="form-control" type="text" name="SETTING.staff_api_url"
+                                           value="{{ SETTING.staff_api_url }}">
+                                </td>
+                            </tr>
+
+<!--                            <tr>-->
+<!--                                <td>ONLINE DATABASE URL</td>-->
+<!--                                <td>-->
+<!--                                    <input class="form-control" type="text" name="SETTING.online_database_url"-->
+<!--                                           value="{{ SETTING.online_database_url }}">-->
+<!--                                </td>-->
+<!--                            </tr>-->
+
+                            <tr>
+                                <td>SHOW SALE REPORT TO MOBILE APP</td>
+                                <td>
+                                    <input class="form-control" type="text" name="SETTING.app_sale_report_mobile_numbers"
+                                           value="{{ SETTING.app_sale_report_mobile_numbers }}">
+                                    <small class="text-muted">You Can Enter Multiple Mobile Number By Using , (comma)</small>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                    <div class="h-100 d-flex align-items-center justify-content-center">
+                        <button type="submit" class="btn btn-primary mt-4">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- REMOTE DATABASE CONFIG CARD -->
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <strong><i class="bi bi-database-up me-1"></i> Remote Database Configuration</strong>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Remote Database URL</label>
+                        <input type="text" name="remote_db_url" class="form-control" value="{{ remote_url }}">
+                        <small class="text-muted">This updates <code>db_config.json</code> file.</small>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-info">Save Remote URL</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock content %}

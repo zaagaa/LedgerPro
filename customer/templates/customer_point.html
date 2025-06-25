@@ -1,0 +1,381 @@
+{% extends 'layouts2/main.html' %}
+
+
+{% block body %}
+
+<style type="text/css">
+/* Hide printable content on screen */
+#printable {
+    display: none;
+}
+
+@media print {
+    @page {
+        size: 72mm auto; /* For 3-inch thermal printer */
+        margin: 0;
+    }
+
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-family: "Courier New", Courier, monospace;
+    }
+
+    body * {
+        visibility: hidden;
+    }
+
+    #printable, #printable * {
+        visibility: visible;
+    }
+
+    #printable {
+        display: block !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    #printable_content {
+        padding: 0 5px;
+        width: 100%;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px; /* Increased font size */
+        font-weight: bold; /* Bold text */
+    }
+
+    table td {
+        padding: 3px 0;
+        white-space: nowrap;
+        vertical-align: top;
+    }
+
+    table td:first-child {
+        width: 50%;
+    }
+
+    h4 {
+        text-align: center;
+        margin: 6px 0;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    hr {
+        margin: 5px 0;
+        border: none;
+        border-top: 1px dashed #000;
+    }
+
+    p {
+        font-size: 12px;
+        font-weight: bold;
+    }
+}
+</style>
+
+
+
+
+
+<div id="printable">
+  <div id="printable_content">
+    <h4>Customer Point Receipt</h4>
+    <hr>
+      <span id="print_data">
+
+          </span>
+    <hr>
+    <p style="text-align: center; margin-top: 5px;">Thank you!</p>
+
+  </div>
+</div>
+
+
+{% endblock body %}
+
+
+{% block content %}
+
+
+
+
+<style>
+.form-control {
+    height: 54px;
+    position: relative;
+    border: 2px solid #cdcdcd;
+    border-color: rgba(0, 0, 0, .14);
+    font-size: 54px;
+    background-color: grey;
+    font-weight:bold;
+
+    color: black;
+
+}
+
+.form-control:focus {
+    height: 54px;
+    position: relative;
+    border: 2px solid #cdcdcd;
+    border-color: rgba(0, 0, 0, .14);
+    font-size: 54px;
+    background-color: yellow;
+    font-weight:bold;
+    outline: 2px solid orange;
+    color: black;
+    }
+
+
+</style>
+
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body d-flex justify-content-center">
+
+
+
+
+<div id="content">
+<input style="width:500px;" id="qr_code" placeholder="Enter QR Code" type="text" class="form-control">
+</div>
+
+
+
+<input type="hidden" id="last_mobile">
+
+
+
+</div></div></div></div>
+
+
+
+
+{% endblock content %}
+
+{% block footer %}
+
+<script>
+
+$("#qr_code").focus()
+
+
+function home(){
+        content=`<input style="width:500px;" id="qr_code" placeholder="Enter QR Code" type="text" class="form-control">`;
+
+
+        $("#content").html(content);
+        $("#qr_code").focus();
+}
+
+$('body').on('keyup', '#qr_code', function(e) {
+
+     if(e.which === 13){
+
+    value=$("#qr_code").val();
+
+    $.ajax({
+        url: '{% url 'customer_point'  %}',
+        method: "POST",
+        data: {
+            query: 'qr_code',
+            value: value,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+        },
+        success: function(data) {
+
+            if(data.old_bill==1){alert("Sorry, Old Bill Not Allowed");return;}
+
+            if(data.invoice_point<=0){alert("#"+data.invoice_id+" Discount Bill Have No Points");$("#qr_code").val('');return;}
+
+             bill_info=`<h4>Date: <span class="text-primary fw-bold mr-2">`+data.invoice_date+`</span> Number: <span class="text-primary fw-bold">`+data.invoice_number+`</span>
+             Amount: <span class="text-primary fw-bold">`+data.invoice_amount+`</span> Point: <span class="text-primary fw-bold">`+data.invoice_point+`</span></h4>`;
+
+            if(data.already_added==0){
+
+            content=bill_info+`<input type='hidden' value='`+data.invoice_id+`' id='invoice_id'>
+            <input style="width:500px;" id="mobile" maxlength="10" placeholder="Enter Mobile Number" type="text" class="int_numeric_only form-control mt-2">
+            <div id='customer_info'></div>`;
+
+            $("#content").html(content);
+            $("#mobile").focus();
+
+            }else{
+
+            content=bill_info+`<br><h2>Already Added to `+data.already_added_customer_name+`[`+data.already_added_customer_mobile+`]</h2><br><a class="btn btn-primary" href="javascript:home();">
+             <i class="fas fa-arrow-left"></i> Back</a>`;
+
+            $("#content").html(content);
+
+            }
+
+        },
+        error: function(error) {
+            return 0
+
+        }
+    });
+
+}
+
+});
+
+
+$('body').on('keyup', '#mobile', function(e) {
+
+    if (e.key === ' ' || e.keyCode === 32) {
+        $("#mobile").val($("#last_mobile").val());
+    }
+
+    if(e.which === 13 && $("#mobile").val().length==10){
+
+    $("#confirm").click();
+
+    }
+
+value=$("#mobile").val();
+if(value.length!=10){$("#customer_info").html('');}
+
+     if(value.length==10){
+
+$("#last_mobile").val(value);
+
+    invoice_id=$("#invoice_id").val();
+
+    $.ajax({
+        url: '{% url 'customer_point'  %}',
+        method: "POST",
+        data: {
+            query: 'mobile',
+            value: value,
+            invoice_id: invoice_id,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+        },
+        success: function(data) {
+
+        if(data.new_customer!=1){
+        customer_info=`
+        <table class="table mt-2">
+        <tr><td>Customer Name </td><td>: `+data.customer_name+`</td></tr>
+        <tr><td>Customer Mobile </td><td>: `+data.mobile+`</td></tr>
+        <tr><td>Old Point </td><td>: `+data.old_point+`</td></tr>
+        <tr><td>Bill Point </td><td>: `+data.bill_point+`</td></tr>
+        <tr><td>Current Point </td><td>: `+data.current_point+`</td></tr>
+        </table><input type="hidden" id="customer_name">
+        <div class="text-center"><button type="button" id="confirm" class="btn btn-primary mt-2">Confirm</button></div>`;
+
+        $("#customer_info").html(customer_info);
+
+        }else{
+
+        customer_info=`<table class="table mt-2">
+        <tr><td>Customer Name </td><td>: <input type="text" id="customer_name"></td></tr>
+        </table>
+        <div class="text-center"><button type="button" id="confirm" class="btn btn-primary mt-2">Confirm</button></div>`;
+
+        $("#customer_info").html(customer_info);
+
+        $("#customer_name").focus();
+
+        }
+
+
+
+        },
+        error: function(error) {
+            return 0
+
+        }
+    });
+
+}
+
+});
+
+
+$('body').on('keyup', '#customer_name', function(e) {
+
+if(e.which === 13){
+
+$("#confirm").click();
+
+}
+
+
+});
+
+
+$('body').on('click', '#confirm', function(e) {
+
+invoice_id=$("#invoice_id").val();
+mobile=$("#mobile").val();
+customer_name=$("#customer_name").val();
+
+    $.ajax({
+        url: '{% url 'customer_point'  %}',
+        method: "POST",
+        data: {
+            query: 'confirm',
+            invoice_id: invoice_id,
+            mobile: mobile,
+            customer_name: customer_name,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+        },
+        success: function(data) {
+
+        customer_info=`<table class="table mt-2">
+        <tr><td>Customer Name </td><td>: `+data.customer_name+`</td></tr>
+        <tr><td>Customer Mobile </td><td>: `+data.mobile+`</td></tr>
+        <tr><td>Old Point </td><td>: `+data.old_point+`</td></tr>
+        <tr><td>Bill Point </td><td>: `+data.bill_point+`</td></tr>
+        <tr><td>Current Point </td><td>: `+data.current_point+`</td></tr>
+        </table>`;
+
+        $("#customer_info").html(customer_info);
+
+        $("#print_data").html(customer_info.replace(' class="table mt-2"',""));
+
+        window.print();
+
+        $("#print_data").html("");
+
+        content=`<input style="width:500px;" id="qr_code" placeholder="Enter QR Code" type="text" class="form-control">`;
+
+
+        $("#content").html(content);
+        $("#qr_code").focus();
+
+        },
+        error: function(error) {
+            return 0
+
+        }
+    });
+
+
+});
+
+
+
+</script>
+
+
+<script>
+$(function() {
+
+document.querySelector("html").setAttribute('data-layout-style', 'modern');
+
+});
+</script>
+
+{% endblock footer %}
