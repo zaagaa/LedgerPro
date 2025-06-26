@@ -1,0 +1,18 @@
+{% extends "layouts2/main.html" %}
+{% block content %}
+<h4 class="mb-3">{{ holiday|yesno:"Edit,Add" }} Holiday</h4>
+
+<form method="post">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label class="form-label">Date</label>
+    <input type="date" name="date" class="form-control" value="{{ holiday.date|date:'Y-m-d'|default:'' }}" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Reason</label>
+    <input type="text" name="reason" class="form-control" value="{{ holiday.reason|default:'' }}" required>
+  </div>
+  <button type="submit" class="btn btn-success">Save</button>
+  <a href="{% url 'holiday_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

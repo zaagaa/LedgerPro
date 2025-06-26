@@ -1,0 +1,207 @@
+🔧 Update Replacements Log
+========================================
+
+📄 D:/BusinessApp\test2.py
+⏪ Purchase.objects.filter(stock_only=None).update(stock_only=0)
+⏩ updates = {stock_only=0, request.sync_field: int(time.time() * 1000)}
+Purchase.objects.filter(stock_only=None).update(**updates)
+
+📄 D:/BusinessApp\BusinessApp\function.py
+⏪ #     updated = Setting.objects.filter(company_id=company_id, setting=setting_key).update(value=value)
+⏩ updates = {value=value, request.sync_field: int(time.time() * 1000)}
+Setting.objects.filter(company_id=company_id, setting=setting_key).update(**updates)
+
+📄 D:/BusinessApp\BusinessApp\function.py
+⏪ #         Setting.objects.filter(company_id=None, setting=setting_key).update(value=value)
+⏩ updates = {value=value, request.sync_field: int(time.time() * 1000)}
+Setting.objects.filter(company_id=None, setting=setting_key).update(**updates)
+
+📄 D:/BusinessApp\company\views.py
+⏪ #         User.objects.filter(id=request.user.id).update(company_id=Company.objects.all().first().id)
+⏩ updates = {company_id=Company.objects.all(, request.sync_field: int(time.time() * 1000)}
+User.objects.filter(id=request.user.id).update(**updates)
+
+📄 D:/BusinessApp\company\views.py
+⏪ #         User.objects.filter(id=request.user.id).update(company_id=company_id)
+⏩ updates = {company_id=company_id, request.sync_field: int(time.time() * 1000)}
+User.objects.filter(id=request.user.id).update(**updates)
+
+📄 D:/BusinessApp\customer\views.py
+⏪ Invoice.objects.filter(customer=source).update(customer=dest)
+⏩ updates = {customer=dest, request.sync_field: int(time.time() * 1000)}
+Invoice.objects.filter(customer=source).update(**updates)
+
+📄 D:/BusinessApp\customer\views.py
+⏪ Point_Entry.objects.filter(customer=source).update(customer=dest, entry_date=now())
+⏩ updates = {customer=dest, entry_date=now(, request.sync_field: int(time.time() * 1000)}
+Point_Entry.objects.filter(customer=source).update(**updates)
+
+📄 D:/BusinessApp\customer\views.py
+⏪ model.objects.filter(**{fk_name: old_customer}).update(**{fk_name: latest})
+⏩ updates = {**{fk_name: latest}, request.sync_field: int(time.time() * 1000)}
+model.objects.filter(**{fk_name: old_customer}).update(**updates)
+
+📄 D:/BusinessApp\dashboard\views.py
+⏪ model.objects.filter(id=request.POST.get('id')).update(**parm_dict)
+⏩ updates = {**parm_dict, request.sync_field: int(time.time() * 1000)}
+model.objects.filter(id=request.POST.get('id')).update(**updates)
+
+📄 D:/BusinessApp\dashboard\views.py
+⏪ Notification.objects.filter(user=request.user).update(is_read=True)
+⏩ updates = {is_read=True, request.sync_field: int(time.time() * 1000)}
+Notification.objects.filter(user=request.user).update(**updates)
+
+📄 D:/BusinessApp\dashboard\views.py
+⏪ User.objects.filter(id=current_user.id).update(company_id=id)
+⏩ updates = {company_id=id, request.sync_field: int(time.time() * 1000)}
+User.objects.filter(id=current_user.id).update(**updates)
+
+📄 D:/BusinessApp\pos\views.py
+⏪ Cash_Counter.objects.filter(company_id=request.COOKIES.get('company_id'), user_id=request.user.id, entry_date=entry_date).update(stand_by=stand_by, cash_taken=cash_taken)
+⏩ updates = {stand_by=stand_by, cash_taken=cash_taken, request.sync_field: int(time.time() * 1000)}
+Cash_Counter.objects.filter(company_id=request.COOKIES.get('company_id'), user_id=request.user.id, entry_date=entry_date).update(**updates)
+
+📄 D:/BusinessApp\pos\views.py
+⏪ Invoice.objects.filter(id=cancel_invoice_id).update(cancel_no=cancel_no, invoice_number=new_invoice_number(request), total_amount=F('total_amount')*-1)
+⏩ updates = {cancel_no=cancel_no, invoice_number=new_invoice_number(request, request.sync_field: int(time.time() * 1000)}
+Invoice.objects.filter(id=cancel_invoice_id).update(**updates)
+
+📄 D:/BusinessApp\pos\views.py
+⏪ Sale.objects.filter(id=data.id).update(invoice_id=cancel_invoice_id, qty=F('qty')*-1)
+⏩ updates = {invoice_id=cancel_invoice_id, qty=F('qty', request.sync_field: int(time.time() * 1000)}
+Sale.objects.filter(id=data.id).update(**updates)
+
+📄 D:/BusinessApp\pos\views_copy_tmp.py
+⏪ Cash_Counter.objects.filter(company_id=request.COOKIES.get('company_id'), user_id=request.user.id, entry_date=entry_date).update(stand_by=stand_by, cash_taken=cash_taken)
+⏩ updates = {stand_by=stand_by, cash_taken=cash_taken, request.sync_field: int(time.time() * 1000)}
+Cash_Counter.objects.filter(company_id=request.COOKIES.get('company_id'), user_id=request.user.id, entry_date=entry_date).update(**updates)
+
+📄 D:/BusinessApp\pos\views_copy_tmp.py
+⏪ Invoice.objects.filter(id=cancel_invoice_id).update(cancel_no=cancel_no, invoice_number=new_invoice_number(request), total_amount=F('total_amount')*-1)
+⏩ updates = {cancel_no=cancel_no, invoice_number=new_invoice_number(request, request.sync_field: int(time.time() * 1000)}
+Invoice.objects.filter(id=cancel_invoice_id).update(**updates)
+
+📄 D:/BusinessApp\pos\views_copy_tmp.py
+⏪ Sale.objects.filter(id=data.id).update(invoice_id=cancel_invoice_id, qty=F('qty')*-1)
+⏩ updates = {invoice_id=cancel_invoice_id, qty=F('qty', request.sync_field: int(time.time() * 1000)}
+Sale.objects.filter(id=data.id).update(**updates)
+
+📄 D:/BusinessApp\purchase\views.py
+⏪ Purchase.objects.filter(company_id=request.COOKIES.get('company_id'), id=id).update(transaction_date=timezone.now(), finish=request.POST["finish"])
+⏩ updates = {transaction_date=timezone.now(, request.sync_field: int(time.time() * 1000)}
+Purchase.objects.filter(company_id=request.COOKIES.get('company_id'), id=id).update(**updates)
+
+📄 D:/BusinessApp\purchase\views.py
+⏪ Purchase.objects.filter(company_id=request.COOKIES.get('company_id'), id=id).update(finish=request.POST["finish"])
+⏩ updates = {finish=request.POST["finish"], request.sync_field: int(time.time() * 1000)}
+Purchase.objects.filter(company_id=request.COOKIES.get('company_id'), id=id).update(**updates)
+
+📄 D:/BusinessApp\purchase\views.py
+⏪ # Stock.objects.filter(id=last_id).update(barcode=barcode)
+⏩ updates = {barcode=barcode, request.sync_field: int(time.time() * 1000)}
+Stock.objects.filter(id=last_id).update(**updates)
+
+📄 D:/BusinessApp\purchase\views.py
+⏪ Purchase.objects.filter(id=id, finish=0).update(payable_amount=context["total_amount"])
+⏩ updates = {payable_amount=context["total_amount"], request.sync_field: int(time.time() * 1000)}
+Purchase.objects.filter(id=id, finish=0).update(**updates)
+
+📄 D:/BusinessApp\purchase\views.py
+⏪ Purchase.objects.filter(id=id).update(transaction_date=invoice_date)
+⏩ updates = {transaction_date=invoice_date, request.sync_field: int(time.time() * 1000)}
+Purchase.objects.filter(id=id).update(**updates)
+
+📄 D:/BusinessApp\purchase\views.py
+⏪ Purchase.objects.filter(id=id).update(invoice_number=value)
+⏩ updates = {invoice_number=value, request.sync_field: int(time.time() * 1000)}
+Purchase.objects.filter(id=id).update(**updates)
+
+📄 D:/BusinessApp\purchase\views.py
+⏪ Purchase.objects.filter(id=id).update(discount=value)
+⏩ updates = {discount=value, request.sync_field: int(time.time() * 1000)}
+Purchase.objects.filter(id=id).update(**updates)
+
+📄 D:/BusinessApp\purchase\views.py
+⏪ Purchase.objects.filter(id=id).update(round_off=value)
+⏩ updates = {round_off=value, request.sync_field: int(time.time() * 1000)}
+Purchase.objects.filter(id=id).update(**updates)
+
+📄 D:/BusinessApp\purchase\views.py
+⏪ Purchase.objects.filter(id=id).update(other_charges=value)
+⏩ updates = {other_charges=value, request.sync_field: int(time.time() * 1000)}
+Purchase.objects.filter(id=id).update(**updates)
+
+📄 D:/BusinessApp\setting\middleware.py
+⏪ updated = Setting.objects.filter(company_id=company_id, setting=setting_key).update(value=value)
+⏩ updates = {value=value, request.sync_field: int(time.time() * 1000)}
+Setting.objects.filter(company_id=company_id, setting=setting_key).update(**updates)
+
+📄 D:/BusinessApp\setting\middleware.py
+⏪ updated = Setting.objects.filter(company_id=None, setting=setting_key).update(value=value)
+⏩ updates = {value=value, request.sync_field: int(time.time() * 1000)}
+Setting.objects.filter(company_id=None, setting=setting_key).update(**updates)
+
+📄 D:/BusinessApp\setting\middleware.py
+⏪ #             updated = Setting.objects.filter(company_id=company_id, setting=setting_key).update(value=value)
+⏩ updates = {value=value, request.sync_field: int(time.time() * 1000)}
+Setting.objects.filter(company_id=company_id, setting=setting_key).update(**updates)
+
+📄 D:/BusinessApp\setting\middleware.py
+⏪ #                 updated = Setting.objects.filter(company_id=None, setting=setting_key).update(value=value)
+⏩ updates = {value=value, request.sync_field: int(time.time() * 1000)}
+Setting.objects.filter(company_id=None, setting=setting_key).update(**updates)
+
+📄 D:/BusinessApp\setting\middleware.py
+⏪ #     #     updated = Setting.objects.filter(company_id=company_id, setting=setting_key).update(value=value)
+⏩ updates = {value=value, request.sync_field: int(time.time() * 1000)}
+Setting.objects.filter(company_id=company_id, setting=setting_key).update(**updates)
+
+📄 D:/BusinessApp\setting\middleware.py
+⏪ #     #         Setting.objects.filter(company_id=None, setting=setting_key).update(value=value)
+⏩ updates = {value=value, request.sync_field: int(time.time() * 1000)}
+Setting.objects.filter(company_id=None, setting=setting_key).update(**updates)
+
+📄 D:/BusinessApp\setting\middleware.py
+⏪ #         updated = Setting.objects.filter(company_id=company_id, setting=setting_key).update(value=value)
+⏩ updates = {value=value, request.sync_field: int(time.time() * 1000)}
+Setting.objects.filter(company_id=company_id, setting=setting_key).update(**updates)
+
+📄 D:/BusinessApp\setting\middleware.py
+⏪ #             updated = Setting.objects.filter(company_id=None, setting=setting_key).update(value=value)
+⏩ updates = {value=value, request.sync_field: int(time.time() * 1000)}
+Setting.objects.filter(company_id=None, setting=setting_key).update(**updates)
+
+📄 D:/BusinessApp\setting\views.py
+⏪ Sticker.objects.filter(id=request.POST.get('edit_id')).update(company_id=request.COOKIES.get('company_id'), sticker_name=request.POST.get('sticker_name'),
+⏩ updates = {company_id=request.COOKIES.get('company_id', request.sync_field: int(time.time() * 1000)}
+Sticker.objects.filter(id=request.POST.get('edit_id')).update(**updates)
+
+📄 D:/BusinessApp\setting\views.py
+⏪ Master_Setting.objects.filter(setting='server_type').update(value=request.POST['server_type'])
+⏩ updates = {value=request.POST['server_type'], request.sync_field: int(time.time() * 1000)}
+Master_Setting.objects.filter(setting='server_type').update(**updates)
+
+📄 D:/BusinessApp\setting\views.py
+⏪ Master_Setting.objects.filter(setting='client_url').update(value=request.POST['client_url'])
+⏩ updates = {value=request.POST['client_url'], request.sync_field: int(time.time() * 1000)}
+Master_Setting.objects.filter(setting='client_url').update(**updates)
+
+📄 D:/BusinessApp\setting\views.py
+⏪ Master_Setting.objects.filter(setting='client_api_code').update(value=request.POST['client_api_code'])
+⏩ updates = {value=request.POST['client_api_code'], request.sync_field: int(time.time() * 1000)}
+Master_Setting.objects.filter(setting='client_api_code').update(**updates)
+
+📄 D:/BusinessApp\setting\views.py
+⏪ Setting.objects.filter(company_id=request.COOKIES.get('company_id'), setting=key).update(value=value)
+⏩ updates = {value=value, request.sync_field: int(time.time() * 1000)}
+Setting.objects.filter(company_id=request.COOKIES.get('company_id'), setting=key).update(**updates)
+
+📄 D:/BusinessApp\sync\views.py
+⏪ Master_Setting.objects.filter(setting='master_id').update(value=request.GET.get("master_id"))
+⏩ updates = {value=request.GET.get("master_id", request.sync_field: int(time.time() * 1000)}
+Master_Setting.objects.filter(setting='master_id').update(**updates)
+
+📄 D:/BusinessApp\sync\views.py
+⏪ Master_Setting.objects.filter(setting='slave_id').update(value=request.GET.get("slave_id"))
+⏩ updates = {value=request.GET.get("slave_id", request.sync_field: int(time.time() * 1000)}
+Master_Setting.objects.filter(setting='slave_id').update(**updates)
