@@ -1,0 +1,194 @@
+{% extends 'layouts2/main.html' %}
+{% block content %}
+<style>
+    @media print {
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Hide everything except payslip grid and salary summary */
+        body * {
+            visibility: hidden;
+        }
+
+        .payslip-grid, .payslip-grid *,
+        #salary-summary, #salary-summary * {
+            visibility: visible;
+        }
+
+        /* Remove absolute positioning so summary appears below */
+        .payslip-grid {
+            width: 100%;
+        }
+
+        .payslip-container {
+            page-break-inside: avoid;
+            width: 100%;
+            height: 50%;
+            box-sizing: border-box;
+        }
+
+        .payslip {
+            border: 1px solid #000;
+            margin: 5mm;
+            height: calc(100% - 10mm);
+            padding: 10px;
+            box-sizing: border-box;
+            font-size: 12px;
+        }
+    }
+
+    .payslip-grid {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        height: 100vh;
+    }
+
+    .payslip-container {
+        width: 50%;
+        height: 50%;
+    }
+
+    .payslip {
+        border: 1px solid #ccc;
+        margin: 10px;
+        padding: 10px;
+        height: calc(100% - 20px);
+    }
+
+    .payslip-header {
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .table-sm td, .table-sm th {
+        padding: 4px !important;
+    }
+
+    @media print {
+    .page-break {
+        page-break-before: always;
+        break-before: page;
+        height: 0;
+        visibility: hidden;
+    }
+}
+
+
+    @media print {
+    .print-no-top-margin {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+}
+
+    @media print {
+    #salary-summary,
+    #salary-summary .card,
+    #salary-summary .card-body,
+    #salary-summary .row,
+    #salary-summary .col-12 {
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    #salary-summary h5 {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+}
+
+</style>
+
+<div class="mb-3">
+    <form method="get" class="row">
+        <div class="col-auto">
+            <label for="month" class="form-label">Select Month</label>
+            <input type="month" class="form-control" name="month" id="month" value="{{ month_value }}" required>
+        </div>
+        <div class="col-auto align-self-end">
+            <button type="submit" class="btn btn-primary">Show</button>
+            <button type="button" onclick="window.print()" class="btn btn-outline-secondary">Print</button>
+        </div>
+    </form>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+<div class="print-no-top-margin" id="salary-summary">
+    <table class="table table-bordered table-sm">
+        <thead>
+            <tr>
+                <th>S.No</th>
+                <th>Staff Name</th>
+                <th class="text-end">Net Pay (₹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for staff in staff_list %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ staff.name }}</td>
+                    <td class="text-end">{{ staff.net_salaryx|floatformat:2 }}</td>
+                </tr>
+            {% endfor %}
+            <tr class="fw-bold">
+                <td colspan="2" class="text-end">Grand Total</td>
+                <td class="text-end">{{ grand_total|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+    </div></div></div></div>
+
+<div class="page-break"></div>
+
+<div class="payslip-grid">
+    {% for staff in staff_list %}
+        <div class="payslip-container">
+            <div class="payslip">
+                <div class="payslip-header">
+                    {{ company.company_name }}<br>
+                    Payslip for {{ month }}
+                </div>
+                <table class="table table-sm">
+                    <tr><th>Staff Name:</th><td>{{ staff.name }}</td></tr>
+                    <tr><th>Monthly Salary:</th><td>{{ staff.salary }} [for {{staff.days_in_monthx}} Days]</td></tr>
+                    <tr><th>Daily Incentive:</th><td>{{ staff.daily_inventive }} x {{staff.days_in_monthx}} Days = {{staff.daily_inventive_total|floatformat:2}}</td></tr>
+                    <tr><th>Salary Per Day:</th><td>{{ staff.salary_per_day }} + {{ staff.daily_inventive }} = <strong>{{ staff.salary_per_dayx|floatformat:2 }}</strong></td></tr>
+                    <tr><th>Eligible Salary:</th><td>{{staff.eligible_salary|floatformat:2}}</td></tr>
+                </table>
+                <hr>
+                <table class="table table-sm">
+                    <tbody>
+                        <tr><th>Salary - {{ staff.present }} Days</th><td class="text-end">{{ staff.present_salary|floatformat:2 }}</td></tr>
+                        <tr><th>Excess - {{ staff.excess_days }} Days</th><td class="text-end">{{ staff.excess_salary|floatformat:2 }}</td></tr>
+
+                        <tr><th>Total</th><td class="text-end">{{ staff.gross_salaryx|floatformat:2 }}</td></tr>
+                        <tr><th>Credit</th><td class="text-end">-{{ staff.data.credit_total|floatformat:2 }}</td></tr>
+                        <tr><th>Balance</th><td class="text-end">{{ staff.grand_total_salary|floatformat:2 }}</td></tr>
+                    </tbody>
+                </table>
+                <hr>
+                <div class="text-center fw-bold">
+                    <h2>Net Pay: ₹ {{ staff.net_salaryx|floatformat:2 }}</h2>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+
+{% endblock %}
