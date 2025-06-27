@@ -1,0 +1,112 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+<h4 class="page-title mb-4">POS Settings</h4>
+
+<!-- POS Configuration Section -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-header bg-light fw-bold">
+                <i class="bi bi-gear me-1"></i> Browser Print Setup
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-4 row align-items-center">
+                        <label class="col-sm-2 col-form-label fw-bold">Round Off</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="SETTING.pos_round_off" value="{{ SETTING.pos_round_off }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-4 row">
+                        <label class="col-sm-2 col-form-label fw-bold">Browser Print Header</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control summernote" name="SETTING.pos_header">{{ SETTING.pos_header }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 row">
+                        <label class="col-sm-2 col-form-label fw-bold">Browser Print Footer</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control summernote" name="SETTING.pos_footer">{{ SETTING.pos_footer }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary px-4">Save Settings</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Windows Print Setup Section -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-header bg-light fw-bold">
+                <i class="bi bi-printer me-1"></i> Windows Print Setup
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-4 row">
+                        <label class="col-sm-2 col-form-label fw-bold">Windows Print Header</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" name="SETTING.pos_windows_header">{{ SETTING.pos_windows_header }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 row">
+                        <label class="col-sm-2 col-form-label fw-bold">Windows Print Footer</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" name="SETTING.pos_windows_footer">{{ SETTING.pos_windows_footer }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 row">
+    <label class="col-sm-2 col-form-label fw-bold">Show Tax Breakdown</label>
+    <div class="col-sm-10">
+        <select class="form-select" name="SETTING.pos_windows_show_tax">
+            <option value="Enable" {% if SETTING.pos_windows_show_tax == "Enable" %}selected{% endif %}>Enable</option>
+            <option value="Disable" {% if SETTING.pos_windows_show_tax == "Disable" %}selected{% endif %}>Disable</option>
+        </select>
+    </div>
+</div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary px-4">Save Settings</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block footer %}
+<script>
+    // Initialize Summernote
+    $('.summernote').summernote({
+        tabsize: 2,
+        height: 180
+    });
+</script>
+
+<script>
+    // Auto-expand only non-summernote textareas
+    document.querySelectorAll('textarea.form-control:not(.summernote)').forEach(function (textarea) {
+        textarea.setAttribute("style", "overflow:hidden;resize:none;");
+        textarea.addEventListener("input", function () {
+            this.style.height = 'auto'; // Reset height
+            this.style.height = (this.scrollHeight) + "px"; // Expand to fit content
+        });
+        textarea.dispatchEvent(new Event('input')); // Trigger on load
+    });
+</script>
+{% endblock footer %}
