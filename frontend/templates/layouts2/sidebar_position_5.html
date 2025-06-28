@@ -1,0 +1,28 @@
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-inner slimscroll">
+        <div id="sidebar-menu" class="sidebar-menu">
+            <ul>
+
+
+                <li class="submenu-open">
+                    <h6 class="submenu-hdr">Report</h6>
+                     <ul>
+                        <li><a href="{% url 'gstr1_summary' %}"><i data-feather="file-text"></i><span>GSTR1 Summary</span></a></li>
+                         <li><a href="{% url 'statement_day_wise' %}"><i data-feather="calendar"></i><span>Day Wise</span></a></li>
+                        <li><a href="{% url 'month_wise_sales' %}"><i data-feather="calendar"></i><span>Month Wise</span></a></li>
+                        <li><a href="{% url 'year_wise_sales' %}"><i data-feather="clock"></i><span>Year Wise</span></a></li>
+
+                    </ul>
+                </li>
+
+
+
+
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</div>

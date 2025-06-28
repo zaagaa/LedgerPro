@@ -1,0 +1,63 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+<h4 class="page-title mb-4">Customer Settings</h4>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <table class="table table-bordered table-centered mb-0">
+                        <thead>
+                            <tr>
+                                <th>Setting</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+
+
+                          <tr>
+                                <td>1 Customer Point for the Amount</td>
+                                <td>
+                                    <input class="form-control" type="number" name="SETTING.customer_point_amount"
+                                           value="{{ SETTING.customer_point_amount }}">
+                                    </td>
+                            </tr>
+
+                            <tr>
+                                <td>Minimum Customer Deduction Point</td>
+                                <td>
+                                    <input class="form-control" type="number" name="SETTING.customer_min_deduction"
+                                           value="{{ SETTING.customer_min_deduction }}">
+                                    </td>
+                            </tr>
+
+                            <tr>
+                                <td>Set Inactive Customer, After the Day </td>
+                                <td>
+                                    <input class="form-control" type="number" name="SETTING.customer_inactive_days"
+                                           value="{{ SETTING.customer_inactive_days }}">
+                                    <small class="text-muted">If the Customer Does not Add Points upto {{ SETTING.customer_inactive_days }} Days, Automatically set as Inactive</small>
+                                    </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                    <div class="h-100 d-flex align-items-center justify-content-center">
+                        <button type="submit" class="btn btn-primary mt-4">Update</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
