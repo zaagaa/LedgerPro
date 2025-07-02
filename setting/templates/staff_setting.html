@@ -1,0 +1,97 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+<h4 class="page-title mb-4">Staff Settings</h4>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <table class="table table-bordered table-centered mb-0">
+                        <thead>
+                            <tr>
+                                <th>Setting</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr>
+    <td>Leave Incentive System</td>
+    <td>
+        <select class="form-control" name="SETTING.staff_leave_incentive_system">
+            <option value="Enable" {% if SETTING.staff_leave_incentive_system == "Enable" %}selected{% endif %}>Enable</option>
+            <option value="Disable" {% if SETTING.staff_leave_incentive_system == "Disable" %}selected{% endif %}>Disable</option>
+        </select>
+    </td>
+</tr>
+
+                        {% if SETTING.staff_leave_incentive_system == "Enable" %}
+                            <tr>
+                                <td>Maximum Leave Allowed Per Day</td>
+                                <td>
+                                    <input class="form-control" type="number" name="SETTING.daily_leave_all_staff"
+                                           value="{{ SETTING.daily_leave_all_staff }}">
+                                    <small class="text-muted">This is for Over All Staff</small>
+                                    </td>
+                            </tr>
+                            <tr>
+                                <td>Maximum Leave Allowed Per Staff</td>
+                                <td>
+                                    <input class="form-control" type="number" name="SETTING.monthly_leave_per_staff"
+                                           value="{{ SETTING.monthly_leave_per_staff }}">
+                                    </td>
+                            </tr>
+
+                            <tr>
+                                <td>Approved Leave Incentive</td>
+                                <td>
+                                    <input class="form-control" type="number" name="SETTING.staff_approved_leave_incentive"
+                                           value="{{ SETTING.staff_approved_leave_incentive }}">
+                                    </td>
+                            </tr>
+
+                            <tr>
+                                <td>Unapproved Leave Penalty</td>
+                                <td>
+                                    <input class="form-control" type="number" name="SETTING.staff_unapproved_leave_penalty"
+                                           value="{{ SETTING.staff_unapproved_leave_penalty }}">
+                                    </td>
+                            </tr>
+
+<tr>
+<td>Leave Booking at a Time</td>
+<td>
+<input class="form-control" type="number" name="SETTING.staff_leave_booking_at_a_time"
+value="{{ SETTING.staff_leave_booking_at_a_time }}">
+</td>
+</tr>
+
+<tr>
+<td>Maximum Leave Booking Period (in Days)</td>
+<td>
+<input class="form-control" type="number" name="SETTING.staff_max_booking_period"
+value="{{ SETTING.staff_max_booking_period }}">
+</td>
+</tr>
+
+{% endif %}
+
+                        </tbody>
+                    </table>
+
+                    <div class="h-100 d-flex align-items-center justify-content-center">
+                        <button type="submit" class="btn btn-primary mt-4">Update</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
