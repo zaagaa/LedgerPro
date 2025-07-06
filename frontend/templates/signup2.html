@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+        <meta name="description" content="POS - Bootstrap Admin Template">
+		<meta name="keywords" content="admin, estimates, bootstrap, business, corporate, creative, invoice, html5, responsive, Projects">
+        <meta name="author" content="Dreamguys - Bootstrap Admin Template">
+        <meta name="robots" content="noindex, nofollow">
+        <title>Login - Pos admin template</title>
+
+		<script src="{% static 'bootstrap/assets/js/theme-script.js' %}"></script>
+
+		<!-- Favicon -->
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'bootstrap/assets/img/favicon.png' %}">
+
+		<!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{% static 'bootstrap/assets/css/bootstrap.min.css' %}">
+
+        <!-- Fontawesome CSS -->
+		<link rel="stylesheet" href="{% static 'bootstrap/assets/plugins/fontawesome/css/fontawesome.min.css' %}">
+		<link rel="stylesheet" href="{% static 'bootstrap/assets/plugins/fontawesome/css/all.min.css' %}">
+
+		<!-- Main CSS -->
+        <link rel="stylesheet" href="{% static 'bootstrap/assets/css/style.css' %}">
+
+    </head>
+    <body class="account-page">
+
+        <div id="global-loader" >
+			<div class="whirly-loader"> </div>
+		</div>
+
+		<!-- Main Wrapper -->
+        <div class="main-wrapper">
+			<div class="account-content">
+				<div class="login-wrapper login-new">
+                    <div class="login-content user-login">
+
+                            <div class="login-userset">
+
+								                            <div class="login-logo">
+                                <img src="{% static 'bootstrap/assets/img/logo.png' %}" alt="img">
+                                <a href="index.html" class="login-logo logo-white">
+                                    <img src="{% static 'bootstrap/assets/img/logo-white.png' %}"  alt="">
+                                </a>
+                            </div>
+
+	<!-- BEGIN #app -->
+
+				<form action="" method="POST" name="register_form">
+					{% csrf_token %}
+
+					<p class="text-inverse text-opacity-50 text-center">One Admin ID is all you need to access all the Admin services.</p>
+					<div class="mb-3">
+						<label class="form-label">Name <span class="text-danger">*</span></label>
+						<input type="text" name="name" class="form-control form-control-lg bg-inverse bg-opacity-5" placeholder="e.g John Smith" value="">
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Username <span class="text-danger">*</span></label>
+						<input type="text" name="username" class="form-control form-control-lg bg-inverse bg-opacity-5" placeholder="e.g john_smith" value="">
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Email Address <span class="text-danger">*</span></label>
+						<input type="text" name="email" class="form-control form-control-lg bg-inverse bg-opacity-5" placeholder="username@address.com" value="">
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Password <span class="text-danger">*</span></label>
+						<input type="password" name="password" class="form-control form-control-lg bg-inverse bg-opacity-5" value="">
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+						<input type="password" name="password2" class="form-control form-control-lg bg-inverse bg-opacity-5" value="">
+					</div>
+
+
+
+					<div class="mb-3">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="" id="customCheck1">
+							<label class="form-check-label" for="customCheck1">I have read and agree to the <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a>.</label>
+						</div>
+					</div>
+					<div class="mb-3">
+						<button type="submit" class="btn btn-outline-primary btn-lg d-block w-100">Sign Up</button>
+					</div>
+					<div class="text-inverse text-opacity-50 text-center">
+						Already have an Admin ID? <a href="/authenticate/">Sign In</a>
+					</div>
+				</form>
+
+	<!-- END #app -->
+
+
+
+
+                    </div>
+                    <div class="my-4 d-flex justify-content-center align-items-center copyright-text">
+                        <p>Copyright &copy; 2023 DreamsPOS. All rights reserved.</p>
+                    </div>
+                </div>
+			</div>
+        </div>
+		<!-- /Main Wrapper -->
+
+
+		<!-- jQuery -->
+        <script src="{% static 'bootstrap/assets/js/jquery-3.7.1.min.js' %}"></script>
+
+         <!-- Feather Icon JS -->
+		<script src="{% static 'bootstrap/assets/js/feather.min.js' %}"></script>
+
+		<!-- Bootstrap Core JS -->
+        <script src="{% static 'bootstrap/assets/js/bootstrap.bundle.min.js' %}"></script>
+
+		<!-- Custom JS -->
+<script src="{% static 'bootstrap/assets/js/script.js' %}"></script>
+
+
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
