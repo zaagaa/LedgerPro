@@ -1,0 +1,694 @@
+{% extends 'layouts2/main.html' %}
+{% load static %}
+{% load custom_tags %}
+{% load custom_filters %}
+
+
+{% block modal %}
+<!-- Pending TODO Modal -->
+{% if pending_tasks %}
+<!-- Pending TODO Modal -->
+<div class="modal fade" id="pendingTasksModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Pending TODO List</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Task</th>
+              <th>Due Date</th>
+              <th>Type</th>
+              <th>Repeat</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for task in pending_tasks %}
+            <tr class="{% if task.task_date and task.task_date < today %}table-danger{% endif %}">
+              <td>{{ forloop.counter }}</td>
+              <td>{{ task.task_name }}</td>
+              <td>{{ task.task_date }}</td>
+              <td>{{ task.get_task_type_display }}</td>
+              <td>{{ task.get_task_repeat_display }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <a href="{% url 'todo' %}" class="btn btn-primary">Go to TODO Page</a>
+        <button type="button" class="btn btn-outline-secondary" id="remindLaterBtn">Remind Me Later</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock modal %}
+
+
+{% block content %}
+<style>
+    table#recent_purchase  {
+
+    td {
+      width: 10ch;
+      white-space: nowrap;
+    }
+
+    td:nth-child(3) {
+      width: 100%;
+      max-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    }
+</style>
+
+<div class="d-flex justify-content-between mb-4">
+
+
+  <!-- Pull Button -->
+<div class="align-self-end d-flex gap-2">
+
+<a href="{% url 'purchase' %}" class="btn btn-primary">Purchase</a>
+<a href="{% url 'supplier_account' id='home' %}" class="btn btn-primary">Supplier Account</a>
+<a href="{% url 'todo' %}" class="btn btn-primary">Todo</a>
+    <a href="{% url 'staff_leave_booking' %}" class="btn btn-primary">Leave Booking</a>
+
+{% if request.user.is_superuser %}
+<a href="{% url 'bank_statement' %}" class="btn btn-primary">Bank Statement</a>
+<a href="{% url 'statement_report' %}" class="btn btn-primary">Sales Report</a>
+<a href="{% url 'cash_flow_summary' %}" class="btn btn-primary">Cash Flow</a>
+    <a href="{% url 'supplier_upcoming_payment' %}" class="btn btn-primary">Upcoming Payments</a>
+{% endif %}
+
+</div>
+</div>
+
+{% if request.user.is_superuser %}
+
+<div class="d-flex justify-content-between mb-4">
+  <form method="get" class="row g-2">
+    <div class="col-auto">
+      <label class="form-label d-block">Select Company</label>
+      <select name="company_id" class="form-select" onchange="this.form.submit()">
+        <option value="0" {% if selected_company_id == 0 %}selected{% endif %}>All Companies</option>
+        {% for company in companies %}
+          <option value="{{ company.id }}" {% if company.id == selected_company_id %}selected{% endif %}>
+            {{ company.company_name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-auto">
+      <label class="form-label d-block">Select Date</label>
+      <input type="date" name="date" class="form-control" value="{{ selected_date }}" onchange="this.form.submit()">
+    </div>
+  </form>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="row">
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+        <div class="dash-widget w-100">
+            <div class="dash-widgetimg">
+                <span><img src="{% static 'bootstrap/assets/img/icons/dash2.svg' %}" alt="img"></span>
+
+            </div>
+            <div class="dash-widgetcontent">
+                <h5>{{today_sale|money:MONEY_DATA|default_if_none:"-"}}</h5>
+                <h6>Today Sale</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+        <div class="dash-widget dash1 w-100">
+            <div class="dash-widgetimg">
+                <span><img src="{% static 'bootstrap/assets/img/icons/dash1.svg' %}" alt="img"></span>
+            </div>
+            <div class="dash-widgetcontent">
+                <h5>{{today_purchase|money:MONEY_DATA|default_if_none:"-"}}</h5>
+                <h6>Total Purchase</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+        <div class="dash-widget dash2 w-100">
+            <div class="dash-widgetimg">
+                <span><img src="{% static 'bootstrap/assets/img/icons/dash3.svg' %}" alt="img"></span>
+            </div>
+            <div class="dash-widgetcontent">
+                <h5>{{today_payment|money:MONEY_DATA|default_if_none:"-"}}</h5>
+                <h6>Today Payment</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+        <div class="dash-widget dash3 w-100">
+            <div class="dash-widgetimg">
+                <span><img src="{% static 'bootstrap/assets/img/icons/dash4.svg' %}" alt="img"></span>
+            </div>
+            <div class="dash-widgetcontent">
+                <h5>{{today_expenses|money:MONEY_DATA|default_if_none:"-"}}</h5>
+                <h6>Today Expenses</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+        <div class="dash-count">
+            <div class="dash-counts">
+                <h4>{{ sundry_creditor|floatformat:0|intcomma_indian }}</h4>
+                <h5>Sundry Creditors</h5>
+            </div>
+            <div class="dash-imgs">
+                <i data-feather="user"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+        <div class="dash-count das1">
+            <div class="dash-counts">
+                <h4>{{ month_payment|floatformat:0|intcomma_indian }}</h4>
+                <h5>This Month Payment</h5>
+            </div>
+            <div class="dash-imgs">
+                <i data-feather="user-check"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+        <div class="dash-count das2">
+            <div class="dash-counts">
+                <h4>{{month_purchase|money:MONEY_DATA|default_if_none:"-"}}</h4>
+                <h5>This Month Purchase </h5>
+            </div>
+            <div class="dash-imgs">
+                <img src="{% static 'bootstrap/assets/img/icons/file-text-icon-01.svg' %}" class="img-fluid" alt="icon">
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+        <div class="dash-count das3">
+            <div class="dash-counts">
+                <h4>{{ month_sale|floatformat:0|intcomma_indian }}</h4>
+                <h5>This Month Sale</h5>
+            </div>
+            <div class="dash-imgs">
+                <i data-feather="file"></i>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+<!-- Button trigger modal -->
+
+<div class="row align-items-stretch">
+
+<div class="col-xl-3 col-sm-6 col-12 d-flex">
+  <div class="dash-widget dash3 w-100 p-3 d-flex justify-content-between align-items-center">
+    <div>
+      <h4 class="mb-1">{{ today_present|length }}</h4>
+      <h6 class="mb-0">Today Present</h6>
+    </div>
+    <button type="button"
+            class="btn btn-sm btn-danger"
+            data-bs-toggle="modal"
+            data-bs-target="#modalTodayPresent">
+      View
+    </button>
+  </div>
+</div>
+
+  <div class="col-xl-3 col-sm-6 col-12 d-flex">
+    <div class="dash-widget dash3 w-100 p-3 d-flex justify-content-between align-items-center">
+      <div class="dash-counts">
+        <h4 class="mb-1">{{ today_absent|length }}</h4>
+        <h6 class="mb-0">Today Absent</h6>
+      </div>
+      <div class="dash-imgs">
+        <button type="button"
+                class="btn btn-sm btn-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#modalTodayAbsent">
+          View
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-sm-6 col-12 d-flex">
+    <div class="dash-widget dash3 w-100 p-3 d-flex justify-content-between align-items-center">
+      <div class="dash-counts">
+        <h4 class="mb-1">{{ yesterday_absent|length }}</h4>
+        <h6 class="mb-0">Yesterday Absent</h6>
+      </div>
+      <div class="dash-imgs">
+        <button type="button"
+                class="btn btn-sm btn-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#modalYesterdayAbsent">
+          View
+        </button>
+      </div>
+    </div>
+  </div>
+
+<div class="col-xl-3 col-sm-6 col-12 d-flex">
+  <div class="dash-widget dash3 w-100 p-3 d-flex justify-content-between align-items-center">
+    <div class="dash-counts">
+      <h4 class="mb-1">{{ today_staff_credit_total|floatformat:2 }}</h4>
+      <h6 class="mb-0">Today Staff Credit</h6>
+    </div>
+    <div class="dash-imgs">
+      <button type="button"
+              class="btn btn-sm btn-danger"
+              data-bs-toggle="modal"
+              data-bs-target="#modalStaffCredit">
+        View
+      </button>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
+<!-- Today Present Modal -->
+<div class="modal fade" id="modalTodayPresent" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Today Present Staff</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0">
+        <table class="table table-bordered table-striped m-0">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 50px;">#</th>
+              <th>Name</th>
+              <th>Mobile</th>
+              <th>In Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in today_present_entries %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+<td>
+  <a href="{% url 'attendance_summary' %}?staff={{ entry.staff.id }}" target="_blank">
+    {{ entry.staff.staff_name }}
+  </a>
+</td>
+                <td>{{ entry.staff.mobile }}</td>
+                <td>{{ entry.in_time|unix_to_time }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4" class="text-center">No data available</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Today Absent Modal -->
+<div class="modal fade" id="modalTodayAbsent" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Today Absent Staff</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0">
+        <table class="table table-bordered table-striped m-0">
+          <thead class="table-light">
+            <tr><th>#</th><th>Name</th><th>Mobile</th></tr>
+          </thead>
+          <tbody>
+            {% for s in today_absent %}
+              <tr><td>{{ forloop.counter }}</td>
+                  <td>
+  <a href="{% url 'attendance_summary' %}?staff={{ s.id }}" target="_blank">
+    {{ s.staff_name }}
+  </a>
+</td>
+
+                  <td>{{ s.mobile }}</td></tr>
+            {% empty %}
+              <tr><td colspan="3" class="text-center">No absent staff today</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Yesterday Absent Modal -->
+<div class="modal fade" id="modalYesterdayAbsent" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Yesterday Absent Staff</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0">
+        <table class="table table-bordered table-striped m-0">
+          <thead class="table-light">
+            <tr><th>#</th><th>Name</th><th>Mobile</th></tr>
+          </thead>
+          <tbody>
+            {% for s in yesterday_absent %}
+              <tr><td>{{ forloop.counter }}</td>
+                  <td>
+  <a href="{% url 'attendance_summary' %}?staff={{ s.id }}" target="_blank">
+    {{ s.staff_name }}
+  </a>
+</td>
+
+                  <td>{{ s.mobile }}</td></tr>
+            {% empty %}
+              <tr><td colspan="3" class="text-center">No absent staff yesterday</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Staff Credit Modal -->
+<div class="modal fade" id="modalStaffCredit" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Today Staff Credit Entries</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0">
+        <table class="table table-bordered table-striped m-0">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Amount</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in today_staff_credit %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+
+                                    <td>
+  <a href="{% url 'attendance_summary' %}?staff={{ c.staff.id }}" target="_blank">
+    {{ c.staff.staff_name }}
+  </a>
+</td>
+
+
+
+                <td>{{ c.amount|floatformat:2 }}</td>
+                <td>{{ c.notes }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4" class="text-center">No credit entries today</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+          {% if today_staff_credit %}
+          <tfoot class="table-light">
+            <tr>
+              <th colspan="2" class="text-end">Grand Total</th>
+              <th colspan="2">
+                {{ today_staff_credit_total|floatformat:2 }}
+              </th>
+            </tr>
+          </tfoot>
+          {% endif %}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="row">
+    <div class="col-xl-6 col-sm-12 col-12 d-flex">
+        <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Purchase & Sales</h5>
+
+
+            </div>
+                <div class="card-body">
+    <canvas id="monthlySalesChart" height="200"></canvas>
+</div>
+        </div>
+    </div>
+    <div class="col-xl-6 col-sm-12 col-12 d-flex">
+        <div class="card flex-fill default-cover mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">Recent Purchase</h4>
+                <div class="view-all-link">
+                    <a href="{% url 'purchase' %}" class="view-all d-flex align-items-center">
+                        View All<span class="ps-2 d-flex align-items-center"><i data-feather="arrow-right"
+                                                                                class="feather-16"></i></span>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive dataview">
+                    <div class="overflow-auto" style="max-height: 400px;">
+                        <table id="recent_purchase" class="table dashboard-recent-products">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Date</th>
+                                <th>Supplier</th>
+                                <th>Amount</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+{% for data in recent_purchase %}
+<tr>
+    <td>#{{ data.id|short_uuid }}</td>
+    <td>{{ data.transaction_date|date:'d/m/Y' }}</td>
+    <td>
+        <a class="fw-bold" href="{% url 'purchase_add_stock' data.id %}">
+            {{ data.supplier.supplier_name }}
+        </a>
+    </td>
+    <td class="text-end">{{ data.payable_amount|money:MONEY_DATA }}</td>
+    <td class="table-action text-center">
+        {% if data.finish == 1 %}
+        <i class="fas fa-lg fa-fw me-2 fa-check text-theme"></i>
+        {% else %}
+        <i class="fas fa-lg fa-fw me-2 fa-pause-circle text-theme"></i>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">Upcoming Payments</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive dataview">
+
+
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Supplier</th>
+                        <th>Transaction No</th>
+                        <th class="text-end">Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in upcoming_cheque_payments %}
+<tr>
+    <td>
+        {% if user.is_superuser %}
+        <a href="{% url 'edit_payment' payment.id %}" class="fw-bold text-primary" target="_blank">
+            #{{ payment.id|short_uuid }}
+        </a>
+        {% else %}
+        #{{ payment.id|short_uuid }}
+        {% endif %}
+    </td>
+    <td>{{ payment.transaction_date|date:"d/m/Y" }}</td>
+    <td>
+        <a href="{% url 'supplier_account' payment.supplier.id %}" target="_blank">
+            {{ payment.supplier.supplier_name }}
+        </a>
+    </td>
+    <td>{{ payment.tran_no }}</td>
+    <td class="text-end">{{ payment.amount|money:MONEY_DATA }}</td>
+    <td>
+        {% if payment.cheque_cleared %}
+        <span class="badge bg-success">Cleared</span>
+        {% else %}
+        <span class="badge bg-warning text-dark">Pending</span>
+        {% endif %}
+    </td>
+</tr>
+{% empty %}
+<tr><td colspan="6" class="text-center">No upcoming cheque payments</td></tr>
+{% endfor %}
+
+                </tbody>
+            </table>
+
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+
+{% block footer %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document.getElementById('monthlySalesChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [
+                {
+                    label: 'Sales (100%)',
+                    data: {{ sales_totals|safe }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderRadius: 5,
+                },
+                {
+                    label: 'Purchase (% of Sales)',
+                    data: {{ purchase_totals|safe }},
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderRadius: 5,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 120,
+                    ticks: {
+                        callback: function (value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Purchase % of Sales - Last 3 Months'
+                }
+            }
+        }
+    });
+});
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.feather) feather.replace();
+  });
+</script>
+
+
+
+
+<script>
+    /*
+$(document).ready(function () {
+    if (!sessionStorage.getItem("todoShown")) {
+        $('#pendingTasksModal').modal('show');
+        sessionStorage.setItem("todoShown", true);
+    }
+});
+    */
+</script>
+
+<script>
+$(document).ready(function () {
+    const modalKey = "todoReminderTimestamp";
+
+    function shouldShowModal() {
+        const storedTime = localStorage.getItem(modalKey);
+        if (!storedTime) return true;
+
+        const now = new Date().getTime();
+        const diffInMs = now - parseInt(storedTime);
+        const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
+
+        return diffInMs >= oneHour;
+    }
+
+    // Show modal if allowed
+    if (shouldShowModal()) {
+        $('#pendingTasksModal').modal('show');
+    }
+
+    // On "Remind Me Later"
+    $('#remindLaterBtn').on('click', function () {
+        const now = new Date().getTime();
+        localStorage.setItem(modalKey, now);
+        $('#pendingTasksModal').modal('hide');
+    });
+});
+</script>
+
+
+
+{% endblock footer %}
