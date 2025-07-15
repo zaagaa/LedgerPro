@@ -1,0 +1,107 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+<h4 class="mb-4">Weekly Incentive Dashboard</h4>
+
+<form method="get" class="mb-3 row g-2 align-items-end">
+  <div class="col-auto">
+    <label class="form-label">Select Week</label>
+    <input type="date" name="week" class="form-control" value="{{ week_start|date:'Y-m-d' }}">
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-primary">View</button>
+  </div>
+</form>
+
+<div class="card border-primary">
+  <div class="card-header bg-primary text-white">
+    <strong>Week: {{ week_start|date:"M d" }} – {{ week_end|date:"M d, Y" }}</strong>
+  </div>
+  <div class="card-body">
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Progress</label>
+      <div class="progress" style="height: 25px;">
+        <div class="progress-bar bg-success" role="progressbar"
+             style="width: {{ percent|floatformat:2 }}%;"
+             aria-valuenow="{{ percent|floatformat:2 }}" aria-valuemin="0" aria-valuemax="400">
+          {{ percent|floatformat:2 }}%
+        </div>
+      </div>
+    </div>
+
+    {% if total_incentive > 0 %}
+    <p class="mt-3">
+      🎯 <strong>Incentive Earned:</strong> ₹{{ total_incentive }} <br>
+      🚀 <strong>Booster Level:</strong> {{ current_booster }} <br>
+      📈 <strong>Next Booster:</strong> {{ next_booster }} (₹{{ next_booster }} per %)
+    </p>
+
+    <hr class="my-4">
+    <h5 class="mb-3">Incentive Breakdown</h5>
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead class="table-light">
+          <tr>
+            <th>Slab % Range</th>
+            <th>Booster</th>
+            <th>% Earned</th>
+            <th>₹ / %</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in incentive_breakdown %}
+          <tr>
+            <td>{{ row.range }}</td>
+            <td>{{ row.booster }}</td>
+            <td>{{ row.percent }}</td>
+            <td>₹{{ row.rate }}</td>
+            <td>₹{{ row.subtotal }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr class="table-secondary">
+            <th colspan="4" class="text-end">Total Incentive</th>
+            <th>₹{{ total_incentive }}</th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    {% else %}
+    <p class="mt-3 text-muted">
+      💡 Reach above 0% to start earning incentives. You're currently at {{ percent|floatformat:2 }}%.
+    </p>
+    {% endif %}
+
+    <small class="text-muted">Note: Each slab range applies a multiplier (booster) to each percentage point you cross.</small>
+
+    <hr class="my-4">
+    <h5 class="mb-3">Booster Slab Table</h5>
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead class="table-light">
+          <tr>
+            <th>% Range</th>
+            <th>Booster Level</th>
+            <th>Incentive per %</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>0% – 50%</td><td>1</td><td>₹1</td></tr>
+          <tr><td>51% – 100%</td><td>2</td><td>₹2</td></tr>
+          <tr><td>101% – 150%</td><td>3</td><td>₹3</td></tr>
+          <tr><td>151% – 200%</td><td>4</td><td>₹4</td></tr>
+          <tr><td>201% – 250%</td><td>5</td><td>₹5</td></tr>
+          <tr><td>251% – 300%</td><td>6</td><td>₹6</td></tr>
+          <tr><td>301% – 350%</td><td>7</td><td>₹7</td></tr>
+          <tr><td>351%+</td><td>8</td><td>₹8</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
