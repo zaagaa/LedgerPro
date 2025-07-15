@@ -1,0 +1,111 @@
+{% extends 'layouts2/main.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+    <div class="row">
+    <div class="col-lg-12">
+    <h4 class="mb-4">Year-wise Sales Summary</h4>
+
+    <form method="get" class="mb-3 row g-2 align-items-end">
+        <div class="col-md-2">
+            <label for="start_month">Start Month:</label>
+            <select name="start_month" class="form-select">
+                {% for num, name in months %}
+                    <option value="{{ num }}" {% if start_month|stringformat:"i" == num|stringformat:"i" %}selected{% endif %}>
+                        {{ name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="from_year">From Year:</label>
+            <input type="number" name="from_year" class="form-control" value="{{ from_year }}" min="2000" max="2100">
+        </div>
+        <div class="col-md-3">
+            <label for="to_year">To Year:</label>
+            <input type="number" name="to_year" class="form-control" value="{{ to_year }}" min="2000" max="2100">
+        </div>
+        <div class="col-md-3">
+            <label for="company_id">Select Company:</label>
+            <select name="company_id" class="form-select">
+                <option value="all" {% if selected_company_id == "all" %}selected{% endif %}>All Companies</option>
+                {% for company in companies %}
+                    <option value="{{ company.id }}" {% if company.id|stringformat:"s" == selected_company_id|stringformat:"s" %}selected{% endif %}>
+                        {{ company.company_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary w-100">Show</button>
+        </div>
+    </form>
+    </div></div>
+
+    <div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+    <!-- Chart -->
+    <canvas id="salesChart" height="100"></canvas>
+
+                                </div></div></div></div>
+
+                <div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+    <!-- Table -->
+    <table class="table table-bordered table-striped mt-4">
+        <thead class="table-light">
+            <tr>
+                <th>Year</th>
+                <th>Total Sales</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in sales_by_year %}
+                <tr>
+                    <td>{{ row.label }}</td>
+                    <td>{{ row.total_sales|floatformat:2|intcomma_indian }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="2" class="text-center">No data found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+                </div></div></div></div>
+
+
+{% endblock %}
+
+{% block footer %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    const salesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [{
+                label: 'Total Sales',
+                data: {{ chart_sales|safe }},
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                title: { display: true, text: 'Year-wise Total Sales' }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+{% endblock %}
