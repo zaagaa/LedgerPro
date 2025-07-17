@@ -1,0 +1,185 @@
+{% extends 'layouts2/main.html' %}
+{% load custom_filters %}
+{% block content %}
+
+<!-- Button -->
+<button class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#expenseModal">Add Cash Flow Expense</button>
+
+<!-- Modal -->
+<div class="modal fade" id="expenseModal" tabindex="-1" aria-labelledby="expenseModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="expenseForm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="expenseModalLabel">Add Cash Flow Expense</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% csrf_token %}
+          <input type="hidden" name="expense_id" id="expense_id">
+          <div class="mb-2">
+            <label>Date</label>
+            <input type="date" name="entry_date" id="entry_date" class="form-control" required>
+          </div>
+          <div class="mb-2">
+            <label>Amount</label>
+            <input type="number" name="amount" id="amount" class="form-control" required>
+          </div>
+          <div class="mb-2">
+            <label>Description</label>
+            <input type="text" name="description" id="description" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-danger" id="deleteButton" style="display: none;">Delete</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4>Cash Flow Summary</h4>
+
+                <form method="get" class="row row-cols-lg-auto g-3 align-items-end mb-3">
+                    <div class="col">
+                        <label class="form-label mb-1">Company</label>
+                        <select name="company_id" class="form-select">
+                            <option value="" {% if not selected_company_id %}selected{% endif %}>All Companies</option>
+                            {% for company in companies %}
+                                <option value="{{ company.id }}" {% if company.id == selected_company_id %}selected{% endif %}>
+                                    {{ company.company_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label mb-1">From</label>
+                        <input type="date" name="from_date" class="form-control" value="{{ from_date }}" min="2025-05-01">
+                    </div>
+                    <div class="col">
+                        <label class="form-label mb-1">To</label>
+                        <input type="date" name="to_date" class="form-control" value="{{ to_date }}" min="2025-05-01">
+                    </div>
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </div>
+                </form>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Cash Taken</th>
+                            <th>Bank Deposit</th>
+                            <th>Other Expenses</th>
+                            <th>Balance in Hand</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            <td>{{ row.date }}</td>
+                            <td>
+                                {% for exp in row.expense_entries %}
+                                    <a href="#" onclick="editExpense('{{ exp.id }}', '{{ exp.entry_date|date:'Y-m-d' }}', '{{ exp.amount }}', '{{ exp.description|escapejs }}'); return false;" style="text-decoration: underline; color: #0d6efd;">
+    {{ exp.description }} (₹{{ exp.amount|floatformat:2 }})
+</a>&nbsp;&nbsp;
+                                {% endfor %}
+                                {{ row.description|truncatechars:60 }}
+                            </td>
+                            <td class="text-end">{{ row.credit|floatformat:2|intcomma_indian }}</td>
+                            <td class="text-end">{{ row.debit|floatformat:2|intcomma_indian }}</td>
+                            <td class="text-end">{{ row.expense|floatformat:2|intcomma_indian }}</td>
+                            <td class="text-end">{{ row.balance|floatformat:2|intcomma_indian }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="fw-bold table-secondary">
+                            <td colspan="2" class="text-end">Grand Totals:</td>
+                            <td class="text-end">{{ total_credit|floatformat:2|intcomma_indian }}</td>
+                            <td class="text-end">{{ total_debit|floatformat:2|intcomma_indian }}</td>
+                            <td class="text-end">{{ total_expense|floatformat:2|intcomma_indian }}</td>
+                            <td class="text-end">{{ final_balance|floatformat:2|intcomma_indian }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script>
+  $("#expenseForm").on("submit", function (e) {
+    e.preventDefault();
+    $.ajax({
+      type: "POST",
+      url: "{% url 'add_cash_flow_expense' %}",
+      data: $(this).serialize(),
+      success: function (response) {
+        if (response.success) {
+          alert("Expense saved");
+          $('#expenseForm')[0].reset();
+          $('#expense_id').val('');
+          $('#deleteButton').hide();
+          $('#entry_date').val(new Date().toISOString().split('T')[0]);
+          $('#expenseModal').modal('hide');
+          location.reload();
+        } else {
+          alert("Error saving expense");
+        }
+      }
+    });
+  });
+
+  function editExpense(id, date, amount, desc) {
+    $('#expense_id').val(id);
+    $('#entry_date').val(date);
+    $('#amount').val(amount);
+    $('#description').val(desc);
+    $('#expenseModal').modal('show');
+    $('#deleteButton').show().off('click').on('click', function () {
+      deleteExpense(id);
+    });
+  }
+
+  function deleteExpense(id) {
+    if (confirm("Are you sure you want to delete this expense?")) {
+      $.ajax({
+        type: "POST",
+        url: "{% url 'delete_cash_flow_expense' %}",
+        data: {
+          'expense_id': id,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function (response) {
+          if (response.success) {
+            alert("Deleted successfully");
+            location.reload();
+          } else {
+            alert("Delete failed");
+          }
+        }
+      });
+    }
+  }
+
+  // Set today's date when modal opens (for add new)
+  $('#expenseModal').on('show.bs.modal', function (e) {
+    if (!$('#expense_id').val()) {
+      const today = new Date().toISOString().split('T')[0];
+      $('#entry_date').val(today);
+      $('#amount').val('');
+      $('#description').val('');
+      $('#deleteButton').hide();
+    }
+  });
+</script>
+{% endblock footer %}
