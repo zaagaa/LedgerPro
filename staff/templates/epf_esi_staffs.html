@@ -1,0 +1,181 @@
+{% extends 'layouts2/main.html' %}
+{% load custom_filters %}
+
+
+{% block content %}
+<div id="print-area">
+
+<h4 class="page-title mb-4">EPF & ESI Monthly Report</h4>
+
+
+<h4 class="mb-1">{{ company.company_name }}</h4>
+<p class="text-muted mb-3">Month: <strong>{{ month_label }}</strong></p>
+
+
+<div class="card mb-4">
+  <div class="card-body table-responsive">
+<form method="get" class="mb-3 d-flex align-items-center non-print">
+  <label for="monthPicker" class="me-2 fw-bold">Select Month:</label>
+  <input type="text" name="month" class="form-control monthPicker w-auto me-2"
+         value="{{ month }}">
+  <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+</form>
+
+
+
+
+    <table class="table table-bordered table-hover table-sm">
+  <thead class="table-light">
+    <tr>
+      <th>Sl.</th>
+      <th>Staff Name</th>
+      <th>Salary</th>
+      <th>Aadhaar No.</th>
+      <th>EPF - UAN</th>
+      <th>ESI - IP</th>
+      <th>Holiday</th>
+      <th>Worked</th>
+      <th>Total Days</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in staff_list %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ item.staff.staff_name }}</td>
+        <td>{{ item.staff.epf_salary|floatformat:2 }}</td>
+        <td>{{ item.staff.aadhar_number }}</td>
+        <td>{{ item.staff.epf_number }}</td>
+        <td>{{ item.staff.esi_number }}</td>
+        <td>{{ item.holidays }} Days</td>
+<td>{{ item.working_days|clean_float }} Days</td>
+<td>{{ item.total_days|clean_float }} Days</td>
+
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="9" class="text-center text-muted">No staff with EPF salary.</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+  </div>
+</div>
+
+<div class="card mt-4">
+  <div class="card-body">
+    <h5 class="mb-3">Holiday List</h5>
+    <table class="table table-sm table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th style="width: 60px;">#</th>
+          <th>Date</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for h in holiday_list %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ h.date|date:"d/m/Y" }}</td>
+          <td>{{ h.reason }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+</div>
+<style>
+  #print-area {
+    font-family: "Helvetica", sans-serif;
+    font-size: 11px;
+    color: #000;
+  }
+
+  #print-area table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    table-layout: auto; /*  Dynamic column widths based on content */
+  }
+
+  #print-area th,
+  #print-area td {
+    border: 1px solid #888;
+    padding: 6px 8px;
+    vertical-align: middle;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  #print-area th {
+    background-color: #f1f1f1;
+    font-weight: bold;
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  #print-area tr:nth-child(even) td {
+    background-color: #fcfcfc;
+  }
+
+  .text-center { text-align: center; }
+  .text-right  { text-align: right; }
+</style>
+
+
+
+
+
+<button id="exportToPDF" class="btn btn-danger btn-sm">Export This Page</button>
+
+{% endblock %}
+
+
+
+{% block footer %}
+<script>
+document.getElementById("exportToPDF").addEventListener("click", function () {
+    // Clone only the printable content
+    const printable = document.getElementById("print-area").cloneNode(true);
+
+    // Optional: clean out any non-print extras inside
+    printable.querySelectorAll("#non-print-area, .non-print").forEach(el => el.remove());
+
+    const htmlContent = `
+    <html>
+      <head>
+        <style>
+          body { font-family: sans-serif; font-size: 12px; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid #000; padding: 5px; }
+        </style>
+      </head>
+      <body>
+        ${printable.outerHTML}
+      </body>
+    </html>`;
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "{% url 'dynamic_html_to_pdf' %}";
+    form.target = "_blank";
+
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "html";
+    input.value = htmlContent;
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
+    form.remove();
+});
+</script>
+
+{% endblock footer %}

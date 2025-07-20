@@ -1,0 +1,86 @@
+{% extends "layouts2/main.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Switch Database</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" id="dbForm">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label">Select Database Engine</label>
+                        <select name="engine" id="id_engine" class="form-select" required>
+                            {% if current_engine != 'sqlite3' %}
+                            <option value="sqlite3">SQLite (Default)</option>
+                            {% endif %}
+                            {% if current_engine != 'postgresql' %}
+                            <option value="postgresql">PostgreSQL</option>
+                            {% endif %}
+                            {% if current_engine != 'mysql' %}
+                            <option value="mysql">MySQL</option>
+                            {% endif %}
+                        </select>
+                    </div>
+
+                    <div class="db-fields">
+                        <div class="mb-3">
+                            <label class="form-label">Database Name</label>
+                            <input type="text" name="name" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">User</label>
+                            <input type="text" name="user" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Host</label>
+                            <input type="text" name="host" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Port</label>
+                            <input type="text" name="port" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="copy_data" id="copy_data">
+                        <label class="form-check-label" for="copy_data">
+                            Transfer existing data to new database
+                        </label>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-success">Switch & Migrate</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script>
+    function toggleDbFields() {
+        const selected = document.getElementById("id_engine").value;
+        const dbFields = document.querySelector(".db-fields");
+        if (selected === "sqlite3") {
+            dbFields.style.display = "none";
+        } else {
+            dbFields.style.display = "block";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const engineSelect = document.getElementById("id_engine");
+        engineSelect.addEventListener("change", toggleDbFields);
+        toggleDbFields();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% load form_tags %}
+
+<form method="POST" id="editTaxSlabForm">
+  {% csrf_token %}
+  <div class="row g-3">
+    <div class="col-md-4">
+      <label class="form-label">Name</label>
+      {{ form.name|add_class:"form-control" }}
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Tax Rate</label>
+      {{ form.tax_rate|add_class:"form-control" }}
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Trigger Amount</label>
+      {{ form.trigger_amount|add_class:"form-control" }}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Inventories</label>
+      {{ form.inventories|add_class:"form-select select2" }}
+    </div>
+  </div>
+  <div class="mt-3">
+    <button type="submit" class="btn btn-success">Update</button>
+  </div>
+</form>
+
+<script>
+  $("#editTaxSlabForm").submit(function (e) {
+    e.preventDefault();
+
+    $.ajax({
+      type: "POST",
+      url: "{% url 'edit_tax_slab' slab.id %}",
+      data: $(this).serialize(),
+      success: function (data) {
+        if (data.success) {
+          location.reload();
+        } else {
+          $("#editSlabModalBody").html(data.html);
+        }
+      }
+    });
+  });
+</script>
