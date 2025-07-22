@@ -1,0 +1,44 @@
+{% extends 'layouts2/main.html' %}
+{% load humanize %}
+
+{% block content %}
+
+<h4 class="page-title mb-4">Inventory</h4>
+
+<div class="row">
+
+
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <table class="table">
+
+{% for data in supplier_list %}
+
+                    <tr><td>{{ forloop.counter }}</td><td>{{ data.supplier_name }}</td>
+                        <td class="text-end">₹ {{ data.balance | floatformat:2|intcomma }}</td></tr>
+
+                {% endfor %}
+
+                    <tr><th></th><th></th><th>{{total_balance}}</th></tr>
+
+                </table>
+
+
+            </div>
+            <!-- BEGIN card-arrow -->
+            <div class="card-arrow">
+                <div class="card-arrow-top-left"></div>
+                <div class="card-arrow-top-right"></div>
+                <div class="card-arrow-bottom-left"></div>
+                <div class="card-arrow-bottom-right"></div>
+            </div>
+            <!-- END card-arrow -->
+        </div>
+    </div>
+
+
+</div>
+
+
+{% endblock content %}

@@ -1,0 +1,173 @@
+ {% load static %}
+ {% if '/pos/' in request.path %}
+<style>
+.has-submenu {
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+/* Remove extra spacing from main links */
+.has-submenu > a {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+/* Remove spacing from feather icons */
+.has-submenu > a i {
+    margin-right: 8px;
+}
+
+/* Dropdown arrow */
+.has-submenu > a:after {
+    content: " ▾";
+    margin-left: 6px;
+    font-size: 0.8em;
+    opacity: 0.6;
+}
+
+/* Submenu styling */
+.submenu {
+    display: none;
+    position: absolute;
+    top: calc(100% - 7px); /* ✅ Snap it closer to the parent */
+    left: 0;
+    padding: 6px 0;
+    margin: 0;
+    min-width: 180px;
+    list-style: none;
+    background-color: #1c2340;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    z-index: 9999;
+}
+
+/* Show submenu on hover */
+
+
+/* Submenu link styles */
+.submenu li a {
+    display: block;
+    padding: 8px 16px;
+    color: #fff;
+    font-size: 14px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+/* Submenu hover style */
+.submenu li a:hover {
+    background-color: #2d3a60;
+}
+</style>
+
+
+
+ <div class="sidebar horizontal-sidebar">
+    <div id="sidebar-menu-3" class="sidebar-menu">
+        <ul class="nav">
+
+            <!-- Simple link -->
+            <li>
+                <a href="{% url 'pos' %}"><i data-feather="grid"></i><span> Home</span></a>
+            </li>
+            <li>
+                <a href="{% url 'pos' %}" target="_blank"><i data-feather="grid"></i><span> New Tab</span></a>
+            </li>
+
+            <!-- Submenu example -->
+            <li class="has-submenu">
+                <a href="#"><i data-feather="grid"></i><span> Billing</span></a>
+                <ul class="submenu">
+                    <li><a href="{% url 'pos_bill_copy' %}">Bill Copy</a></li>
+                    <li><a href="{% url 'pos_statement' %}">Statement</a></li>
+
+                    <li><a href="{% url 'pos_bill_list' %}">Bill List</a></li>
+                </ul>
+            </li>
+
+            <!-- Submenu example -->
+            <li class="has-submenu">
+                <a href="#"><i data-feather="grid"></i><span> Finance</span></a>
+                <ul class="submenu">
+                    <li><a href="{% url 'pos_supplier_payment' %}">Cash Payment</a></li>
+                    <li><a href="{% url 'pos_add_staff_credit' %}">Staff Credit</a></li>
+                    <li><a href="{% url 'pos_expenses' %}">Expenses</a></li>
+                    <li><a href="{% url 'pos_bundle' %}">Bundle</a></li>
+                </ul>
+            </li>
+
+
+            <li class="has-submenu">
+                <a href="#"><i data-feather="grid"></i><span> Others</span></a>
+                <ul class="submenu">
+                    <li><a href="{% url 'staff_leave_booking' %}">Leave Booking</a></li>
+                    <li><a href="{% url 'customer_gift_otp' %}">Gift OTP</a></li>
+                    <li><a href="{% static 'agent.exe' %}">Download Printer Agent</a></li>
+                    <li><a href="{% static 'client_setup.exe' %}">Download Client Installer</a></li>
+                </ul>
+            </li>
+            <!-- Single link -->
+
+
+            <li>
+                <a href="{% url 'dashboard' %}"><i data-feather="grid"></i><span> Admin Panel</span></a>
+            </li>
+
+        </ul>
+    </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    // Toggle submenu on click
+    $('.has-submenu > a').on('click', function (e) {
+        e.preventDefault();
+        var $submenu = $(this).next('.submenu');
+
+        // Close other submenus
+        $('.submenu').not($submenu).slideUp();
+        $submenu.slideToggle();
+        e.stopPropagation();
+    });
+
+    // Close submenu on outside click
+    $(document).on('click', function () {
+        $('.submenu').slideUp();
+    });
+
+    // Prevent closing when clicking inside submenu
+    $('.submenu').on('click', function (e) {
+        e.stopPropagation();
+    });
+});
+</script>
+
+
+ {% endif %}
+
+ {% if '/customer/' in request.path %}
+ <div class="sidebar horizontal-sidebar">
+        <div id="sidebar-menu-3" class="sidebar-menu">
+            <ul class="nav">
+                <li>
+                    <a href="{% url 'customer_point' %}"><i data-feather="grid"></i><span> Home</span></a>
+                </li>
+                <li>
+                    <a href="{% url 'customer_activities' %}"><i data-feather="grid"></i><span> Recent Activities</span></a>
+                </li>
+
+                <li>
+                    <a href="{% url 'update_customer_name' %}"><i data-feather="grid"></i><span> Change Customer Name</span></a>
+                </li>
+
+                <li>
+                    <a href="{% url 'customer_gift_otp' %}"><i data-feather="grid"></i><span> Gift OTP</span></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+ {% endif %}
