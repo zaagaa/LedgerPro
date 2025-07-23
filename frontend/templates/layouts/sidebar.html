@@ -1,0 +1,236 @@
+<!-- BEGIN #sidebar -->
+<div id="sidebar" class="app-sidebar">
+    <!-- BEGIN scrollbar -->
+    <div class="app-sidebar-content" data-scrollbar="true" data-height="100%">
+        <!-- BEGIN menu -->
+        <div class="menu">
+            <div class="menu-header">Navigation</div>
+            <div class="menu-item active">
+                <a href="{% url 'dashboard' %}" class="menu-link">
+                    <span class="menu-icon"><i class="bi bi-cpu"></i></span>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </div>
+
+            <div class="menu-item">
+                <a href="{% url 'pos' %}" class="menu-link">
+                    <span class="menu-icon"><i class="bi bi-cpu"></i></span>
+                    <span class="menu-text">Point of Sale</span>
+                </a>
+            </div>
+
+            <div class="menu-item has-sub">
+                <a href="#" class="menu-link">
+							<span class="menu-icon">
+								<i class="bi bi-envelope"></i>
+							</span>
+                    <span class="menu-text">Company</span>
+                    <span class="menu-caret"><b class="caret"></b></span>
+                </a>
+                <div class="menu-submenu">
+
+
+                    {% for company in COMPANY_LIST %}
+
+                    <div class="menu-item">
+                        <a href="{% url 'dashboard_company' company.id %}" class="menu-link">
+                            <span class="menu-text">{{ company.company_name }}</span>
+                        </a>
+                    </div>
+
+
+                    {% endfor %}
+
+
+                </div>
+            </div>
+            <div class="menu-header">General</div>
+
+
+            <div class="menu-item has-sub">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon"><i class="bi bi-controller"></i></span>
+                    <span class="menu-text">{{ request.session.TAX_CODE_NAME }} Code</span>
+                    <span class="menu-caret"><b class="caret"></b></span>
+                </a>
+                <div class="menu-submenu">
+                    <div class="menu-item">
+                        <a href="{% url 'tax_code' %}" class="menu-link">
+                            <span class="menu-text">{{ request.session.TAX_CODE_NAME }} Code</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="menu-item has-sub">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon"><i class="bi bi-controller"></i></span>
+                    <span class="menu-text">Inventory</span>
+                    <span class="menu-caret"><b class="caret"></b></span>
+                </a>
+                <div class="menu-submenu">
+                    <div class="menu-item">
+                        <a href="{% url 'inventory' %}" class="menu-link">
+                            <span class="menu-text">Inventory</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item has-sub">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon"><i class="bi bi-controller"></i></span>
+                    <span class="menu-text">Attribute</span>
+                    <span class="menu-caret"><b class="caret"></b></span>
+                </a>
+                <div class="menu-submenu">
+                    <div class="menu-item">
+                        <a href="{% url 'attribute' %}" class="menu-link">
+                            <span class="menu-text">Attribute</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="menu-header">Accounts</div>
+
+            <div class="menu-item has-sub">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon"><i class="bi bi-controller"></i></span>
+                    <span class="menu-text">Company</span>
+                    <span class="menu-caret"><b class="caret"></b></span>
+                </a>
+                <div class="menu-submenu">
+                    <div class="menu-item">
+                        <a href="{% url 'company_index' %}" class="menu-link">
+                            <span class="menu-text">Create Company</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="menu-item has-sub">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon"><i class="bi bi-controller"></i></span>
+                    <span class="menu-text">Supplier</span>
+                    <span class="menu-caret"><b class="caret"></b></span>
+                </a>
+                <div class="menu-submenu">
+                    <div class="menu-item">
+                        <a href="{% url 'supplier' %}" class="menu-link">
+                            <span class="menu-text">Create Supplier</span>
+                        </a>
+                    </div>
+                                        <div class="menu-item">
+                        <a href="{% url 'supplier_account' 'home' %}" class="menu-link">
+                            <span class="menu-text">Supplier Accounts</span>
+                        </a>
+                    </div>
+                         <div class="menu-item">
+                        <a href="{% url 'supplier_current_balance' %}" class="menu-link">
+                            <span class="menu-text">Current Balance</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="menu-item has-sub">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon"><i class="bi bi-controller"></i></span>
+                    <span class="menu-text">Customer</span>
+                    <span class="menu-caret"><b class="caret"></b></span>
+                </a>
+                <div class="menu-submenu">
+                    <div class="menu-item">
+                        <a href="#" class="menu-link">
+                            <span class="menu-text">Create Customer</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="menu-item has-sub">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon"><i class="bi bi-grid-3x3"></i></span>
+                    <span class="menu-text">Stock</span>
+                    <span class="menu-caret"><b class="caret"></b></span>
+                </a>
+                <div class="menu-submenu">
+
+                    <div class="menu-item">
+                        <a href="{% url 'purchase' %}" class="menu-link">
+                            <span class="menu-text">Purchase</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="menu-item has-sub">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon"><i class="bi bi-pie-chart"></i></span>
+                    <span class="menu-text">Setting</span>
+                    <span class="menu-caret"><b class="caret"></b></span>
+                </a>
+                <div class="menu-submenu">
+                    <div class="menu-item">
+                        <a href="{% url 'general_setting' %}" class="menu-link">
+                            <span class="menu-text">General Setting</span>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="{% url 'pos_setting' %}" class="menu-link">
+                            <span class="menu-text">Pos Setting</span>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            	<div class="menu-divider"></div>
+					<div class="menu-header">Users</div>
+					<div class="menu-item">
+						<a href="#" class="menu-link">
+							<span class="menu-icon"><i class="bi bi-people"></i></span>
+							<span class="menu-text">Profile</span>
+						</a>
+					</div>
+					<div class="menu-item">
+						<a href="#" class="menu-link">
+							<span class="menu-icon"><i class="bi bi-calendar4"></i></span>
+							<span class="menu-text">Calendar</span>
+						</a>
+					</div>
+					<div class="menu-item active">
+						<a href="settings.html" class="menu-link">
+							<span class="menu-icon"><i class="bi bi-gear"></i></span>
+							<span class="menu-text">Settings</span>
+						</a>
+					</div>
+					<div class="menu-item">
+						<a href="#" class="menu-link">
+							<span class="menu-icon"><i class="bi bi-gem"></i></span>
+							<span class="menu-text">Helper</span>
+						</a>
+					</div>
+
+
+        </div>
+        <!-- END menu -->
+        <div class="p-3 px-4 mt-auto">
+            <a href="#" class="btn d-block btn-outline-theme">
+                <i class="fa fa-code-branch me-2 ms-n2 opacity-5"></i> Ledger PRO 4.01
+            </a>
+        </div>
+    </div>
+    <!-- END scrollbar -->
+</div>
+<!-- END #sidebar -->
+
+<!-- BEGIN mobile-sidebar-backdrop -->
+<button class="app-sidebar-mobile-backdrop" data-toggle-target=".app"
+        data-toggle-class="app-sidebar-mobile-toggled"></button>
+<!-- END mobile-sidebar-backdrop -->

@@ -1,0 +1,63 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h4 class="mb-3">All Cash Flow Expenses</h4>
+
+        <form method="get" class="row row-cols-lg-auto g-3 align-items-end mb-3">
+          <div class="col">
+            <label class="form-label mb-1">Company</label>
+            <select name="company_id" class="form-select">
+              <option value="">All Companies</option>
+              {% for company in companies %}
+                <option value="{{ company.id }}" {% if company.id == selected_company_id %}selected{% endif %}>{{ company.company_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col">
+            <label class="form-label mb-1">From</label>
+            <input type="date" name="from_date" class="form-control" value="{{ from_date }}">
+          </div>
+          <div class="col">
+            <label class="form-label mb-1">To</label>
+            <input type="date" name="to_date" class="form-control" value="{{ to_date }}">
+          </div>
+          <div class="col">
+            <button type="submit" class="btn btn-primary">Filter</button>
+          </div>
+        </form>
+
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Company</th>
+              <th>User</th>
+              <th>Description</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for exp in expenses %}
+            <tr>
+              <td>{{ exp.entry_date|date:"d-m-Y" }}</td>
+              <td>{{ exp.company.company_name }}</td>
+              <td>{{ exp.user.username }}</td>
+              <td>{{ exp.description }}</td>
+              <td>{{ exp.amount|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+            <tr class="fw-bold">
+              <td colspan="4" class="text-end">Total</td>
+              <td>{{ total_amount|floatformat:2 }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-body">
+
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+
+                    <div class="form-group">
+                        <label for="id_country">Country</label>
+                        {{ form.country }}
+                    </div>
+
+                    <!-- State dropdown, initially hidden -->
+                    <div class="form-group" id="state_dropdown" style="display:none;">
+                        <label for="id_state">State</label>
+                        <select id="id_state" name="state" class="form-control">
+                            <!-- States will be dynamically added here -->
+                        </select>
+                    </div>
+
+                    <!-- State text input, initially visible -->
+                    <div class="form-group" id="state_input" style="display:none;">
+                        <label for="id_state_input">State</label>
+                        <input type="text" name="state" id="id_state_input" class="form-control" placeholder="Enter State">
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <a href="{% url 'company_index' %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block footer %}
+
+<script>
+    $(document).ready(function() {
+        $('#id_country').change(function() {
+            var selectedCountry = $(this).val();
+
+            if (selectedCountry === 'IN') {  // India selected
+                // Show the state dropdown and hide the text input
+                $('#state_dropdown').show();
+                $('#state_input').hide();
+
+                // Fetch states for India
+                $.ajax({
+                    url: '{% url "get_states" %}',  // URL to your view that fetches states based on country
+                    data: {
+                        'country_code': selectedCountry
+                    },
+                    success: function(response) {
+                        // Clear the state dropdown
+                        $('#id_state').empty();
+
+                        // Add a default option
+                        $('#id_state').append('<option value="">Select State</option>');
+
+                        // Add the states to the dropdown
+                        $.each(response.states, function(index, state) {
+                            $('#id_state').append('<option value="' + state.code + '">' + state.name + '</option>');
+                        });
+                    }
+                });
+            } else {  // Other countries selected
+                // Hide the state dropdown and show the text input
+                $('#state_dropdown').hide();
+                $('#state_input').show();
+            }
+        });
+
+        // Trigger the change event on page load to ensure the correct state is displayed
+        $('#id_country').trigger('change');
+    });
+</script>
+
+
+{% endblock footer %}
