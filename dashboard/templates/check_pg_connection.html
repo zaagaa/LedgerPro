@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LedgerPRO - PostgreSQL Setup</title>
+
+  <link rel="stylesheet" href="{% static 'bootstrap/assets/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'bootstrap/assets/plugins/fontawesome/css/all.min.css' %}">
+  <script src="{% static 'bootstrap/assets/js/jquery-3.7.1.min.js' %}"></script>
+
+  <style>
+    body {
+      background: #f5f7fa;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .auth-container {
+      padding-top: 40px;
+      padding-bottom: 40px;
+    }
+    .card-style {
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+    }
+    .form-control {
+      background-color: #f1f1f1;
+    }
+    .title {
+      font-weight: 600;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+    .btn-primary {
+      background-color: #ffa500;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #e69500;
+    }
+    .brand-logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .brand-logo img {
+      height: 70px;
+    }
+    .footer {
+      text-align: center;
+      color: #aaa;
+      font-size: 12px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container auth-container">
+
+  <!-- Logo Header -->
+  <div class="brand-logo pb-2">
+    <img src="{% static 'bootstrap/assets/img/logo.png' %}" alt="LEDGER PRO">
+  </div>
+
+  <!-- PostgreSQL Connection Card -->
+  <div class="row justify-content-center">
+    <div class="col-lg-6 card-style">
+      <h4 class="title"><i class="fas fa-database text-primary me-2"></i> PostgreSQL Database Login</h4>
+<form method="POST" action="">
+  {% csrf_token %}
+    {% if success_message %}
+  <div class="alert alert-success">{{ success_message }}</div>
+{% endif %}
+  {% if error_message %}
+  <div class="alert alert-danger">{{ error_message }}</div>
+  {% endif %}
+  <div class="mb-3">
+    <input type="text" name="host" class="form-control" placeholder="Host (e.g., localhost)"
+           value="{{ request.POST.host }}" required>
+  </div>
+  <div class="mb-3">
+    <input type="text" name="port" class="form-control" placeholder="Port (default 5432)"
+           value="{{ request.POST.port }}" required>
+  </div>
+  <div class="mb-3">
+    <input type="text" name="dbname" class="form-control" placeholder="Database Name"
+           value="{{ request.POST.dbname }}" required>
+  </div>
+  <div class="mb-3">
+    <input type="text" name="user" class="form-control" placeholder="Username"
+           value="{{ request.POST.user }}" required>
+  </div>
+  <div class="mb-3">
+    <input type="password" name="password" class="form-control" placeholder="Password"
+           value="{{ request.POST.password }}" required>
+  </div>
+  <button type="submit" class="btn btn-primary w-100">Test Connection</button>
+</form>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer mt-4">
+    &copy; ZTech. All rights reserved.
+  </div>
+</div>
+
+<script src="{% static 'bootstrap/assets/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
