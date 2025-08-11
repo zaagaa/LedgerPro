@@ -1,0 +1,580 @@
+{% extends 'layouts2/main.html' %}
+
+{% block body %}
+
+<style type="text/css">
+/* Hide printable content on screen */
+#printable {
+    display: none;
+}
+
+@media print {
+    @page {
+        size: 72mm auto; /* For 3-inch thermal printer */
+        margin: 0;
+    }
+
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-family: "Courier New", Courier, monospace;
+    }
+
+    body * {
+        visibility: hidden;
+    }
+
+    #printable, #printable * {
+        visibility: visible;
+    }
+
+    #printable {
+        display: block !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    #printable_content {
+        padding: 0 5px;
+        width: 100%;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px; /* Increased font size */
+        font-weight: bold; /* Bold text */
+    }
+
+    table td {
+        padding: 3px 0;
+        white-space: nowrap;
+        vertical-align: top;
+    }
+
+    table td:first-child {
+        width: 50%;
+    }
+
+    h4 {
+        text-align: center;
+        margin: 6px 0;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    hr {
+        margin: 5px 0;
+        border: none;
+        border-top: 1px dashed #000;
+    }
+
+    p {
+        font-size: 12px;
+        font-weight: bold;
+    }
+}
+</style>
+
+
+
+
+
+<div id="printable">
+  <div id="printable_content">
+    <h4>Customer Point Deduction Receipt</h4>
+    <hr>
+      <span id="print_data">
+
+          </span>
+    <hr>
+    <p style="text-align: center; margin-top: 5px;">Thank you!</p>
+
+  </div>
+</div>
+
+
+{% endblock body %}
+
+
+{% block content %}
+
+<style type="text/css">
+@media print {
+    @page {
+        margin: 0;
+    }
+
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    body * {
+        visibility: hidden;
+    }
+
+    #printable, #printable * {
+        visibility: visible;
+    }
+
+    #printable {
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    #printable_content {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .table {
+        margin-top: 0 !important;
+    }
+}
+</style>
+
+<div class="page-header">
+    <div class="add-item d-flex">
+        <div class="page-title">
+            <h4>GIFT OTP</h4>
+            <h6>Customer Portal</h6>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="d-flex justify-content-center">
+  <div class="mb-3 fw-bold" style="width: 500px;">
+    <label for="mobile" class="form-label">Mobile:</label>
+    <input type="text" id="mobile" maxlength="10" placeholder="Enter Mobile Number"
+           class="form-control int_numeric_only mt-1 fw-bold"
+           style="background-color: #fff9c4; font-size: 18px;">
+  </div>
+</div>
+
+
+<div class="row" id="">
+
+<div id="customer_info" class="col-4"></div>
+<div id="process" class="col-4"></div>
+
+<div id="confirm" class="col-4"></div>
+
+</div>
+
+<div class="row" id="row_data">
+
+</div>
+
+
+{% endblock content %}
+
+{% block footer %}
+
+<script>
+
+$('#mobile').on('keydown', function (e) {
+  if (e.key === 'Enter' || e.keyCode === 13) {
+
+if ($('#next').length) {
+$('#next').click();
+$('#deduction_point').focus();
+}
+
+  }
+});
+
+$(document).on('input', '#deduction_point', function () {
+  let val = parseFloat($(this).val());
+  let points = parseFloat($('#points').val());
+
+  if (!isNaN(points) && !isNaN(val)) {
+    if (val > points) {
+      $(this).val(points);
+    } else if (val < 0) {
+      $(this).val(0);
+    }
+  }
+});
+
+
+
+$(document).on('keydown', '#deduction_point', function (e) {
+  if ((e.key === 'Enter' || e.keyCode === 13) && $(this).val().trim() !== '') {
+    // Check if confirm button exists
+    if ($('#confirm_button').length && !$('#confirm_button').is(':disabled')) {
+      // Ask for confirmation
+      if (confirm('Are you sure you want to proceed?')) {
+        // Trigger the button click
+        $('#confirm_button').click();
+      }
+    } else {
+      console.log('#confirm_button not found');
+    }
+  }
+});
+
+
+$(document).on('keydown', '#otp', function (e) {
+  if ((e.key === 'Enter' || e.keyCode === 13) && $(this).val().trim() !== '') {
+    // Check if confirm button exists
+    if ($('#finish').length) {
+
+        $('#finish').click();
+
+    } else {
+      console.log('#confirm_button not found');
+    }
+  }
+});
+
+
+    /*************** GET MOBILE DATA ************/
+    $('#mobile').on('input', function () {
+    const value = $(this).val();
+
+    $('body').find("#row_data").html(``);
+
+    if (value.length === 10) {
+
+    $.ajax({
+            url: '{% url 'mobile_data'  %}',
+            method: "POST",
+            data: {
+                mobile: value,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function(data) {
+
+                if(data.id==0){
+                $("#customer_info").html("<span class='text-danger'>Sorry, No Record Found</span>");
+                $("#process").html("");
+
+                }else{
+
+                $("#customer_info").html(`
+        <div class="card mb-4">
+            <div class="card-body">
+
+<table class='table'>
+
+                <tr><td>ID</td><td>: #`+data.id+`<input type='hidden' value='`+data.id+`' id='customer_id'></td></tr>
+                <tr><td>NAME</td><td>: `+data.name+`</td></tr>
+                <tr><td>MOBILE</td><td>: `+data.mobile+`</td></tr>
+                <tr><td>POINTS</td><td>: `+data.points+`<input type='hidden' value='`+data.points+`' id='points'></td></tr>
+                </table>
+                <br>
+
+                <input type='button' id='next' value='Next'>
+
+            </div>
+        </div>
+
+
+                `);
+
+                }
+                return 1
+            },
+            error: function(error) {
+                return 0
+
+            }
+        });
+
+    }
+    });
+
+
+    /*********** END GET MOBILE DATA ***************/
+
+
+$('body').on('keyup', '#deduction_point', function(e) {
+
+
+
+    let point = parseFloat($('#deduction_point').val()) || 0;
+
+    if (point < {{customer_min_deduction}}) {
+      $('#confirm_button')
+        .prop('disabled', true)
+        .removeClass('btn-success')
+        .addClass('btn-light');
+    } else {
+      $('#confirm_button')
+        .prop('disabled', false)
+        .removeClass('btn-light')
+        .addClass('btn-success');
+    }
+
+    $('#deduction_point_amount').val(point * 4);
+    $('#current_point').html($('#points').val());
+    $('#deducted_point').html(point.toFixed(2));
+    $('#balance_point').html(($('#points').val()-point).toFixed(2));
+
+});
+
+$('body').on('keyup', '#deduction_point_amount', function(e) {
+
+    let amount = parseFloat($('#deduction_point_amount').val()) || 0;
+    $('#deduction_point').val((amount / 4).toFixed(2));
+    $('#current_point').html($('#points').val());
+    $('#deducted_point').html((amount / 4).toFixed(2));
+    $('#balance_point').html(($('#points').val()-(amount / 4)).toFixed(2));
+
+     let point = parseFloat($('#deduction_point').val()) || 0;
+
+    if (point < {{customer_min_deduction}}) {
+      $('#confirm_button')
+        .prop('disabled', true)
+        .removeClass('btn-success')
+        .addClass('btn-light');
+    } else {
+      $('#confirm_button')
+        .prop('disabled', false)
+        .removeClass('btn-light')
+        .addClass('btn-success');
+    }
+
+
+});
+
+$('body').on('click', '#confirm_button', function(e) {
+
+        $(this).remove();
+
+$('body').find("#final_content").html(`<div class="spinner-border text-warning" role="status">
+										<span class="sr-only">Loading...</span>
+									</div>`);
+
+        $('#deduction_point').prop('readonly', true);
+        $('#deduction_point_amount').prop('readonly', true);
+
+        var customer_id=$("#customer_id").val();
+        var deducted_point=$("#deduction_point").val();
+
+            $.ajax({
+                    url: '{% url 'mobile_data'  %}',
+                    method: "POST",
+                    data: {
+                        customer_id: customer_id,
+                        deducted_point: deducted_point,
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                    },
+                    success: function(data) {
+
+
+
+                    if(data!='0'){
+
+
+
+$('body').find("#final_content").html(`
+<span id='final_loading'></span>
+<input type="hidden" id="encoded_otp" value="`+data+`">
+<div class="container mt-4" style="max-width: 600px;">
+  <div class="d-flex align-items-center gap-2">
+    <label for="otp" class="form-label mb-0">OTP:</label>
+
+    <input type="text" class="form-control numeric_only" id="otp" placeholder="Enter OTP" maxlength="4" style="max-width: 100px;">
+    <button type="button" id="finish" class="btn btn-primary">Finish</button>
+  </div>
+</div>
+
+
+
+`);
+
+$('#otp').focus();
+
+
+                    }
+
+                        return 1
+                    },
+                    error: function(error) {
+                        return 0
+
+                    }
+            });
+
+     });
+
+$('body').on('click', '#finish', function(e) {
+
+
+
+        var customer_id=$("#customer_id").val();
+        var deducted_point=$("#deduction_point").val();
+        var otp=$('body').find("#otp").val();
+        var encoded_otp=$('body').find("#encoded_otp").val();
+
+
+$('body').find("#final_loading").html(`<div class="spinner-border text-warning" role="status">
+										<span class="sr-only">Loading...</span>
+									</div>`);
+
+
+
+
+
+
+    $.ajax({
+            url: '{% url 'mobile_data'  %}',
+            method: "POST",
+            data: {
+                final_customer_id: customer_id,
+                deducted_point: deducted_point,
+                otp: otp,
+                encoded_otp: encoded_otp,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function(data) {
+
+            if(data.final_point==$('#balance_point').html()){
+
+
+
+$('body').find("#customer_info").html('');
+$('body').find("#process").html('');
+$('body').find("#confirm").html('');
+$('#mobile').val('');
+$('#mobile').focus();
+
+var table_data=`<table class="table table-bordered">
+          <tr><td>ID</td><td>: #`+data.id+`</td></tr>
+          <tr><td>NAME</td><td>: `+data.name+`</td></tr>
+          <tr><td>MOBILE</td><td>: `+data.mobile+`</td></tr>
+          <tr><td>OLD POINTS</td><td>: `+data.points+`</td></tr>
+          <tr><td>DEDUCTED POINTS</td><td>: `+data.deducted_point+`</td></tr>
+          <tr><td>CURRENT POINTS</td><td>: `+data.final_point+`</td></tr>
+        </table>`;
+
+            $('body').find("#row_data").html(`
+
+
+         <div class="card mb-4">
+    <div class="card-body">
+      <div id="" class="col-4 mx-auto">
+
+`+table_data+`
+
+      </div>
+    </div>
+  </div>
+            `);
+
+$('body').find("#print_data").html(table_data.replace(' class="table table-bordered"',""));
+
+   window.print();
+
+$('body').find("#print_data").html("");
+
+            }
+
+            return 1
+        },
+        error: function(error) {
+            return 0
+
+        }
+    });
+
+});
+
+    /********** NEXT ***********/
+
+    $('body').on('click', '#next', function(e) {
+
+    $(this).remove();
+
+    $("#process").html(`
+
+
+<div class="card mb-4">
+  <div class="card-body">
+
+    <div class="mb-3">
+      <label for="deduction_point" class="form-label">Deduction Point:</label>
+      <div class="input-group mt-1" style="width: auto;">
+      <input type="text" id="deduction_point" maxlength="10" placeholder="Enter Point"
+             class="form-control int_numeric_only mt-1 mb-4" style="background-color: #f8d7da; width: auto;">
+        </div>
+
+      <label for="deduction_point_amount" class="form-label">Deduction Point Amount:</label>
+      <div class="input-group mt-1" style="width: auto;">
+        <span class="input-group-text">₹</span>
+        <input type="text" id="deduction_point_amount" maxlength="10" placeholder="Enter Amount"
+               class="form-control numeric_only" style="background-color: #f8d7da; width: auto;">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+    `);
+
+
+    $("#confirm").html(`
+    <div class="px-3"> <!-- px-3 adds left and right padding -->
+  <table class="table table-bordered mb-3">
+    <tr>
+      <td>Current Point</td>
+      <td>: <span id='current_point'>250.00</span></td>
+    </tr>
+    <tr>
+      <td>Deducted Point</td>
+      <td>: <span id='deducted_point'>250.00</span></td>
+    </tr>
+    <tr>
+      <td>Balance Point</td>
+      <td>: <span id='balance_point'>250.00</span></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="text-center">
+        <span id="final_content"><input type="button" value="Confirm" id="confirm_button" class="btn btn-light mt-2" disabled></span>
+      </td>
+    </tr>
+  </table>
+</div>
+`);
+
+
+    });
+
+    /********** END NEXT ***********/
+
+$(document).ready(function() {
+    $('#mobile').focus();
+});
+
+    /***************** ESC BUTTON FUNCTION ******************/
+    $(document).keyup(function (e) {
+        if (e.keyCode == 27) {
+            if (confirm("Are you sure to Cancel?")) {
+                window.location = "./";
+            }
+        }
+    });
+    /***************** END ESC BUTTON FUNCTION ******************/
+
+</script>
+
+<script>
+    $(function() {
+
+    document.querySelector("html").setAttribute('data-layout-style', 'modern');
+
+    });
+</script>
+
+{% endblock footer %}
