@@ -1,0 +1,18 @@
+pip install -r requirements.txt
+pip freeze > requirements.txt
+
+python manage.py runserver
+
+python manage.py makemigrations attribute company inventory invoice pos purchase setting supplier tax_code
+
+
+
+
+POWERSHELL-tostop**** ok
+Stop-Process -Id (Get-NetTCPConnection -LocalPort 8000).OwningProcess -Force
+
+
+.venv\Scripts\activate
+
+
+python manage.py runserver 0.0.0.0:8000
