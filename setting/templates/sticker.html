@@ -1,0 +1,162 @@
+{% extends 'layouts2/main.html' %}
+
+{% block modal %}
+<div class="modal fade" id="add-units">
+    <div class="modal-dialog modal-dialog-centered custom-modal-two">
+        <div class="modal-content">
+            <div class="page-wrapper-new p-0">
+                <div class="content">
+                    <div class="modal-header border-0 custom-modal-header">
+                        <div class="page-title">
+                            <h4>Add Sticker</h4>
+                        </div>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body custom-modal-body">
+                        <form action="./" method="POST">
+                            {% csrf_token %}
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3 input-blocks">
+                                        <label class="form-label">Sticker name</label>
+                                        <input type="text" value="{{edit.sticker_name}}" name="sticker_name"
+                                               class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="input-blocks">
+                                        <label class="form-label">Number of Column</label>
+                                        <select id="sticker_column" name="column" class="select">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="mb-3 input-blocks">
+                                        <label class="form-label">Sticker Code</label>
+                                        <textarea name="sticker_code"
+                                                  class="form-control">{{edit.sticker_code}}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="modal-footer-btn">
+                                <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel
+                                </button>
+                                {% if not edit.id %}
+                                <button type="submit" class="btn btn-submit">Create Sticker</button>
+                                {% else %}
+                                <input type="hidden" name="edit_id" value="{{edit.id}}">
+                                <button type="submit" class="btn btn-submit">Update</button>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock modal %}
+
+{% block content %}
+
+
+<div class="page-header">
+    <div class="add-item d-flex">
+        <div class="page-title">
+            <h4>Sticker Setting</h4>
+            <h6>Configure Sticker Printing Code</h6>
+        </div>
+    </div>
+
+    <div class="page-btn">
+        <a href="#" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#add-units"><i
+                data-feather="plus-circle" class="me-2"></i> Add Sticker</a>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <table class="table">
+                    {% for data in sticker_list %}
+
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{data.sticker_name}}</td>
+                        <td>{{data.column}}</td>
+                        <td style="text-align: right;">
+
+                            <a class="me-2" href="./?edit={{data.id}}">
+                                <i data-feather="edit" class="feather-edit"></i>
+                            </a>
+                            <a class="confirm-text" onclick="return confirm('Are you Sure to Delete?');"
+                               href="./?delete={{data.id}}">
+                                <i data-feather="trash-2" class="feather-trash-2"></i>
+                            </a>
+
+
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <p class="card-text"
+                   [SERIAL]<br>[BARCODE]<br>[BARCODE_TEXT]<br>[HSN_CODE]<br>[INVENTORY]<br>[MFG]<br>[EXP]<br>
+
+                {% for data in attribute_list %}
+
+                [{{data.attribute_name}}]<br>
+
+                {% endfor %}
+
+                <a href="{% url 'price_code' %}">[PRICE_CODE]</a><br>[PRICE]<br>[MRP]<br>[CODE_NAME]
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}
+
+{% block footer %}
+
+
+<script>
+    $(document).ready(function() {
+    {% if edit.id %}
+    $('#add-units').modal('show');
+
+    $('#add-units').on('hidden.bs.modal', function () {
+    window.location.href = "./";
+    })
+    $("#sticker_column").val("{{edit.column}}").change();
+    {% endif %}
+    });
+
+
+</script>
+{% endblock footer %}
