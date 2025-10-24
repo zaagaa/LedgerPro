@@ -1,0 +1,146 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+<h4 class="page-title mb-4">Attribute</h4>
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-body">
+
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="company" value="{{ COMPANY.id }}">
+                    <input type="hidden" name="parent" value="">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Attribute</label>
+                        <input type="text" name="attribute_name" class="form-control" id="exampleInputEmail1">
+                    </div>
+
+                    <button type="submit" class="btn d-block btn-outline-theme mt-3 mb-1">Add</button>
+                </form>
+
+            </div>
+
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+
+                <table class="table table-bordered table-centered mb-0">
+                    <thead>
+                    <tr>
+                        <th>Attribute Name</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+
+                    {% for data in attribute_list %}
+
+                    <tr>
+
+                        <td><a class="link-offset-2 link-underline link-underline-opacity-0" href="{% url 'attribute_data' data.id %}">{{ data.attribute_name }}</a></td>
+                        <td class="table-action text-center">
+                            <a href="{% url 'attribute_data' data.id %}" class="action-icon"> <i class="fas fa-lg fa-fw me-2 fa-folder"></i></a>
+                        </td>
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                    </tbody>
+                </table>
+
+            </div>
+            <!-- BEGIN card-arrow -->
+            <div class="card-arrow">
+                <div class="card-arrow-top-left"></div>
+                <div class="card-arrow-top-right"></div>
+                <div class="card-arrow-bottom-left"></div>
+                <div class="card-arrow-bottom-right"></div>
+            </div>
+            <!-- END card-arrow -->
+        </div>
+
+
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card mb-3">
+            <div class="card-body">
+
+                                {% if attribute.id != None %}
+
+                <form action="" method="POST" class="row g-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="company" value="{{ COMPANY.id }}">
+                    <input type="hidden" name="parent" value="{{ attribute.id }}">
+
+  <div class="col-auto">
+
+      <input type="text" name="attribute_name" class="form-control" placeholder="">
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn d-block btn-outline-theme mt-0 mb-1">Add</button>
+  </div>
+</form>
+
+
+
+                <table class="table table-bordered table-centered mt-3 mb-0">
+                    <thead>
+                    <tr>
+                        <th>Attribute Name</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+
+                    {% for data in attribute_data_list %}
+
+                    <tr>
+
+                        <td>{{ data.attribute_name }}</td>
+                        <td class="table-action text-center">
+                            <a href="{% url 'delete_attribute_data' data.id %}" class="action-icon">
+                                <i class="fas fa-lg fa-fw me-2 fa-trash-alt"></i></a>
+                        </td>
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                    </tbody>
+                </table>
+
+
+
+                <a href="{% url 'delete_attribute' attribute_id %}" type="button" role="button" class="btn btn-outline-theme mt-3 mb-1 float-end">Delete All</a>
+
+{% else %}
+                <b>Create or Select any Attribute</b>
+  {% endif %}
+
+            </div>
+            <!-- BEGIN card-arrow -->
+            <div class="card-arrow">
+                <div class="card-arrow-top-left"></div>
+                <div class="card-arrow-top-right"></div>
+                <div class="card-arrow-bottom-left"></div>
+                <div class="card-arrow-bottom-right"></div>
+            </div>
+            <!-- END card-arrow -->
+        </div>
+    </div>
+
+
+</div>
+
+
+{% endblock content %}
