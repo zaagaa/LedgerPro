@@ -1,0 +1,216 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+<h4 class="page-title mb-4">Staff Settings</h4>
+
+<!-- Staff Time & Holiday Settings -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <strong><i class="bi bi-clock me-1"></i> Staff Time & Holiday Settings</strong>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="row mb-3">
+                        <label class="col-md-4 form-label">Staff Entry Time</label>
+                        <div class="col-md-8">
+                            <input type="text" name="SETTING.staff_entry_time" class="form-control timepicker" autocomplete="off"
+                                   value="{{ SETTING.staff_entry_time }}" placeholder="hh:mm AM/PM">
+                        </div>
+                    </div>
+
+                                        <div class="row mb-3">
+                        <label class="col-md-4 form-label">Staff Late Entry Time</label>
+                        <div class="col-md-8">
+                            <input type="text" name="SETTING.staff_late_entry_time" class="form-control timepicker" autocomplete="off"
+                                   value="{{ SETTING.staff_late_entry_time }}" placeholder="hh:mm AM/PM">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-md-4 form-label">Staff Exit Time</label>
+                        <div class="col-md-8">
+                            <input type="text" name="SETTING.staff_exit_time" class="form-control timepicker" autocomplete="off"
+                                   value="{{ SETTING.staff_exit_time }}" placeholder="hh:mm AM/PM">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-md-4 form-label">Staff Early Exit Time</label>
+                        <div class="col-md-8">
+                            <input type="text" name="SETTING.staff_early_exit_time" class="form-control timepicker" autocomplete="off"
+                                   value="{{ SETTING.staff_early_exit_time }}" placeholder="hh:mm AM/PM">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-md-4 form-label">Monthly Holiday</label>
+                        <div class="col-md-8">
+                            <input type="number" min="0" max="10" name="SETTING.staff_monthly_holiday" class="form-control"
+                                   value="{{ SETTING.staff_monthly_holiday }}">
+                            <small class="text-muted">No. of holidays/month</small>
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-info">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Leave Incentive Settings -->
+<div class="row mt-4">
+    <div class="col-lg-12">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <strong><i class="bi bi-award me-1"></i> Leave Incentive Settings</strong>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="row mb-3">
+                        <label class="col-md-4 form-label">Leave Incentive System</label>
+                        <div class="col-md-8">
+                            <select class="form-control" name="SETTING.staff_leave_incentive_system">
+                                <option value="Enable" {% if SETTING.staff_leave_incentive_system == "Enable" %}selected{% endif %}>Enable</option>
+                                <option value="Disable" {% if SETTING.staff_leave_incentive_system == "Disable" %}selected{% endif %}>Disable</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {% if SETTING.staff_leave_incentive_system == "Enable" %}
+                        <div class="row mb-3">
+                            <label class="col-md-4 form-label">Maximum Leave Allowed Per Day</label>
+                            <div class="col-md-8">
+                                <input class="form-control" type="number" name="SETTING.daily_leave_all_staff" value="{{ SETTING.daily_leave_all_staff }}">
+                                <small class="text-muted">This is for Over All Staff</small>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-md-4 form-label">Maximum Leave Allowed Per Staff</label>
+                            <div class="col-md-8">
+                                <input class="form-control" type="number" name="SETTING.monthly_leave_per_staff" value="{{ SETTING.monthly_leave_per_staff }}">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-md-4 form-label">Approved Leave Incentive</label>
+                            <div class="col-md-8">
+                                <input class="form-control" type="number" name="SETTING.staff_approved_leave_incentive" value="{{ SETTING.staff_approved_leave_incentive }}">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-md-4 form-label">Unapproved Leave Penalty</label>
+                            <div class="col-md-8">
+                                <input class="form-control" type="number" name="SETTING.staff_unapproved_leave_penalty" value="{{ SETTING.staff_unapproved_leave_penalty }}">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-md-4 form-label">Leave Booking at a Time</label>
+                            <div class="col-md-8">
+                                <input class="form-control" type="number" name="SETTING.staff_leave_booking_at_a_time" value="{{ SETTING.staff_leave_booking_at_a_time }}">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-md-4 form-label">Maximum Leave Booking Period (in Days)</label>
+                            <div class="col-md-8">
+                                <input class="form-control" type="number" name="SETTING.staff_max_booking_period" value="{{ SETTING.staff_max_booking_period }}">
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-info">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sales Incentive Settings -->
+<div class="row mt-4">
+    <div class="col-lg-12">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <strong><i class="bi bi-graph-up-arrow me-1"></i> Sales Incentive Settings</strong>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="row mb-3">
+                        <label class="col-md-4 form-label">Sales Incentive System</label>
+                        <div class="col-md-8">
+                            <select class="form-control" name="SETTING.incentive_sale_system">
+                                <option value="Enable" {% if SETTING.incentive_sale_system == "Enable" %}selected{% endif %}>Enable</option>
+                                <option value="Disable" {% if SETTING.incentive_sale_system == "Disable" %}selected{% endif %}>Disable</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {% if SETTING.incentive_sale_system == "Enable" %}
+                        <div class="row mb-3">
+                            <label class="col-md-4 form-label">Weekly Base Target (₹)</label>
+                            <div class="col-md-8">
+                                <input class="form-control" type="number" name="SETTING.incentive_base_target" value="{{ SETTING.incentive_base_target }}">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-md-4 form-label">Base Reward (₹)</label>
+                            <div class="col-md-8">
+                                <input class="form-control" type="number" name="SETTING.incentive_base_reward" value="{{ SETTING.incentive_base_reward }}">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-md-4 form-label">Rate per Extra % Sale (₹)</label>
+                            <div class="col-md-8">
+                                <input class="form-control" type="number" name="SETTING.incentive_rate_per_extra_percent" value="{{ SETTING.incentive_rate_per_extra_percent }}">
+                                <small class="text-muted">This applies when sales cross 100%</small>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-md-4 form-label">Maximum Cap (%)</label>
+                            <div class="col-md-8">
+                                <input class="form-control" type="number" name="SETTING.incentive_max_percent" value="{{ SETTING.incentive_max_percent }}">
+                                <small class="text-muted">To avoid over-incentivizing</small>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-info">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+{% block footer %}
+<script>
+    flatpickr(".timepicker", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "h:i K",
+        time_24hr: false,
+        allowInput: true
+    });
+</script>
+{% endblock %}
