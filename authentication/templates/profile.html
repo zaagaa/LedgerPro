@@ -1,0 +1,121 @@
+{% extends 'layouts2/main.html' %}
+{% load static %}
+{% load auth_tags %}
+
+
+{% block content %}
+
+<p>DEBUG is_impersonating: {{ is_impersonating }}</p>
+
+{% if is_impersonating %}
+    <form action="{% url 'revert_impersonation' %}" method="POST" class="mb-3">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-sm btn-danger">
+        Back to Superuser
+      </button>
+    </form>
+{% endif %}
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4 class="mb-4 text-center">Edit Profile</h4>
+
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        {% if profile.profile_image %}
+                            <img src="{{ profile.profile_image.url }}" class="rounded-circle mb-3" width="150" height="150">
+                        {% else %}
+                            <img src="{% static 'default-avatar.png' %}" class="rounded-circle mb-3" width="150" height="150">
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-8">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Mobile</label>
+                                {{ form.mobile }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Address</label>
+                                {{ form.address }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Profile Image</label>
+                                {{ form.profile_image }}
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+
+                        <hr class="my-4">
+
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                            Change Password
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Password Change Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" action="{% url 'profile' %}">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% if password_change_form %}
+            {% if password_change_form.errors %}
+              <div class="alert alert-danger">
+                {% for field, errors in password_change_form.errors.items %}
+                  {% for error in errors %}
+                    <div><strong>{{ field|capfirst }}</strong>: {{ error }}</div>
+                  {% endfor %}
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <div class="mb-3">
+              <label for="id_old_password" class="form-label">Old Password</label>
+              {{ password_change_form.old_password|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+              <label for="id_new_password1" class="form-label">New Password</label>
+              {{ password_change_form.new_password1|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+              <label for="id_new_password2" class="form-label">Confirm New Password</label>
+              {{ password_change_form.new_password2|add_class:"form-control" }}
+            </div>
+          {% endif %}
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Update Password</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if show_password_modal %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+        modal.show();
+    });
+</script>
+{% endif %}
+
+{% endblock %}
