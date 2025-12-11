@@ -1,0 +1,125 @@
+{% extends 'layouts2/main.html' %}
+{% load app_tags %}
+{% load custom_filters %}
+{% block content %}
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card mb-4">
+      <div class="card-body">
+        <form method="get" class="row mb-4">
+          <div class="col-md-3">
+            <label class="form-label">Company</label>
+            <select name="company_id" class="form-select" onchange="this.form.submit()">
+              <option value="0" {% if selected_company_id == 0 %}selected{% endif %}>All Companies</option>
+              {% for company in companies %}
+              <option value="{{ company.id }}" {% if selected_company_id == company.id %}selected{% endif %}>{{ company.company_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">From Month</label>
+            <select name="from_month" class="form-select">
+              {% for m in 1|to:12 %}
+              <option value="{{ m }}" {% if m == from_month %}selected{% endif %}>{{ m|stringformat:"02d" }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">From Year</label>
+            <input type="number" name="from_year" class="form-control" value="{{ from_year }}">
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">To Month</label>
+            <select name="to_month" class="form-select">
+              {% for m in 1|to:12 %}
+              <option value="{{ m }}" {% if m == to_month %}selected{% endif %}>{{ m|stringformat:"02d" }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">To Year</label>
+            <input type="number" name="to_year" class="form-control" value="{{ to_year }}">
+          </div>
+
+          <div class="col-md-1 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Go</button>
+          </div>
+        </form>
+
+<h5 class="text-muted mb-3">Average Daily Sale: ₹{{ average_sale|floatformat:2|intcomma_indian }}</h5>
+<canvas id="salesChart" height="100"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const chartData = {{ chart_data|safe }};
+  const labels = chartData.map(row => row.label);
+  const values = chartData.map(row => row.amount);
+
+  const ctx = document.getElementById('salesChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Daily Sales',
+          data: values,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          tension: 0.3,
+          fill: false,
+          pointRadius: 4
+        },
+        {
+          label: 'Average Sale',
+          data: Array(values.length).fill({{ average_sale|floatformat:2 }}),
+          borderDash: [5, 5],
+          borderColor: 'rgba(255, 99, 132, 0.7)',
+          pointRadius: 0,
+          tension: 0,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return '₹' + context.parsed.y.toLocaleString('en-IN');
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            maxRotation: 60,
+            minRotation: 45,
+            autoSkip: true
+          }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return value.toLocaleString("en-IN");
+            }
+          }
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}
+
