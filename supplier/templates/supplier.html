@@ -1,0 +1,238 @@
+{% extends 'layouts2/main.html' %}
+{% load static %}
+
+{% block header %}
+<link href="{% static 'dist/assets/plugins/select-picker/dist/picker.min.css' %}" rel="stylesheet">
+{% endblock header %}
+
+{% block content %}
+<!-- Modal -->
+<div class="modal fade" id="supplierModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Supplier Form</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="supplierModalBody">
+        <!-- AJAX-loaded form content here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>Supplier</h4>
+    </div>
+  </div>
+  <div class="page-btn">
+    <button class="btn btn-success" onclick="openSupplierModal()">Add Supplier</button>
+  </div>
+</div>
+
+<!-- Table -->
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card mb-4">
+      <div class="card-body">
+       <table class="table table-bordered table-centered datanew mb-0">
+  <thead>
+    <tr>
+      <th style="width: 5%;">SL.</th>
+      <th style="width: 20%;">Supplier Name</th>
+      <th style="width: 15%;">{{COMPANY.tax_type}} Number</th>
+      <th style="width: 40%;">Address</th>
+      <th class="text-center" style="width: 10%;">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for data in supplier_list %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ data.supplier_name }}</td>
+      <td>{{ data.tax_number }}</td>
+      <td class="text-truncate" style="max-width: 300px;" title="{{ data.address }}, {{ data.city }}, {{ data.state }}, {{ data.country }}, {{ data.pincode }}">
+        {{ data.address }}, {{ data.city }}, {{ data.state }}, {{ data.country }}, {{ data.pincode }}
+      </td>
+      <td class="text-center">
+        <a href="javascript:void(0)" onclick="openSupplierModal('{{ data.id }}')" class="action-icon">
+          <i class="fas fa-lg fa-fw me-2 fa-edit"></i>
+        </a>
+        <a href="{% url 'delete_supplier' data.id %}" class="action-icon">
+          <i class="fas fa-lg fa-fw me-2 fa-trash-alt"></i>
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block footer %}
+<script>
+function openSupplierModal(pk = null) {
+  const url = pk ? `./supplier/${pk}/edit/` : './supplier/add/';
+
+  fetch(url)
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById('supplierModalBody').innerHTML = html;
+      const modal = new bootstrap.Modal(document.getElementById('supplierModal'));
+      modal.show();
+
+      // ✅ Setup validation
+      initSupplierFormValidation();
+
+      // ✅ Trigger country change if pre-filled (load states)
+      setTimeout(() => {
+        const selectedCountry = $('#id_country').val();
+        if (selectedCountry) {
+          $('#id_country').trigger('change');
+        }
+      }, 100);
+
+      // ✅ Attach form submit handler
+      const form = document.getElementById('supplierForm');
+      form.addEventListener('submit', function (e) {
+        if (!form.checkValidity()) {
+          e.preventDefault();
+          e.stopPropagation();
+          form.classList.add('was-validated');
+          return;
+        }
+
+        e.preventDefault();
+        const formData = new FormData(form);
+
+        fetch(url, {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            location.reload(); // or dynamically refresh supplier table
+          } else if (data.form_html) {
+            document.getElementById('supplierModalBody').innerHTML = data.form_html;
+            openSupplierModal(pk); // reinit
+          }
+        });
+      });
+    });
+}
+
+
+function initModalFormHandler(url) {
+  const form = document.getElementById('supplierForm');
+  if (!form) return;
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    fetch(url, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        location.reload();
+      } else if (data.form_html) {
+        document.getElementById('supplierModalBody').innerHTML = data.form_html;
+        initModalFormHandler(url);
+        initSupplierFormValidation();
+        //bindInputUppercase();
+        //scrollToFirstInvalidField();
+      } else {
+        document.getElementById('supplierModalBody').innerHTML = '<div class="text-danger">An unexpected error occurred. Please try again.</div>';
+      }
+    });
+  });
+
+// Re-init logic after AJAX modal render
+initSupplierFormValidation();
+//bindInputUppercase();
+//scrollToFirstInvalidField();
+
+setTimeout(() => {
+  const selectedCountry = $('#id_country').val();
+  if (selectedCountry) {
+    $('#id_country').trigger('change');
+  }
+}, 100);  // wait 100ms before triggering change
+
+}
+
+
+
+
+function initSupplierFormValidation() {
+  const form = document.getElementById('supplierForm');
+  if (!form) return;
+
+  form.addEventListener('submit', function (e) {
+    if (!form.checkValidity()) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    form.classList.add('was-validated');
+  });
+}
+
+
+function bindInputUppercase() {
+  const nameInput = document.getElementById('id_supplier_name');
+  if (nameInput) {
+    nameInput.addEventListener('input', function () {
+      this.value = this.value.toUpperCase();
+    });
+  }
+}
+
+function scrollToFirstInvalidField() {
+  const firstInvalid = document.querySelector('.was-validated .form-control:invalid');
+  if (firstInvalid) {
+    firstInvalid.focus();
+  }
+}
+</script>
+
+<script>
+$('body').off('change', '#id_country').on('change', '#id_country', function () {
+  const countryCode = $(this).val();
+  const $stateSelect = $('#id_state');
+  const selectedState = $stateSelect.attr('data-selected'); // ✅ get previously selected state
+
+  $stateSelect.empty().append('<option value="">Loading...</option>');
+
+  $.ajax({
+    url: '{% url 'get_states_by_country' %}',
+    data: { country: countryCode },
+    success: function(data) {
+      $stateSelect.empty().append('<option value="">Select state</option>');
+      $.each(data.states, function(index, state) {
+        const isSelected = (state === selectedState) ? 'selected' : '';
+        $stateSelect.append(`<option value="${state}" ${isSelected}>${state}</option>`);
+      });
+    },
+    error: function() {
+      $stateSelect.empty().append('<option value="">Error loading states</option>');
+    }
+  });
+});
+
+
+
+</script>
+
+
+{% endblock footer %}
