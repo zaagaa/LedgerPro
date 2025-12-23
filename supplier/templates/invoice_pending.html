@@ -1,0 +1,162 @@
+{% extends 'layouts2/main.html' %}
+{% load custom_filters %}
+{% block content %}
+
+{% include 'supplier_account_header.html' %}
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+<h5 class="mt-4 text-danger">Pending Purchases</h5>
+<table class="table table-bordered table-sm">
+<thead>
+    <tr>
+        <th>#</th>
+        <th>Date</th>
+        <th>Invoice No</th>
+        <th class="text-end">Amount</th>
+        <th class="text-end">Paid</th>
+        <th class="text-end">Payable</th>
+        <th class="text-end">Balance</th>
+        <th class="text-center">Action</th>
+    </tr>
+</thead>
+
+    <tbody>
+        {% for purchase in pending_purchase_list %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ purchase.transaction_date|date:"d-m-Y" }}</td>
+            <td><a target='_blank' class='link-primary' href="{% url 'purchase_add_stock' purchase.id %}">{{ purchase.invoice_number }}</a></td>
+            <td class="text-end">{{ purchase.payable_amount|floatformat:2|intcomma_indian }}</td>
+            <td class="text-end text-success">
+                ₹ {{ purchase.running_balance_display|floatformat:2|intcomma_indian }}
+            </td>
+            <td class="text-end text-danger">
+                ₹ {{ purchase.pending_amount|floatformat:2|intcomma_indian }}
+            </td>
+            <td class="text-end text-primary">
+    ₹ {{ purchase.cumulative_balance|floatformat:2|intcomma_indian }}
+</td>
+
+<td class="text-center">
+    <button class="btn btn-sm btn-outline-danger pay-button" data-balance="{{ purchase.cumulative_balance|floatformat:2 }}">
+        Pay
+    </button>
+</td>
+
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center">All purchases are fully paid!</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<h5 class="mt-5 text-center">Month-wise Pending Summary</h5>
+<div class="d-flex justify-content-center">
+    <table class="table table-bordered table-sm w-50">
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th class="text-end">Payable</th>
+                <th class="text-end">Balance</th>
+                <th class="text-center">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in month_summary_list %}
+            <tr>
+                <td>{{ item.month }}</td>
+                <td class="text-end text-danger">{{ item.amount|floatformat:2|intcomma_indian }}</td>
+                <td class="text-end text-primary">{{ item.cumulative|floatformat:2|intcomma_indian }}</td>
+                <td class="text-center">
+    <button class="btn btn-sm btn-outline-danger pay-button" data-balance="{{ item.cumulative|floatformat:2 }}">
+        Pay
+    </button>
+</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="fw-bold">
+                <td class="text-end text-primary">Grand Total</td>
+                <td class="text-end text-danger">{{ grand_total|floatformat:2|intcomma_indian }}</td>
+                <td class="text-end text-primary">{{ grand_total|floatformat:2|intcomma_indian }}</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+
+
+
+</div></div></div></div>
+
+
+{% include 'payment_form.html' %}
+
+
+{% include 'upcoming_payment_table.html' %}
+
+
+{% endblock content %}
+
+
+{% block footer %}
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    flatpickr(".flatpickr", {
+    dateFormat: "Y-m-d",       // value submitted to server
+    altInput: true,
+    altFormat: "d/m/Y",        // what user sees
+    defaultDate: "today",
+    allowInput: true
+});
+
+$(document).on("click", ".pay-button", function() {
+    var rawBalance = $(this).data("balance").toString().replace(/,/g, "");
+    var balance = parseFloat(rawBalance);
+    if (!isNaN(balance)) {
+        var cleanAmount = Number.isInteger(balance) ? balance : balance.toFixed(2);
+        $("#amount").val(cleanAmount).focus();
+    }
+});
+
+
+
+
+</script>
+
+
+<script>
+    $("#select_supplier").select2({
+        placeholder: "Select a Supplier",
+        dir: "ltr"
+    });
+
+    $(document).ready(function() {
+        $('#select_supplier').on("change", function(){
+            var selectedId = $(this).val();
+            if(selectedId){
+                var urlTemplate = "{% url 'invoice_pending' '00000000-0000-0000-0000-000000000000' %}";
+                var newUrl = urlTemplate.replace("00000000-0000-0000-0000-000000000000", selectedId);
+                window.location.href = newUrl;
+            }
+        });
+    });
+</script>
+
+
+
+{% include 'supplier_footer.html' %}
+
+{% endblock footer %}
