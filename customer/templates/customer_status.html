@@ -1,0 +1,434 @@
+{# templates/customer_status.html #}
+{% extends 'layouts2/main.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid py-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Customer Status</h4>
+    <div>
+      <a class="btn btn-outline-secondary me-2" href="{% url 'customer' %}">Back to Customer List</a>
+    </div>
+  </div>
+
+  <!-- Summary cards -->
+  <div class="row mb-2">
+  <div class="col-md-2">
+    <div class="card p-3">
+      <div class="h6">Total Customers</div>
+      <div class="h3">{{ total_customers }}</div>
+    </div>
+  </div>
+        <div class="col-md-2">
+    <div class="card p-3">
+      <div class="h6">Total Active Customers</div>
+      <div class="h3">{{ total_active_customers }}</div>
+    </div>
+  </div>
+        <div class="col-md-2">
+    <div class="card p-3">
+      <div class="h6">New (Today)</div>
+      <div class="h3">{{ new_today }}</div>
+    </div>
+  </div>
+        <div class="col-md-2">
+    <div class="card p-3">
+      <div class="h6">New (Yesterday)</div>
+      <div class="h3">{{ new_yesterday }}</div>
+    </div>
+  </div>
+  <div class="col-md-2">
+    <div class="card p-3">
+      <div class="h6">New (Last 30 days)</div>
+      <div class="h3">{{ new_last_30 }}</div>
+    </div>
+  </div>
+  <div class="col-md-2">
+    <div class="card p-3">
+      <div class="h6">New (Last 12 months)</div>
+      <div class="h3">{{ new_last_365 }}</div>
+    </div>
+  </div>
+</div>
+
+    <!-- ====== Today's widgets row ====== -->
+<div class="row mb-3">
+  <!-- 1) Recently Customer Who Add Points (today) -->
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="h5">
+          <strong>Today Recent Entry</strong>
+        </div>
+        <div class="h6">Count: {{ points_added_today|length }}</div>
+      </div>
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush" style="max-height:240px; overflow:auto;">
+          {% for entry in points_added_today %}
+          <li class="list-group-item">
+            <div class="d-flex justify-content-between">
+              <div>
+                <div class="fw-bold">{{ entry.customer.customer_name|default:"—" }} - <a target="_blank" href="../points/activities/?mobile={{ entry.customer.mobile }}">{{ entry.customer.mobile}}</a></div>
+                <div class="small text-muted">
+                  {{ entry.description|default:"" }}
+                  {% if entry.invoice %}
+                    • Invoice: #{{ entry.invoice.invoice_number }} - {{ entry.invoice.invoice_date }}
+                  {% endif %}
+                </div>
+              </div>
+              <div class="text-end">
+                <div class="fw-bold text-success">+{{ entry.point|floatformat:2 }}</div>
+                <div class="small text-muted">{{ entry.balance|floatformat:2 }} bal</div>
+                <div class="small text-muted">{{ entry.created_at|date:"d/m/Y g:i A" }}</div>
+              </div>
+            </div>
+          </li>
+          {% empty %}
+          <li class="list-group-item text-center text-muted">No point additions today.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2) Recently Customer Points Negative (today) -->
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="h5">
+          <strong>Negative Points — Today</strong>
+        </div>
+        <div class="h6">Count: {{ points_negative_today|length }}</div>
+      </div>
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush" style="max-height:240px; overflow:auto;">
+          {% for entry in points_negative_today %}
+          <li class="list-group-item">
+            <div class="d-flex justify-content-between">
+              <div>
+                <div class="fw-bold">{{ entry.customer.customer_name|default:"—" }} - <a target="_blank" href="../points/activities/?mobile={{ entry.customer.mobile }}">{{ entry.customer.mobile }}</a></div>
+                <div class="small text-muted">{{ entry.description|default:"" }}</div>
+              </div>
+              <div class="text-end">
+                <div class="fw-bold text-danger">{{ entry.point|floatformat:2 }}</div>
+                <div class="small text-muted">{{ entry.balance|floatformat:2 }} bal</div>
+                <div class="small text-muted">{{ entry.created_at|date:"d/m/Y g:i A" }}</div>
+              </div>
+            </div>
+          </li>
+          {% empty %}
+          <li class="list-group-item text-center text-muted">No negative point entries today.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3) Today's New Customers (name, points, created_at) -->
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="h5">
+          <strong>New Customers — Today</strong>
+        </div>
+        <div class="h6">Count: {{ new_customers_today|length }}</div>
+      </div>
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush" style="max-height:240px; overflow:auto;">
+          {% for c in new_customers_today %}
+          <li class="list-group-item">
+            <div class="d-flex justify-content-between">
+              <div>
+                <div class="fw-bold">{{ c.customer_name|default:"—" }} - <a target="_blank" href="../points/activities/?mobile={{ c.mobile }}">{{ c.mobile }}</a></div>
+                <div class="small text-muted">{{ c.mobile }}</div>
+              </div>
+              <div class="text-end">
+                <div class="fw-bold">{{ c.point|floatformat:2 }}</div>
+                <div class="small text-muted">{{ c.created_at|date:"d/m/Y g:i A" }}</div>
+              </div>
+            </div>
+          </li>
+          {% empty %}
+          <li class="list-group-item text-center text-muted">No new customers today.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ====== end widgets row ====== -->
+
+
+
+  <!-- Daily chart with controls -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <h6 class="mb-0">New Customers — Per Day</h6>
+          <small class="text-muted">Shows number of new customer accounts per day for selected range</small>
+        </div>
+
+        <div class="d-flex align-items-end gap-2 flex-wrap">
+          <div class="text-end">
+            <label class="form-label small mb-1">From</label>
+            <input type="date" id="startDate" class="form-control form-control-sm" />
+          </div>
+
+          <div class="text-end">
+            <label class="form-label small mb-1">To</label>
+            <input type="date" id="endDate" class="form-control form-control-sm" />
+          </div>
+
+          <div class="d-flex flex-column">
+            <label class="form-label small mb-1">&nbsp;</label>
+            <div>
+              <button id="applyDateRange" class="btn btn-sm btn-primary me-1">Apply</button>
+              <button id="resetDateRange" class="btn btn-sm btn-outline-secondary">Reset</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label small mb-1">&nbsp;</label>
+            <select id="dailyRangeSelect" class="form-select form-select-sm" style="width:150px;">
+              <option value="7">Last 7 days</option>
+              <option value="30" selected>Last 30 days</option>
+              <option value="90">Last 90 days</option>
+              <option value="365">Last 365 days</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <canvas id="dailyChart" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly chart -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+          <h6 class="mb-0">New Customers — Per Month</h6>
+          <small class="text-muted">Monthly totals for the selected range (months that intersect range)</small>
+        </div>
+        <div>
+          <button id="downloadDailyCsv" class="btn btn-sm btn-outline-primary me-1">Download Daily CSV</button>
+          <button id="downloadMonthlyCsv" class="btn btn-sm btn-outline-primary">Download Monthly CSV</button>
+        </div>
+      </div>
+      <div>
+        <canvas id="monthlyChart" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block footer %}
+<!-- Chart.js (CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+/**
+ * Helper to build query string for AJAX:
+ * - If start & end provided, use them
+ * - Otherwise use range (days)
+ */
+function buildQueryParams(rangeDays, start, end) {
+    const params = [];
+    if (start && end) {
+        params.push("start=" + encodeURIComponent(start));
+        params.push("end=" + encodeURIComponent(end));
+    } else {
+        params.push("range=" + encodeURIComponent(rangeDays));
+    }
+    return params.length ? ("?" + params.join("&")) : "";
+}
+
+/**
+ * Fetch JSON from server and render both charts.
+ * Server endpoint: {% url 'customer_status_data' %}
+ */
+function fetchAndRender(rangeDays, start=null, end=null) {
+    const qs = buildQueryParams(rangeDays, start, end);
+    const url = "{% url 'customer_status_data' %}" + qs;
+    $.getJSON(url, function (resp) {
+        updateDailyChart(resp.daily.labels, resp.daily.counts);
+        updateMonthlyChart(resp.monthly.labels, resp.monthly.counts);
+
+        // store last-fetched data for CSV download
+        window.__customer_status_last = resp;
+    }).fail(function() {
+        alert('Failed to fetch data for the selected range.');
+    });
+}
+
+/* Chart instances */
+let dailyChart = null;
+let monthlyChart = null;
+
+function updateDailyChart(labels, data) {
+    const ctx = document.getElementById('dailyChart').getContext('2d');
+    if (dailyChart) {
+        dailyChart.data.labels = labels;
+        dailyChart.data.datasets[0].data = data;
+        dailyChart.update();
+        return;
+    }
+    dailyChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'New customers per day',
+                data: data,
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { ticks: { maxRotation: 90, minRotation: 45, autoSkip: true, maxTicksLimit: 15 } },
+                y: { beginAtZero: true, precision: 0, ticks: { stepSize: 1 } }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: { mode: 'index', intersect: false }
+            }
+        }
+    });
+}
+
+function updateMonthlyChart(labels, data) {
+    const ctx = document.getElementById('monthlyChart').getContext('2d');
+    if (monthlyChart) {
+        monthlyChart.data.labels = labels;
+        monthlyChart.data.datasets[0].data = data;
+        monthlyChart.update();
+        return;
+    }
+    monthlyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'New customers per month',
+                data: data,
+                fill: true,
+                tension: 0.2,
+                borderWidth: 2,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, precision: 0, ticks: { stepSize: 1 } }
+            },
+            plugins: { tooltip: { mode: 'index', intersect: false } }
+        }
+    });
+}
+
+/* CSV download helpers */
+function arrayToCsv(rows) {
+    return rows.map(r => r.map(c => {
+        // escape quotes
+        if (typeof c === 'string' && (c.includes(',') || c.includes('"') || c.includes('\n'))) {
+            return '"' + c.replace(/"/g, '""') + '"';
+        }
+        return c;
+    }).join(',')).join('\n');
+}
+
+function downloadCsv(filename, csvContent) {
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+/* DOM interactions */
+$(document).ready(function () {
+    const $start = $('#startDate');
+    const $end = $('#endDate');
+    const $select = $('#dailyRangeSelect');
+
+    // initial load (default 30 days)
+    fetchAndRender($select.val());
+
+    // preset range changed: clear custom dates
+    $select.on('change', function () {
+        $start.val('');
+        $end.val('');
+        fetchAndRender($(this).val());
+    });
+
+    // Apply custom date range
+    $('#applyDateRange').on('click', function (e) {
+        e.preventDefault();
+        const startVal = $start.val();
+        const endVal = $end.val();
+        if (!startVal || !endVal) {
+            alert('Please select both From and To dates.');
+            return;
+        }
+        if (new Date(startVal) > new Date(endVal)) {
+            alert('Start date must be on or before End date.');
+            return;
+        }
+        // fetch with start & end (range param ignored when start+end present)
+        fetchAndRender(null, startVal, endVal);
+        // clear the preset selection (visual hint)
+        $select.val('');
+    });
+
+    // Reset to default
+    $('#resetDateRange').on('click', function (e) {
+        e.preventDefault();
+        $start.val('');
+        $end.val('');
+        $select.val('30');
+        fetchAndRender(30);
+    });
+
+    // CSV downloads (uses last fetched JSON)
+    $('#downloadDailyCsv').on('click', function () {
+        const resp = window.__customer_status_last;
+        if (!resp || !resp.daily) {
+            alert('No data available to download. Please apply a range first.');
+            return;
+        }
+        const rows = [['Date', 'New Customers']];
+        for (let i = 0; i < resp.daily.labels.length; i++) {
+            rows.push([resp.daily.labels[i], resp.daily.counts[i]]);
+        }
+        const csv = arrayToCsv(rows);
+        downloadCsv('customers_daily.csv', csv);
+    });
+
+    $('#downloadMonthlyCsv').on('click', function () {
+        const resp = window.__customer_status_last;
+        if (!resp || !resp.monthly) {
+            alert('No data available to download. Please apply a range first.');
+            return;
+        }
+        const rows = [['Month', 'New Customers']];
+        for (let i = 0; i < resp.monthly.labels.length; i++) {
+            rows.push([resp.monthly.labels[i], resp.monthly.counts[i]]);
+        }
+        const csv = arrayToCsv(rows);
+        downloadCsv('customers_monthly.csv', csv);
+    });
+});
+</script>
+{% endblock footer %}
