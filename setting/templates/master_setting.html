@@ -1,0 +1,132 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+<h4 class="page-title mb-4">Master Setting</h4>
+
+{% if master_id == '' %}
+<div class="row">
+
+    <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <table class="table table-bordered table-centered mb-0">
+
+                        <tbody>
+
+
+                        <tr>
+                            <td>Server Type</td>
+                            <td><select name="server_type" class="form-control">
+                                {% if server_type == 'master' %}
+                                <option value="master">MASTER SERVER</option>
+                                <option value="slave">CLIENT [READ-ONLY]</option>
+                                {% else %}
+
+                                <option value="master">MASTER SERVER</option>
+                                <option value="slave" selected>CLIENT [READ-ONLY]</option>
+
+                                {% endif %}
+                            </select>
+                            </td>
+                        </tr>
+
+
+                        </tbody>
+                    </table>
+                    <div class="h-100 d-flex align-items-center justify-content-center">
+                        <button type="submit" class="btn btn-primary mt-4">Change</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-body">
+
+                {% if server_type == 'master' %}
+
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <table class="table table-bordered table-centered mb-0">
+
+                        <tbody>
+
+
+                        <tr>
+                            <td>Client URL</td>
+                            <td><input class="form-control" type="text" name="client_url"
+                                       value="{{ client_url }}">
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Client Api Code</td>
+                            <td><input class="form-control" type="text" name="client_api_code"
+                                       value="{{ client_api_code }}">
+                            </td>
+                        </tr>
+
+
+                        </tbody>
+                    </table>
+                    <div class="h-100 d-flex align-items-center justify-content-center">
+                        <button type="submit" class="btn btn-primary mt-4">Update & Connect</button>
+                    </div>
+                </form>
+
+                Connection Status: <div class="badge bg-{{connected_color}} text-wrap" style="">
+  {{connected}}
+</div>
+
+                {% else %}
+<table class="table table-bordered table-centered mb-0">
+                        <tr>
+                            <td>Client URL</td>
+                            <td>{{ request.scheme }}://{{ request.META.HTTP_HOST }}</td>
+                        </tr>
+
+                        <tr>
+                            <td>Client Api Code</td>
+                            <td>{{client_uuid}}</td>
+                        </tr>
+</table>
+
+                {% endif %}
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+{% else %}
+<div class="row">
+
+    <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-body">
+
+
+                *THIS APPLICATION NOW WORK AS A CLIENT [READ-ONLY]*
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+{% endif %}
+
+
+{% endblock content %}
+
