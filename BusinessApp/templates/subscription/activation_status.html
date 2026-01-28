@@ -1,0 +1,32 @@
+{% extends "layouts2/main.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow border-info">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">🔐 Activation Status</h5>
+        </div>
+        <div class="card-body">
+
+
+
+                <p><strong>Email:</strong> {{ status.email }}</p>
+                <p><strong>Device ID:</strong> {{ status.device_id }}</p>
+                <p><strong>Expires At:</strong> {{ status.expires_at }}</p>
+                <p><strong>Status:</strong> <span class="badge bg-success">{{ status.status }}</span></p>
+                <p><strong>Days Left:</strong> {{ status.days_left }}</p>
+
+            <a target="_blank" href="{{ACTIVATION_URL}}/subscribe.php?email={{ status.email }}&device_id={{ status.device_id }}" class="btn btn-success">
+    🔓 Add Subscription
+</a>
+
+                        <a href="{% url 'refresh_subscription_status' %}" class="btn btn-outline-info ms-2">
+    🔄 Refresh Subscription
+</a>
+
+
+
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+<form method="get" class="mb-3">
+    <div class="d-flex justify-content-end">
+        <div class="d-flex gap-2">
+            <input type="text" name="mobile" class="form-control" placeholder="Enter mobile number" value="{{ mobile_filter }}">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{% url 'customer_activities' %}" class="btn btn-secondary">Reset</a>
+        </div>
+    </div>
+</form>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card mb-4">
+      <div class="card-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ENTRY TIME</th><th>INVOICE DATE</th><th>INVOICE NUMBER</th><th>BILL AMOUNT</th>
+              <th>CUSTOMER NAME</th><th>MOBILE</th><th>POINTS</th><th>BALANCE</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for data in activity_list %}
+            <tr>
+              <td>{{ data.entry_date|date:"d/m/Y h:i:s A" }}</td>
+              {% if not data.invoice.invoice_number %}
+                <td colspan="3" class="text-danger">{{ data.description }}</td>
+              {% else %}
+                <td>{{ data.invoice.invoice_date|date:"d/m/Y" }}</td>
+                <td>{{ data.invoice.invoice_number }}</td>
+                <td>{{ data.invoice.total_amount|floatformat:2 }}</td>
+              {% endif %}
+              <td>{{ data.customer.customer_name }}</td>
+              <td>{{ data.customer.mobile }}</td>
+              <td style="color: red; font-weight: bold; text-align: right;">{{ data.point|floatformat:2 }}</td>
+              <td style="text-align: right;">{{ data.balance|floatformat:2 }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="8" class="text-center">No activities found.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+
+
+{% if activity_list.has_other_pages %}
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center mt-4 mb-0">
+
+      {# FIRST #}
+      {% if current_page > 1 %}
+        <li class="page-item">
+          <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page=1">First</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">First</span></li>
+      {% endif %}
+
+      {# PREVIOUS #}
+      {% if activity_list.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ activity_list.previous_page_number }}">&laquo; Prev</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">&laquo; Prev</span></li>
+      {% endif %}
+
+      {# Leading ellipsis #}
+      {% if pages|first > 1 %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+
+      {# Page numbers window #}
+      {% for i in pages %}
+        <li class="page-item {% if i == current_page %}active{% endif %}">
+          <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ i }}">{{ i }}</a>
+        </li>
+      {% endfor %}
+
+      {# Trailing ellipsis #}
+      {% if pages|last < total_pages %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+
+      {# NEXT #}
+      {% if activity_list.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ activity_list.next_page_number }}">Next &raquo;</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Next &raquo;</span></li>
+      {% endif %}
+
+      {# LAST #}
+      {% if current_page < total_pages %}
+        <li class="page-item">
+          <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ total_pages }}">Last</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Last</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <div class="d-flex justify-content-between align-items-center gap-3 mt-2">
+    <small class="text-muted">Showing {{ activity_list.start_index }} - {{ activity_list.end_index }} of {{ activity_list.paginator.count }} (Page {{ current_page }} of {{ total_pages }})</small>
+
+    <form class="d-inline-block ms-auto" method="get" style="display:flex; gap:6px; align-items:center;">
+      {% if mobile_filter %}
+        <input type="hidden" name="mobile" value="{{ mobile_filter }}">
+        {# preserve any other query params by appending querystring when the user uses page links; hidden inputs could be added if needed #}
+      {% endif %}
+      <div class="input-group input-group-sm" style="width:150px;">
+        <input type="number" name="page" min="1" max="{{ total_pages }}" class="form-control" placeholder="Page #" aria-label="Page #">
+        <button class="btn btn-outline-secondary" type="submit">Go</button>
+      </div>
+    </form>
+  </div>
+{% endif %}
+
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block footer %}
+<script>
+$(function() {
+  document.querySelector("html").setAttribute('data-layout-style', 'modern');
+});
+</script>
+{% endblock footer %}
