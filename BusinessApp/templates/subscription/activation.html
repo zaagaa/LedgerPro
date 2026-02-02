@@ -1,0 +1,24 @@
+{% extends "layouts2/main.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card border-danger shadow">
+        <div class="card-header bg-danger text-white text-center">
+            <h5 class="mb-0">🔒 Subscription Required</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-center mb-4">
+                Your subscription is <strong>inactive</strong>.<br>
+                Please enter your email to activate.
+            </p>
+            <form method="post" action="/subscription/email/">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">📧 Email Address</label>
+                    <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Activate</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
