@@ -1,0 +1,46 @@
+{% extends 'layouts2/main.html' %}
+{% load static %}
+{% block content %}
+<h4 class="page-title mb-4">Rejoin Discontinued Staff</h4>
+
+<form id="rejoinForm" method="POST" action="">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label for="staff_select" class="form-label">Search Staff</label>
+    <select id="staff_select" class="form-select" style="width: 100%;"></select>
+  </div>
+  <button type="submit" class="btn btn-success" disabled id="rejoinBtn">Rejoin</button>
+</form>
+{% endblock %}
+
+{% block footer %}
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<script>
+$(document).ready(function () {
+    $('#staff_select').select2({
+        placeholder: 'Search discontinued staff',
+        ajax: {
+            url: "{% url 'search_discontinued_staff' %}",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return { q: params.term };
+            },
+            processResults: function (data) {
+                return { results: data.results };
+            },
+            cache: true
+        }
+    });
+
+    $('#staff_select').on('select2:select', function (e) {
+        const staffId = e.params.data.id;
+        $('#rejoinForm').attr('action', `/staff/rejoin/confirm/${staffId}/`);
+        $('#rejoinBtn').prop('disabled', false);
+    });
+});
+</script>
+{% endblock %}
