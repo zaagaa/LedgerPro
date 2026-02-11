@@ -1,0 +1,21 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card shadow-sm rounded-4">
+            <div class="card-body">
+                <h4 class="card-title mb-3">Welcome, {{ request.user.first_name|default:request.user.username }}!</h4>
+                <p class="card-text">
+                    This is your dashboard. Here you can manage sales, inventory, reports, and more.
+                </p>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Logged in as: <strong>{{ request.user.username }}</strong></span>
+                    <span class="text-muted">Position: {{ request.user.get_position_display|default:"-" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
