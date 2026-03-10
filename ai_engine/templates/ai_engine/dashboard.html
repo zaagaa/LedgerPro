@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Dashboard</title>
+</head>
+<body style="font-family: Arial; padding:40px;">
+
+<h2>🤖 AI Sales Dashboard</h2>
+
+{% if error %}
+    <p style="color:red;">{{ error }}</p>
+{% else %}
+    <p>Date: {{ date }}</p>
+    <h3>Tomorrow Expected Sales: ₹ {{ prediction }}</h3>
+{% endif %}
+
+</body>
+</html>
