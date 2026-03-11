@@ -1,0 +1,114 @@
+{% extends 'layouts2/main.html' %}
+{% block content %}
+<h4 class="page-title mb-4">Database Backup & Restore</h4>
+
+<div class="card">
+    <div class="card-body">
+
+<form id="restoreForm" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <input type="file" name="backup_file" class="form-control" required>
+        </div>
+        <div class="col-md-6 d-flex align-items-end">
+            <button type="submit" class="btn btn-danger">Restore</button>
+        </div>
+    </div>
+</form>
+
+<!-- Restore progress UI -->
+<div id="restore-ui" class="my-3" style="display:none;">
+    <div class="progress" style="height: 25px;">
+        <div id="restore-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+             style="width: 0%">0%
+        </div>
+    </div>
+    <p class="mt-2 text-center">⏱️ Elapsed Time: <span id="restore-timer">0</span> sec</p>
+</div>
+
+
+        <a href="{% url 'take_backup' %}" class="btn btn-success mb-3">Create Backup</a>
+
+        <h5>Backup Files</h5>
+        <ul class="list-group">
+            {% for file in backup_files %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ file }}
+                <a href="{% url 'download_backup' file %}" class="btn btn-sm btn-outline-primary">Download</a>
+            </li>
+            {% empty %}
+            <li class="list-group-item">No backup files found.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script>
+    let timerInterval, elapsed = 0;
+
+    function startTimer() {
+        elapsed = 0;
+        $("#restore-timer").text("0");
+        timerInterval = setInterval(() => {
+            elapsed++;
+            $("#restore-timer").text(elapsed);
+        }, 1000);
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+    }
+
+    function updateProgress(percent) {
+        $("#restore-bar").css("width", percent + "%").text(percent + "%");
+    }
+
+    $("#restoreForm").on("submit", function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        $("#restore-ui").show();
+        updateProgress(10);
+        startTimer();
+
+        $.ajax({
+            url: "{% url 'restore_backup' %}",
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            xhr: function () {
+                const xhr = new window.XMLHttpRequest();
+
+                // Simulate progress
+                xhr.addEventListener("loadstart", () => updateProgress(20));
+                xhr.addEventListener("progress", () => updateProgress(50));
+                xhr.addEventListener("loadend", () => updateProgress(90));
+
+                return xhr;
+            },
+            success: function (res) {
+                updateProgress(100);
+                stopTimer();
+                setTimeout(() => {
+                    if (res.success) {
+                        alert("✅ Restore completed in " + elapsed + " sec");
+                        location.reload();
+                    } else {
+                        alert("❌ Restore failed: " + res.error);
+                    }
+                }, 500);
+            },
+            error: function () {
+                stopTimer();
+                updateProgress(0);
+                alert("❌ Restore failed. Check server logs.");
+            }
+        });
+    });
+</script>
+
+{% endblock footer %}
