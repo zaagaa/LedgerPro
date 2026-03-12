@@ -1,0 +1,147 @@
+{% extends 'layouts2/main.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-12">
+    <h4 class="mb-4">Inventory Sales Trend Analysis</h4>
+    <form method="get" class="row g-2 mb-4 align-items-end">
+      <div class="col-md-3">
+        <label for="from_date">From Date:</label>
+        <input type="date" name="from_date" class="form-control" value="{{ from_date }}">
+      </div>
+      <div class="col-md-3">
+        <label for="to_date">To Date:</label>
+        <input type="date" name="to_date" class="form-control" value="{{ to_date }}">
+      </div>
+      <div class="col-md-4">
+        <label for="company_id">Select Company:</label>
+        <select name="company_id" class="form-select">
+          <option value="all" {% if selected_company_id == "all" %}selected{% endif %}>All Companies</option>
+          {% for company in companies %}
+            <option value="{{ company.id }}" {% if company.id|stringformat:"s" == selected_company_id|stringformat:"s" %}selected{% endif %}>
+              {{ company.company_name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Show</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <h5 class="mb-3">📈 Top 25 Growing by Sales</h5>
+    {% for item in top_growing %}
+      <div class="card mb-3 p-3">
+        <strong>{{ item.name }}</strong>
+        <canvas id="grow_{{ forloop.counter }}" height="80"></canvas>
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById("grow_{{ forloop.counter }}");
+            if (ctx) {
+              new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                  labels: {{ item.trend|extract_list:"0"|safe }},
+                  datasets: [{
+                    label: '₹ Sales',
+                    data: {{ item.trend|extract_list:"1"|safe }},
+                    borderColor: 'green',
+                    backgroundColor: 'rgba(0, 128, 0, 0.1)',
+                    tension: 0.3
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      callbacks: {
+                        label: function(context) {
+                          return '₹ ' + new Intl.NumberFormat('en-IN').format(context.raw.toFixed(2));
+                        }
+                      }
+                    }
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      ticks: {
+                        callback: function(value) {
+                          return '₹ ' + new Intl.NumberFormat('en-IN').format(value);
+                        }
+                      }
+                    }
+                  }
+                }
+              });
+            }
+          });
+        </script>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="col-md-6">
+    <h5 class="mb-3">📉 Top 25 Reducing by Sales</h5>
+    {% for item in top_reducing %}
+      <div class="card mb-3 p-3">
+        <strong>{{ item.name }}</strong>
+        <canvas id="reduce_{{ forloop.counter }}" height="80"></canvas>
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById("reduce_{{ forloop.counter }}");
+            if (ctx) {
+              new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                  labels: {{ item.trend|extract_list:"0"|safe }},
+                  datasets: [{
+                    label: '₹ Sales',
+                    data: {{ item.trend|extract_list:"1"|safe }},
+                    borderColor: 'red',
+                    backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                    tension: 0.3
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      callbacks: {
+                        label: function(context) {
+                          return '₹ ' + new Intl.NumberFormat('en-IN').format(context.raw.toFixed(2));
+                        }
+                      }
+                    }
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      ticks: {
+                        callback: function(value) {
+                          return '₹ ' + new Intl.NumberFormat('en-IN').format(value);
+                        }
+                      }
+                    }
+                  }
+                }
+              });
+            }
+          });
+        </script>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
