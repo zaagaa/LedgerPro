@@ -1,0 +1,17 @@
+{
+    "ENGINE": "django.db.backends.postgresql",
+    "NAME": "ledger_pro",
+    "USER": "postgres",
+    "PASSWORD": "123456",
+    "HOST": "localhost",
+    "PORT": "5462"
+}
+
+db_config.json
+
+git fetch origin && git reset --hard origin/main && git clean -fd
+
+
+.....
+..........
+....
