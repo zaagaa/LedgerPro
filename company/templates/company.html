@@ -1,0 +1,275 @@
+{% extends 'layouts2/main.html' %}
+
+
+{% block content %}
+
+
+
+
+
+
+
+
+
+<div class="page-header">
+    <div class="add-item d-flex">
+        <div class="page-title">
+            <h4>Company</h4>
+        </div>
+    </div>
+
+    <div class="page-btn">
+<button class="btn btn-success" onclick="openCompanyModal()">
+  <i class="fas fa-plus-circle me-1"></i> Add Company
+</button>
+
+    </div>
+</div>
+
+
+<div class="modal fade" id="companyModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Company</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="companyModalBody">
+        <!-- AJAX form gets loaded here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="row justify-content-center">
+
+
+    {% if company_count > 0 %}
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+                <table class="table table-bordered table-centered mb-0">
+                    <thead>
+                    <tr>
+                        <th>SL.</th>
+                        <th>Company Name</th>
+                        <th>Tax Number</th>
+                        <th>Address</th>
+
+                        <th colspan="2" class="text-center">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for data in company_list %}
+
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ data.company_name }}</td>
+                        <td>{{data.tax_type}}: {{ data.tax_number }}</td>
+                        <td>{{ data.address }}, {{ data.city }}, {{ data.state }}, {{ data.country }},
+                            {{ data.pincode }}
+                        </td>
+
+
+                        <td class="table-action text-center">
+<a href="javascript:void(0);" onclick="openCompanyModal('{{ data.id }}')" id="edit_{{ data.id }}" class="action-icon">
+  <i class="fas fa-lg fa-fw me-2 fa-edit"></i>
+</a>
+
+
+                        </td>
+                        <td class="table-action text-center">
+{% if user.is_superuser %}
+<a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="{{ data.id }}">
+    <i class="fas fa-lg fa-fw me-2 fa-trash-alt"></i>
+</a>
+{% endif %}
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+
+                    </tbody>
+                </table>
+
+
+            </div>
+
+        </div>
+    </div>
+    {% endif %}
+
+
+</div>
+
+
+
+<!-- Modal for password confirmation -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <label for="password">Enter Superuser Password</label>
+                    <input type="password" name="password" id="password" class="form-control" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Confirm Deletion</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+{% endblock content %}
+
+
+{% block footer %}
+
+
+<script>
+    // When the delete button is clicked, set the company ID in the form action URL
+    $('#deleteModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var companyId = button.data('id'); // Extract company ID from the button
+
+        // Make sure the company ID is correct by checking the console or alert
+        console.log('Company ID:', companyId); // Debugging line, remove after confirming the ID
+
+        // Dynamically set the form action URL for the deletion
+        var formAction = "{% url 'company_delete' '00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', companyId); // Replace '0' with the actual company ID
+
+        // Find the form in the modal and update its action
+        var form = $(this).find('form');
+        form.attr('action', formAction); // Set the action to the correct URL
+    });
+</script>
+
+
+
+<script>
+$('body').off('change', '#id_country').on('change', '#id_country', function () {
+  const countryCode = $(this).val();
+  const $stateSelect = $('#id_state');
+  const selectedState = $stateSelect.attr('data-selected'); // ✅ read selected state
+
+  $stateSelect.empty().append('<option value="">Loading...</option>');
+
+  $.ajax({
+    url: './ajax/get-states/',
+    data: { country: countryCode },
+    success: function(data) {
+      $stateSelect.empty().append('<option value="">Select state</option>');
+      $.each(data.states, function(index, state) {
+        const isSelected = (state === selectedState) ? 'selected' : '';
+        $stateSelect.append(`<option value="${state}" ${isSelected}>${state}</option>`);
+      });
+    },
+    error: function() {
+      $stateSelect.empty().append('<option value="">Error loading states</option>');
+    }
+  });
+});
+
+
+
+</script>
+
+
+<script>
+
+function initCompanyFormValidation() {
+  const form = document.getElementById('companyForm');
+  if (!form) return;
+
+  form.addEventListener('submit', function (e) {
+    if (!form.checkValidity()) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    form.classList.add('was-validated');
+  });
+}
+
+
+
+
+function openCompanyModal(pk = null) {
+  const url = pk ? `./company/${pk}/edit/` : './company/add/';
+  fetch(url)
+    .then(res => res.text())
+    .then(html => {
+
+      document.getElementById('companyModalBody').innerHTML = html;
+      const modal = new bootstrap.Modal(document.getElementById('companyModal'));
+      modal.show();
+
+      // ✅ Setup validation
+      initCompanyFormValidation();
+
+      // ✅ Trigger country change if pre-filled (load states)
+      setTimeout(() => {
+        const selectedCountry = $('#id_country').val();
+        if (selectedCountry) {
+          $('#id_country').trigger('change');
+        }
+      }, 100);
+
+      // ✅ Attach form submit handler only if form exists
+      const form = document.getElementById('companyForm');
+      if (form) {
+        form.addEventListener('submit', function (e) {
+          if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return;
+          }
+
+          e.preventDefault();
+          const formData = new FormData(form);
+
+          fetch(url, {
+            method: 'POST',
+            body: formData
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                location.reload(); // or dynamically refresh table
+              } else if (data.form_html) {
+                document.getElementById('companyModalBody').innerHTML = data.form_html;
+                openCompanyModal(pk); // reinit with same pk
+              }
+            });
+        });
+      } else {
+        console.error('❌ companyForm not found in modal HTML');
+      }
+    })
+    .catch(err => {
+      console.error('❌ Failed to load company modal:', err);
+    });
+}
+
+
+</script>
+
+{% endblock footer %}
