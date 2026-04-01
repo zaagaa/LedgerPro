@@ -1,0 +1,9 @@
+{
+    "ENGINE": "django.db.backends.postgresql",
+    "NAME": "ledger_pro",
+    "USER": "postgres",
+    "PASSWORD": "123456",
+    "HOST": "192.168.1.37",
+    "PORT": "5462",
+    "REMOTE_DATABASE_URL": ""
+}
