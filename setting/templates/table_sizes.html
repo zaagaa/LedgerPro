@@ -1,0 +1,40 @@
+{% extends "layouts2/main.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-header bg-light fw-bold">
+                <i class="bi bi-table me-1"></i> Database Table Sizes
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Table Name</th>
+                            <th class="text-end">Rows</th>
+                            <th class="text-end">Size</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for table in tables %}
+                        <tr>
+                            <td>{{ table.name }}</td>
+                            <td class="text-end">{{ table.row_count|intcomma }}</td>
+                            <td class="text-end">{{ table.size_pretty }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-light fw-bold">
+                        <tr>
+                            <td class="text-end" colspan="2">Grand Total</td>
+                            <td class="text-end">{{ grand_total }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
