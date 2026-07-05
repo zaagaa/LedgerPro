@@ -1,0 +1,63 @@
+pip install -r requirements.txt
+
+
+to create requirements.txt file:
+pip freeze > requirements.txt
+
+12
+
+<script type="text/javascript">
+      $(document).ready(function () {
+              $('#post_form').submit(function(i){
+              //first prevent the page from reloading and all other default actions
+              i.preventDefault();
+              var serializedData = $(this).serializeArray();
+              //make POST ajax call
+              $.ajax({
+                  method:'POST',
+                  url: "",
+                  data: serializedData,
+                  success: function (response, django_backend, form_isbound) {
+                      $("#post_form").trigger('reset');
+                      console.log(serializedData);
+                      console.log(response);
+                      console.log(django_backend);
+                      console.log(form_isbound);
+                      alert("done!");
+
+                      $('#stock_purchase_table tbody').append(
+                            '<tr><td>' + serializedData[2].value + '</td><td>' + serializedData[3].value + '</td></tr>'
+                        );
+
+
+                      },
+                  error: function (response) {
+                      alert(response["responseJSON"]["error"]);
+                  }
+              })
+          })
+      })
+    </script>
+
+
+         <script>
+
+
+    $(document).ready(function() {
+        $("#add_purchase_entry").click(function() {
+alert("Yes");
+
+
+            $.ajax({
+                    url: '{% url 'purchase_stock_table' %}',
+                    success: function(data) {
+                    $('#stock_data').html(data);
+                    }
+                  });
+
+
+        });
+    });
+
+
+</script>

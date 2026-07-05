@@ -1,0 +1,108 @@
+{% extends 'layouts2/main.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="mb-3">Manual Point Entry</h5>
+
+        {% if message %}
+          <div class="alert alert-success">{{ message }}</div>
+        {% endif %}
+        {% if error %}
+          <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        {% if preview %}
+          <!-- 🔄 Confirmation Step -->
+          <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="step" value="finish">
+            <input type="hidden" name="mobile" value="{{ mobile }}">
+            <input type="hidden" name="point" value="{{ point }}">
+            <input type="hidden" name="entry_date" value="{{ entry_date }}">
+            <input type="hidden" name="description" value="{{ description }}">
+
+            <div class="alert alert-info">
+              <p><strong>Customer:</strong> {{ customer.customer_name }}</p>
+              <p><strong>Mobile:</strong> {{ customer.mobile }}</p>
+              <p><strong>Current Point:</strong> {{ current_balance }}</p>
+              <p><strong>{% if point > 0 %}Add{% else %}Deduct{% endif %}:</strong> {{ point }}</p>
+              <p><strong>New Point Total:</strong> {{ new_balance }}</p>
+              <p><strong>Description:</strong> {{ description }}</p>
+              <p><strong>Date & Time:</strong> {{ entry_date }}</p>
+            </div>
+
+            <button type="submit" class="btn btn-success">✅ Finish</button>
+            <a href="{% url 'manual_point_entry' %}" class="btn btn-secondary">Cancel</a>
+          </form>
+
+        {% else %}
+          <!-- 📝 Entry Step -->
+          <form method="POST" class="row g-3">
+            {% csrf_token %}
+            <input type="hidden" name="step" value="confirm">
+
+            <div class="col-md-4">
+              <label class="form-label">Customer Mobile</label>
+              <input type="text" name="mobile" id="mobile_input" class="form-control" required>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label">Customer Info</label>
+              <div id="customer_info" class="form-control bg-light" readonly>
+                Type mobile number to fetch...
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Point (use negative for deduction)</label>
+              <input type="number" step="0.01" name="point" class="form-control" required>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Description</label>
+              <input type="text" name="description" class="form-control">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Date & Time</label>
+              <input type="datetime-local" name="entry_date" class="form-control" value="{{ now|date:'Y-m-d\\TH:i' }}" required>
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary">Preview Entry</button>
+            </div>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script>
+$(document).ready(function () {
+  $('#mobile_input').on('input', function () {
+    const mobile = $(this).val().trim();
+
+    if (mobile.length === 10) {
+      $.ajax({
+        url: "{% url 'customer_lookup' %}",
+        data: { mobile },
+        success: function (response) {
+          $('#customer_info').html(`<strong>${response.name}</strong> - ${parseFloat(response.point).toFixed(2)} points`);
+        },
+        error: function (xhr) {
+          if (xhr.status === 404) {
+            $('#customer_info').html('<span class="text-danger">Customer not found</span>');
+          } else {
+            $('#customer_info').html('<span class="text-danger">Error fetching customer</span>');
+          }
+        }
+      });
+    } else {
+      $('#customer_info').html('Enter a 10-digit mobile number');
+    }
+  });
+});
+</script>
+{% endblock %}
