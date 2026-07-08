@@ -1,0 +1,112 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+<h4 class="page-title mb-4">Expenses</h4>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+                <form action="" method="POST" class="row gy-2 gx-3 align-items-center justify-content-center mb-4">
+                    {% csrf_token %}
+                    <div class="col-auto"><label class="form-check-label">From:</label></div>
+                    <div class="col-auto">
+                        <input style='width:150px;' class='form-control datepicker form-control-sm-4'
+                               type='text' name='start_date' value='{{form_start_date}}'>
+                    </div>
+                    <div class="col-auto"><label class="form-check-label">To:</label></div>
+                    <div class="col-auto">
+                        <input style='width:150px;' class='form-control datepicker form-control-sm-4'
+                               type='text' name='end_date' value='{{form_end_date}}'>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Show</button>
+                    </div>
+                </form>
+
+                <table class="table">
+                    {% for data in expenses_list %}
+                    <tr>
+                        <td>{{ data.entry_date|date:"d/m/Y h:i A" }}</td>
+                        <td>{{ data.description }}</td>
+                        <td>{{ data.amount }}</td>
+                        <td>{{ data.balance }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                {% if finish == 0 %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row justify-content-center g-3" style="max-width: 900px; margin: 0 auto;">
+                        <div class="col-auto">
+                            <input type="text" class="form-control datepicker" id="date" value="{{ TODAY }}" disabled>
+                        </div>
+                        <div class="col-auto">
+                            <input type="text" class="form-control" name="description" placeholder="Description">
+                        </div>
+                        <div class="col-auto">
+                            <input type="text" class="form-control" name="amount" placeholder="Amount">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary mb-3">Add</button>
+                        </div>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block footer %}
+
+
+<script>
+$(function () {
+    document.querySelector("html").setAttribute("data-layout-mode", 'light_mode');
+    document.querySelector("html").setAttribute('data-layout-style', 'modern');
+    document.querySelector("html").setAttribute('data-nav-color', 'light');
+
+    let $desc = $("input[name='description']");
+    let $amount = $("input[name='amount']");
+
+    // Focus on description
+    $desc.focus();
+
+    // Autocomplete
+    $desc.autocomplete({
+        source: "{% url 'autocomplete_expense_description' %}",
+        minLength: 1
+    });
+
+    // Title Case on blur or enter
+    function toTitleCase(str) {
+        return str.toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
+    }
+
+    $desc.on('blur keydown', function (e) {
+        if (e.type === 'blur' || (e.type === 'keydown' && e.key === 'Enter')) {
+            let val = $desc.val().trim();
+            let titleCased = toTitleCase(val);
+            $desc.val(titleCased);
+            if (e.key === 'Enter' && val !== "") {
+                e.preventDefault();
+                $amount.focus();
+            }
+        }
+    });
+});
+</script>
+{% endblock footer %}
