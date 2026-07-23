@@ -1,0 +1,103 @@
+<form method="post" id="companyForm" class="needs-validation" novalidate>
+  {% csrf_token %}
+  <div class="row g-3">
+
+    <div class="col-md-6">
+      <label for="{{ form.company_name.id_for_label }}" class="form-label">Company Name</label>
+      {{ form.company_name }}
+      {% if form.company_name.errors %}
+        <div class="invalid-feedback d-block">{{ form.company_name.errors.0 }}</div>
+      {% else %}
+        <div class="invalid-feedback">Company name is required.</div>
+      {% endif %}
+    </div>
+
+    <div class="col-md-6">
+      <label for="{{ form.tax_number.id_for_label }}" class="form-label">Tax Number</label>
+      {{ form.tax_number }}
+    </div>
+
+    <div class="col-md-12">
+      <label for="{{ form.address.id_for_label }}" class="form-label">Address</label>
+      {{ form.address }}
+      {% if form.address.errors %}
+        <div class="invalid-feedback d-block">{{ form.address.errors.0 }}</div>
+      {% else %}
+        <div class="invalid-feedback">Address is required.</div>
+      {% endif %}
+    </div>
+
+          <div class="col-md-4">
+      <label for="{{ form.country.id_for_label }}" class="form-label">Country</label>
+      {{ form.country }}
+      {% if form.country.errors %}
+        <div class="invalid-feedback d-block">{{ form.country.errors.0 }}</div>
+      {% else %}
+        <div class="invalid-feedback">Country is required.</div>
+      {% endif %}
+    </div>
+
+
+
+    <div class="col-md-4">
+      <label for="id_state" class="form-label">State</label>
+      <select name="state" id="id_state" class="form-control" required data-selected="{{ form.state.value }}">
+        {% if form.state.value %}
+          <option value="{{ form.state.value }}" selected>{{ form.state.value }}</option>
+        {% else %}
+          <option value="">Select state</option>
+        {% endif %}
+      </select>
+      {% if form.state.errors %}
+        <div class="invalid-feedback d-block">{{ form.state.errors.0 }}</div>
+      {% else %}
+        <div class="invalid-feedback">State is required.</div>
+      {% endif %}
+    </div>
+
+    <div class="col-md-4">
+      <label for="{{ form.city.id_for_label }}" class="form-label">City</label>
+      {{ form.city }}
+      {% if form.city.errors %}
+        <div class="invalid-feedback d-block">{{ form.city.errors.0 }}</div>
+      {% else %}
+        <div class="invalid-feedback">City is required.</div>
+      {% endif %}
+    </div>
+
+    <div class="col-md-4">
+      <label for="{{ form.pincode.id_for_label }}" class="form-label">Pincode</label>
+      {{ form.pincode }}
+      {% if form.pincode.errors %}
+        <div class="invalid-feedback d-block">{{ form.pincode.errors.0 }}</div>
+      {% else %}
+        <div class="invalid-feedback">Pincode is required.</div>
+      {% endif %}
+    </div>
+
+        <div class="col-md-4">
+      <label for="{{ form.mobile.id_for_label }}" class="form-label">Mobile</label>
+      {{ form.mobile }}
+      {% if form.mobile.errors %}
+        <div class="invalid-feedback d-block">{{ form.mobile.errors.0 }}</div>
+      {% else %}
+        <div class="invalid-feedback">Mobile is required.</div>
+      {% endif %}
+    </div>
+
+    <div class="col-md-4">
+      <label for="{{ form.tax_type.id_for_label }}" class="form-label">Tax Type</label>
+      {{ form.tax_type }}
+      {% if form.tax_type.errors %}
+        <div class="invalid-feedback d-block">{{ form.tax_type.errors.0 }}</div>
+      {% else %}
+        <div class="invalid-feedback">Tax type is required.</div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <div class="mt-4 text-end">
+    <button type="submit" class="btn btn-primary">💾 Save</button>
+  </div>
+</form>
