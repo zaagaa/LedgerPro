@@ -1,0 +1,15 @@
+{
+    "ENGINE": "django.db.backends.postgresql",
+    "NAME": "ledgerpro",
+    "USER": "ledgerpro",
+    "PASSWORD": "ledger123",
+    "HOST": "localhost",
+    "PORT": "5432",
+    "REMOTE_DATABASE_URL": "",
+    "CONN_MAX_AGE": 0,
+    "OPTIONS": {},
+    "ATOMIC_REQUESTS": false,
+    "TIME_ZONE": "Asia/Kolkata",
+    "CONN_HEALTH_CHECKS": false,
+    "AUTOCOMMIT": true
+}
