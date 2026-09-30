@@ -1,0 +1,289 @@
+{% extends 'layouts2/main.html' %}
+{% load automation_tags %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div class="add-item d-flex">
+
+        <div class="page-title">
+
+            <h4>Purchase Order</h4>
+
+            <h6>
+                {{ inventory.inventory_name }}
+            </h6>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="row">
+
+    <div class="col-lg-12">
+
+        <div class="card mb-4">
+
+            <div class="card-body">
+
+
+                <!-- Header -->
+
+                <div class="d-flex align-items-center mb-4">
+
+                    <a href="{% url 'purchase_order_settings' %}"
+                       class="btn btn-outline-primary me-3">
+
+                        <i class="fas fa-arrow-left me-1"></i>
+
+                        Back
+
+                    </a>
+
+
+                    <div>
+
+                        <h4 class="mb-0">
+
+                            <i class="fas fa-shopping-cart me-2"></i>
+
+                            {{ inventory.inventory_name }}
+
+                        </h4>
+
+                        <small class="text-muted">
+
+                            Automatic Order Settings
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Information -->
+
+                <div class="alert alert-info">
+
+                    <i class="fas fa-info-circle me-2"></i>
+
+                    Set the minimum and maximum stock for each product.
+                    When available stock reaches the minimum,
+                    the system will calculate the required order quantity.
+
+                </div>
+
+
+                <!-- Table -->
+
+                <div class="card border">
+
+                    <div class="card-header">
+
+                        <strong>
+
+                            <i class="fas fa-boxes me-2"></i>
+
+                            Stock Order Settings
+
+                        </strong>
+
+                    </div>
+
+
+                    <div class="card-body p-0">
+
+                        <div class="table-responsive">
+
+                            <table class="table table-bordered table-hover mb-0">
+
+                                <thead>
+
+                                    <tr>
+
+                                        {% for attribute_type in attribute_types %}
+
+                                        <th>
+                                            {{ attribute_type|title }}
+                                        </th>
+
+                                        {% endfor %}
+
+                                        <th class="text-end">
+                                            Current Stock
+                                        </th>
+
+                                        <th style="width: 130px;">
+                                            Min Stock
+                                        </th>
+
+                                        <th style="width: 130px;">
+                                            Max Stock
+                                        </th>
+
+                                        <th style="width: 100px;"
+                                            class="text-center">
+
+                                            Auto
+
+                                        </th>
+
+                                        <th style="width: 100px;"
+                                            class="text-center">
+
+                                            Save
+
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+
+                                <tbody>
+
+{% for group in stock_groups %}
+
+<tr>
+
+    {% for attribute_type in attribute_types %}
+
+    <td>
+
+        {% with attr=group.attributes|get_item:attribute_type %}
+
+            {% if attr %}
+                {{ attr.name }}
+            {% else %}
+                -
+            {% endif %}
+
+        {% endwith %}
+
+    </td>
+
+    {% endfor %}
+
+
+    <td class="text-end">
+
+        <strong class="{% if group.qty <= group.minimum_stock and group.enabled %}text-danger{% else %}text-success{% endif %}">
+
+            {{ group.qty }}
+
+        </strong>
+
+    </td>
+
+
+    <td>
+
+        <form method="POST"
+              action="{% url 'save_purchase_order_setting' inventory.id %}"
+              class="d-flex align-items-center gap-1">
+
+            {% csrf_token %}
+
+            {% for attribute_id in group.attribute_ids %}
+
+            <input type="hidden"
+                   name="attribute_ids"
+                   value="{{ attribute_id }}">
+
+            {% endfor %}
+
+            <input type="number"
+                   name="minimum_stock"
+                   value="{{ group.minimum_stock }}"
+                   min="0"
+                   step="0.01"
+                   class="form-control form-control-sm">
+
+    </td>
+
+
+    <td>
+
+            <input type="number"
+                   name="maximum_stock"
+                   value="{{ group.maximum_stock }}"
+                   min="0"
+                   step="0.01"
+                   class="form-control form-control-sm">
+
+    </td>
+
+
+    <td class="text-center">
+
+            <div class="form-check form-switch d-flex justify-content-center">
+
+                <input type="checkbox"
+                       name="enabled"
+                       value="1"
+                       class="form-check-input"
+                       {% if group.enabled %}checked{% endif %}>
+
+            </div>
+
+    </td>
+
+
+    <td class="text-center">
+
+            <button type="submit"
+                    class="btn btn-outline-primary btn-sm">
+
+                <i class="fas fa-save"></i>
+
+            </button>
+
+        </form>
+
+    </td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+    <td colspan="20"
+        class="text-center text-muted py-5">
+
+        <i class="fas fa-box-open fa-2x mb-3"></i>
+
+        <p class="mb-0">
+            No Stock Maintenance items found.
+        </p>
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock content %}

@@ -1,0 +1,172 @@
+{% extends 'layouts2/main.html' %}
+{% load statement_tags %}
+
+{% block content %}
+
+<div class="page-header">
+    <div class="add-item d-flex">
+        <div class="page-title">
+            <h4>Statement - Bill Wise </h4>
+            <form action="" method="POST">
+                {% csrf_token %}
+<div class="d-flex align-items-end gap-2">
+    <div class="col-auto">
+        <label for="bill_date" class="form-label">Bill Date:</label>
+        <input type="text" class="form-control datepicker" id="bill_date" name="bill_date" placeholder="" value="{{ invoice_date }}">
+    </div>
+    <div class="col-auto">
+        <button type="submit" id="show" class="btn btn-primary">Show</button>
+    </div>
+</div>
+</form>
+        </div>
+
+    </div>
+
+<ul class="table-top-head">
+<li>
+
+</li>
+
+</ul>
+
+</div>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>BILL NO</th>
+                        <th>TIME</th>
+                        <th>CASHIER</th>
+                        <th>EXCHANGE</th>
+                        <th>DISCOUNT</th>
+                        <th>AMOUNT</th>
+                        <th>Sale Recalculated Total</th> <!-- new -->
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for invoice in invoices %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+<a href="javascript:void(0);" onclick="loadInvoiceModal('{{ invoice.id }}')">
+    {{ invoice.invoice_number }}
+</a>
+
+                        </td>
+                        <td>{{ invoice.invoice_date|date:"h:i:s A" }}</td>
+                        <td>{{ invoice.user.username }}</td>
+                        <td>{{ invoice.exchange_value|default_if_none:'-' }}</td>
+                        <td>
+                            {% if invoice.discount_value %}
+                            -{{ invoice.discount_value|floatformat:2 }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td>{{ invoice.total_amount }}</td>
+
+  {% with sale_total=invoice_sale_totals|get_item:invoice.id %}
+      <td>{{ invoice.total_amount|subtract:sale_total|floatformat:2|default:'' }}</td>
+
+  {% endwith %}
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th colspan="4" class="text-right">TOTAL:</th>
+                        <th>{{ exchange_total|default_if_none:'-' }}</th>
+                        <th>{{ discount_total|default_if_none:'-' }}</th>
+                        <th>{{ total_amount }}</th>
+                    </tr>
+                    </tfoot>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="invoiceModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered w-auto mx-auto">
+  <div class="modal-content">
+<div class="modal-header justify-content-end">
+  <button type="button" class="btn btn-sm btn-outline-secondary me-2" onclick="printInvoiceModal()">
+    <i class="fas fa-print me-1"></i> Print
+  </button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+    <div class="modal-body p-2">
+      <div id="invoiceModalBody" class="mx-auto" style="width: max-content;">
+        <!-- Your bill will load here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<style>
+  #invoiceModal .modal-dialog {
+    max-width: 380px; /* Adjust as needed */
+  }
+</style>
+
+
+
+
+{% endblock content %}
+
+{% block footer %}
+<script>
+function loadInvoiceModal(invoiceId) {
+    $('#invoiceModalBody').html('<div class="text-center text-muted">Loading...</div>');
+
+
+const url = "{% url 'invoice_modal_view' '00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', invoiceId);
+
+
+
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function (response) {
+var html = '';
+        eval(response.pos_template);
+
+            $('#invoiceModalBody').html(html);
+            const modal = new bootstrap.Modal(document.getElementById('invoiceModal'));
+            modal.show();
+        },
+        error: function () {
+            $('#invoiceModalBody').html('<div class="text-danger text-center">Failed to load invoice.</div>');
+        }
+    });
+}
+
+
+
+function printInvoiceModal() {
+    const printContent = document.getElementById('invoiceModalBody').innerHTML;
+    const originalContent = document.body.innerHTML;
+
+    document.body.innerHTML = printContent;
+    window.print();
+    document.body.innerHTML = originalContent;
+    location.reload(); // Optional: reload to restore events and state
+}
+
+</script>
+
+
+{% endblock footer %}

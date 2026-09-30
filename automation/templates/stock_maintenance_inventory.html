@@ -1,0 +1,347 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+<div class="page-header">
+    <div class="add-item d-flex">
+        <div class="page-title">
+            <h4>AI Order</h4>
+            <h6>Send Order to Supplier Automatically</h6>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-12">
+
+        <div class="card mb-4">
+            <div class="card-body">
+
+                <!-- =========================
+                     PAGE HEADER
+                ========================== -->
+                <div class="d-flex align-items-center mb-4">
+
+                    <a href="{% url 'stock_maintenance_brand' inventory.id %}"
+                       class="btn btn-outline-primary me-3">
+                        <i class="fas fa-arrow-left me-1"></i>
+                        Back
+                    </a>
+
+                    <div>
+                        <h4 class="mb-0">
+                            <i class="fas fa-box me-2"></i>
+                            {{ inventory.inventory_name }}
+                        </h4>
+
+                        <small class="text-muted">
+                            Brand: {{ brand.attribute_name }}
+                        </small>
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     STOCK AVAILABILITY CARD
+                ========================== -->
+                <div class="card border">
+
+                    <div class="card-header d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <i class="fas fa-boxes me-2"></i>
+                            <strong>Stock Availability</strong>
+                        </div>
+
+                        <span class="badge bg-success">
+                            {{ stock_groups|length }} Items
+                        </span>
+
+                    </div>
+
+
+                    <!-- =========================
+                         STOCK TABLE
+                    ========================== -->
+                    <div class="card-body p-0">
+
+                        <div class="table-responsive">
+
+                            <table class="table table-bordered table-hover mb-0">
+
+                                <thead>
+                                    <tr>
+                                        <th>Brand</th>
+                                        <th>Style</th>
+                                        <th>Type</th>
+                                        <th>Color</th>
+                                        <th>Size</th>
+                                        <th class="text-end">Qty</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    {% for group in stock_groups %}
+
+                                    <tr class="stock-summary-row"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#stockModal{{ forloop.counter }}">
+
+                                        <td>
+                                            {{ group.brand }}
+                                        </td>
+
+                                        <td>
+                                            {{ group.style }}
+                                        </td>
+
+                                        <td>
+                                            {{ group.type }}
+                                        </td>
+
+                                        <td>
+                                            {{ group.color }}
+                                        </td>
+
+                                        <td>
+                                            {{ group.size }}
+                                        </td>
+
+                                        <td class="text-end">
+                                            <strong class="text-success">
+                                                {{ group.qty }}
+                                            </strong>
+                                        </td>
+
+                                    </tr>
+
+                                    {% empty %}
+
+                                    <tr>
+                                        <td colspan="6"
+                                            class="text-center py-5 text-muted">
+
+                                            <i class="fas fa-box-open fa-2x mb-3"></i>
+
+                                            <div>
+                                                No stock available.
+                                            </div>
+
+                                        </td>
+                                    </tr>
+
+                                    {% endfor %}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- =====================================================
+     MODALS
+     IMPORTANT:
+     Keep modals OUTSIDE the table
+====================================================== -->
+
+{% for group in stock_groups %}
+
+<div class="modal fade"
+     id="stockModal{{ forloop.counter }}"
+     tabindex="-1"
+     aria-labelledby="stockModalLabel{{ forloop.counter }}"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+
+                <div>
+
+                    <h5 class="modal-title"
+                        id="stockModalLabel{{ forloop.counter }}">
+
+                        <i class="fas fa-boxes me-2"></i>
+                        Stock Details
+
+                    </h5>
+
+                    <small class="text-muted">
+
+                        {{ group.brand }}
+
+                        {% if group.style != "-" %}
+                            / {{ group.style }}
+                        {% endif %}
+
+                        {% if group.type != "-" %}
+                            / {{ group.type }}
+                        {% endif %}
+
+                        {% if group.color != "-" %}
+                            / {{ group.color }}
+                        {% endif %}
+
+                        {% if group.size != "-" %}
+                            / {{ group.size }}
+                        {% endif %}
+
+                    </small>
+
+                </div>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+
+            </div>
+
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover mb-0">
+
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">#</th>
+                                <th>Barcode</th>
+                                <th>Supplier</th>
+                                <th>Invoice</th>
+                                <th class="text-end">Buy Price</th>
+                                <th class="text-end">Qty</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for stock in group.stocks %}
+
+                            <tr>
+
+                                <td>
+                                    {{ forloop.counter }}
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        {{ stock.barcode }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    {{ stock.supplier.supplier_name|default:"-" }}
+                                </td>
+
+                                <td>
+                                    {{ stock.purchase.invoice_number|default:"-" }}
+                                </td>
+
+                                <td class="text-end">
+                                    {{ stock.buy_price }}
+                                </td>
+
+                                <td class="text-end">
+                                    <strong>
+                                        {{ stock.qty|default:0 }}
+                                    </strong>
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                        <tfoot>
+
+                            <tr>
+
+                                <th colspan="5"
+                                    class="text-end">
+                                    Total Qty
+                                </th>
+
+                                <th class="text-end text-success">
+                                    {{ group.qty }}
+                                </th>
+
+                            </tr>
+
+                        </tfoot>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+
+<!-- =========================
+     SMALL CSS
+========================== -->
+
+<style>
+.stock-summary-row {
+    cursor: pointer;
+}
+
+.stock-summary-row:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.stock-summary-row td {
+    vertical-align: middle;
+}
+
+.table th {
+    white-space: nowrap;
+}
+
+.table td {
+    vertical-align: middle;
+}
+</style>
+
+{% endblock content %}

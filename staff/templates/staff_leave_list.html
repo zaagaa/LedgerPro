@@ -1,0 +1,81 @@
+{% extends 'layouts2/main.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<h5 class="mb-4">Date-wise Leave List</h5>
+
+<form method="get" class="mb-3">
+    <label class="me-2">Month</label>
+    <select name="month" class="form-select d-inline w-auto me-3">
+        {% for m in month_choices %}
+            <option value="{{ m }}" {% if m == month %}selected{% endif %}>
+                {{ m|date:"F"|default:m }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label class="me-2">Year</label>
+    <input type="number" name="year" value="{{ year }}"
+           class="form-control d-inline w-auto me-3" min="2020" max="2100">
+
+    <button type="submit" class="btn btn-warning">Show</button>
+</form>
+
+{% for d in dates %}
+    {% with leaves=datewise_leave_map|get_item:d %}
+        <div class="card mb-3 border border-info">
+            <div class="card-header bg-info text-white fw-bold">
+                {{ d|date:"d M, D" }}
+            </div>
+            <div class="card-body p-0">
+                {% if leaves %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">S.No</th>
+                                    <th>Staff</th>
+                                    <th>Status</th>
+                                    <th>Approval</th>
+                                    <th>Session</th>
+                                    <th>In Time</th>
+                                    <th>Out Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for leave in leaves %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ leave.staff_name }}</td>
+                                        <td>
+                                            {% if leave.status == 'full' %}
+                                                <span class="text-danger fw-bold">Full Day</span>
+                                            {% elif leave.status == 'half' %}
+                                                <span class="text-warning fw-bold">Half Day</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+    {% if leave.approval == "Approved" %}
+        <span class="text-success fw-bold">Approved</span>
+    {% else %}
+        <span class="text-danger fw-bold">Unapproved</span>
+    {% endif %}
+</td>
+                                        <td>{{ leave.session }}</td>
+                                        <td>{{ leave.in_time }}</td>
+                                        <td>{{ leave.out_time }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="p-3">
+                        <span class="text-success">No Leaves</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endwith %}
+{% endfor %}
+{% endblock %}
