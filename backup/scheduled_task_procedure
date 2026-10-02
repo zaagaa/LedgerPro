@@ -1,0 +1,71 @@
+Awesome — glad it's working now! 🙌
+
+---
+
+##  To Run the Backup Script Every Hour on Windows
+
+You can use **Windows Task Scheduler** to run the Python script every hour automatically.
+
+---
+
+### 🛠️ Step-by-step Setup:
+
+1. **Open Task Scheduler**
+   Press `Windows + R`, type `taskschd.msc`, hit **Enter**.
+
+2. **Create Basic Task**
+   - Click **“Create Basic Task…”**
+   - Name it: `PostgreSQL Backup Every Hour`
+
+3. **Trigger**
+   - Choose **“Daily”**
+   - Set **Start time** (e.g., 12:00 AM)
+   - On the next screen, choose **Repeat task every 1 hour** for **1 day**
+
+4. **Action**
+   - Choose **“Start a program”**
+
+5. **Program/script**
+   Enter the path to your **Python executable**, for example:
+
+   ```
+   wscript.exe
+
+   ```
+
+6. **Add Arguments (optional)**
+   Add the path to your script:
+
+   ```
+   "H:\BusinessApp\backup\run_backup_silent.vbs"
+   ```
+
+7. **Finish**
+   Click **Finish**, then go to **Task Scheduler Library**, find your task, right-click → **Properties**.
+
+---
+
+###  In Properties (Advanced Settings):
+
+1. In **Triggers → Edit**
+   - Set: Repeat task every **1 hour**
+   - For a duration of: **1 day**
+   - Enabled:
+
+2. In **Conditions**
+   - Uncheck **"Start the task only if the computer is on AC power"** if needed.
+
+3. In **Settings**
+   - Enable **“Run task as soon as possible after a scheduled start is missed”**
+   - Enable **“If the task fails, restart every 5 minutes” (optional)**
+
+---
+
+### 🔁 Bonus: To run script every 10 minutes, just change the repeat time
+
+Let me know if you want to:
+- Log output to a file
+- Add desktop notifications when backup completes
+- Zip the SQL files to save space
+
+Want me to generate a `.bat` file or Task Scheduler XML for this?

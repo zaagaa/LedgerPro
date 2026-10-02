@@ -1,0 +1,72 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+<div class="page-header">
+    <div class="add-item d-flex">
+        <div class="page-title">
+            <h4>Pos Print Template</h4>
+        </div>
+    </div>
+
+
+</div>
+
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-body">
+
+                    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.template_name.label_tag }}
+            {{ form.template_name }}
+        </div>
+        <div class="mb-3">
+            {{ form.template.label_tag }}
+            {{ form.template }}
+        </div>
+        <button type="submit" class="btn btn-primary">Save Template</button>
+    </form>
+
+</div></div></div>
+
+   <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-body">
+
+<table class="table table-bordered table-striped">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Template Preview</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for template in templates %}
+        <tr>
+            <td>{{ template.id }}</td>
+            <td>{{ template.template_name }}</td>
+            <td>{{ template.template|truncatechars:40 }}</td>
+            <td>
+                <a href="{% url 'edit_template' template.id %}" class="btn btn-sm btn-warning">Edit</a>
+                <a href="{% url 'delete_template' template.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No templates added yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+</div></div></div>
+
+</div>
+
+
+{% endblock content %}

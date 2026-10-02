@@ -1,0 +1,261 @@
+{% extends 'layouts2/main.html' %}
+{% load static %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'bootstrap/assets/plugins/flatpickr/flatpickr.css' %}">
+{% endblock header %}
+
+{% block content %}
+
+<div class="row align-items-end mb-3">
+<div class="col-md-6">
+    <form method="post">
+        {% csrf_token %}
+        <div class="row align-items-center g-2">
+            <div class="col-auto">
+                <label for="date" class="col-form-label">DATE:</label>
+            </div>
+            <div class="col-auto">
+                <input class="form-control form-control-sm datepicker" style="width: 150px;"
+                       id="date" type="text" name="from" value="{{ selected_date }}">
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="col-md-6 text-end">
+    <div class="d-flex justify-content-end gap-2">
+
+        {% if sync_allowed %}
+        <button type="button" class="btn btn-success" id="sync_button">
+            <i class="fas fa-sync-alt"></i> Sync Attendance
+        </button>
+        {% else %}
+        <button type="button" class="btn btn-secondary" disabled title="Sync only allowed for today or yesterday">
+            <i class="fas fa-lock"></i> Sync Disabled
+        </button>
+        {% endif %}
+
+        <!-- 🔴 Finish Button -->
+{% if editable %}
+    <!-- FINISH Button -->
+    <form method="post" action="" class="attendance-finish-form">
+        {% csrf_token %}
+        <input type="hidden" name="attendance_finish" value="finish">
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-check-circle"></i> Finish
+        </button>
+    </form>
+{% else %}
+    <!-- UNFINISH Button -->
+    <form method="post" action="" class="attendance-finish-form">
+        {% csrf_token %}
+        <input type="hidden" name="attendance_finish" value="-">
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-check-circle"></i> Editable
+        </button>
+    </form>
+{% endif %}
+
+
+    </div>
+    <div id="sync_status" class="text-muted small mt-2 text-start"></div>
+</div>
+</div>
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+
+
+
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Mobile</th>
+                        <th>In Time</th>
+                        <th>Out Time</th>
+                        <th>Status</th>
+                        {% if editable %}
+                        <th>Mark Absent</th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for data in staff_data %}
+                    <tr style='{% if data.in_time == "" or data.out_time == "" %}background-color:#ffe2db;{% endif %}'>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ data.staff_name }}</td>
+                        <td>{{ data.mobile }}</td>
+
+                        <td>
+                            {% if editable %}
+                            <input type="text" class="form-control in_picker time_picker"
+                                   value="{{ data.in_time }}" id="in_{{ data.id }}">
+                            {% else %}
+                            {{ data.in_time }}
+                            <input type="hidden" id="in_{{ data.id }}" value="{{ data.in_time }}">
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if editable %}
+                            <input type="text" class="form-control out_picker time_picker"
+                                   value="{{ data.out_time }}" id="out_{{ data.id }}">
+                            {% else %}
+                            {{ data.out_time }}
+                            <input type="hidden" id="out_{{ data.id }}" value="{{ data.out_time }}">
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <span id="status_{{ data.id }}">
+                            {% if data.status == "Full Day" %}
+                                <span class="badge bg-success">Full Day</span>
+                            {% elif data.status == "Half Day" %}
+                                <span class="badge bg-warning text-dark">Half Day</span>
+                            {% else %}
+                                <span class="badge bg-danger">Absent</span>
+                            {% endif %}
+                            </span>
+                        </td>
+
+                        {% if editable %}
+                        <td>
+                            <input id="absent_{{ data.id }}" type='button' value='ABSENT' class="absent btn btn-light">
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block footer %}
+<script src="{% static 'bootstrap/assets/plugins/flatpickr/flatpickr.js' %}"></script>
+<script>
+
+function handleTimeUpdate(selectedDates, dateStr, instance) {
+    let id = $(instance.input).attr("id").split("_")[1];
+    let in_time = $("#in_" + id).val();
+    let out_time = $("#out_" + id).val();
+    let date = $("#date").val();
+
+    $.post("{% url 'attendance_entry' %}", {
+        query: "update",
+        staff_id: id,
+        date: date,
+        in_time: in_time,
+        out_time: out_time,
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+    }, function (res) {
+        if (res.status === "success") {
+            if (in_time && out_time) {
+                $("#in_" + id).closest('tr').css('background-color', '#fff');
+            }
+
+            let badge_html = "";
+            if (res.day_status === "Full Day") {
+                badge_html = `<span class="badge bg-success">Full Day</span>`;
+            } else if (res.day_status === "Half Day") {
+                badge_html = `<span class="badge bg-warning text-dark">Half Day</span>`;
+            } else {
+                badge_html = `<span class="badge bg-danger">Absent</span>`;
+            }
+
+            $("#status_" + id).html(badge_html);
+        } else {
+            alert("Error: " + res.message);
+        }
+    });
+}
+
+$(".in_picker, .out_picker").flatpickr({
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "h:i:S K",
+    onClose: [handleTimeUpdate]
+});
+
+flatpickr(".datepicker", {
+    dateFormat: "d/m/Y",
+    onClose: function () {
+        $(this._input).closest("form").submit();
+    }
+});
+
+$(".absent").on("click", function (e) {
+    if ($(this).prop("disabled")) return;
+
+    let staff_id = this.id.split("_")[1];
+    let date = $("#date").val();
+
+    if (confirm("Are you sure?")) {
+        $.post("{% url 'attendance_entry' %}", {
+            query: "delete",
+            staff_id: staff_id,
+            date: date,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        }, function () {
+            $("#in_" + staff_id).val('');
+            $("#out_" + staff_id).val('');
+            $("#status_" + staff_id).html(`<span class="badge bg-danger">Absent</span>`);
+            $("#in_" + staff_id).closest('tr').css('background-color', '#ffe2db');
+        });
+    }
+});
+
+$("#sync_button").on("click", function () {
+    $("#sync_status").html("Syncing...");
+
+    let date = $("#date").val();
+    if (!date) {
+        $("#sync_status").html("<span class='text-danger'>Please select a date first.</span>");
+        return;
+    }
+
+    let parts = date.split('/');
+    if (parts.length !== 3) {
+        $("#sync_status").html("<span class='text-danger'>Invalid date format.</span>");
+        return;
+    }
+
+    let sync_date = parts[2] + parts[1] + parts[0]; // yyyymmdd
+
+    $.post("{% url 'attendance_entry' %}", {
+        query: "sync",
+        sync_date: sync_date,
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+    }, function (res) {
+        window.location.href = `?from=${date}`;
+    });
+});
+</script>
+
+<script>
+document.querySelectorAll('.attendance-finish-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        const buttonText = form.querySelector('button').textContent.trim();
+        const confirmText = buttonText === 'Finish'
+            ? "Are you sure you want to mark attendance as FINISHED?"
+            : "Are you sure you want to mark attendance as UNFINISHED and allow editing again?";
+
+        if (!confirm(confirmText)) {
+            e.preventDefault(); // Cancel form submission
+        }
+    });
+});
+</script>
+
+{% endblock footer %}
+

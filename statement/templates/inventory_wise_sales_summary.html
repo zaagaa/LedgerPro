@@ -1,0 +1,74 @@
+{% extends 'layouts2/main.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-12">
+    <h4 class="mb-4">Inventory-wise Sales Summary</h4>
+
+    <form method="get" class="mb-3 row g-2 align-items-end">
+      <div class="col-md-3">
+        <label for="from_date">From Date:</label>
+        <input type="date" name="from_date" class="form-control" value="{{ from_date }}">
+      </div>
+      <div class="col-md-3">
+        <label for="to_date">To Date:</label>
+        <input type="date" name="to_date" class="form-control" value="{{ to_date }}">
+      </div>
+      <div class="col-md-4">
+        <label for="company_id">Select Company:</label>
+        <select name="company_id" class="form-select">
+          <option value="all" {% if selected_company_id == "all" %}selected{% endif %}>All Companies</option>
+          {% for company in companies %}
+            <option value="{{ company.id }}" {% if company.id|stringformat:"s" == selected_company_id|stringformat:"s" %}selected{% endif %}>
+              {{ company.company_name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Show</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card mb-4">
+      <div class="card-body">
+        <table class="table table-bordered table-striped mt-4">
+          <thead class="table-light">
+            <tr>
+              <th>SL</th>
+              <th>Item</th>
+              <th>Total Qty</th>
+              <th>Total Sales</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in inventory_sales %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ row.inventory__inventory_name }}</td>
+                <td>{{ row.total_qty|floatformat:2 }}</td>
+                <td>{{ row.total_sales|floatformat:2|intcomma_indian }}</td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="4" class="text-center">No data found.</td></tr>
+            {% endfor %}
+          </tbody>
+          <tfoot class="fw-bold bg-light">
+            <tr>
+              <td colspan="2" class="text-end">Grand Total:</td>
+              <td>{{ grand_totals.total_qty|floatformat:2 }}</td>
+              <td>{{ grand_totals.total_sales|floatformat:2|intcomma_indian }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

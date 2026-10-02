@@ -1,0 +1,121 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+<div class="page-header">
+    <div class="add-item d-flex">
+        <div class="page-title">
+            <h4>Purchase Order Settings</h4>
+            <h6>{{ inventory.inventory_name }} - Select Brand</h6>
+        </div>
+    </div>
+
+    <div class="page-btn">
+        <a href="{% url 'purchase_order_settings' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>
+            Back
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            {{ inventory.inventory_name }}
+        </h5>
+    </div>
+
+    <div class="card-body">
+
+        {% if brands %}
+
+        <div class="row">
+
+            {% for brand in brands %}
+
+            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+
+                <a href="{% url 'purchase_order_settings_brand' inventory.id brand.id %}"
+                   class="text-decoration-none">
+
+                    <div class="card border h-100 mb-0 brand-card">
+
+                        <div class="card-body text-center">
+
+                            <div class="mb-3">
+                                <div class="brand-icon">
+                                    <i class="fas fa-tag"></i>
+                                </div>
+                            </div>
+
+                            <h5 class="mb-1 text-dark">
+                                {{ brand.attribute_name }}
+                            </h5>
+
+                            <small class="text-muted">
+                                Click to configure stock
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+
+        <div class="text-center py-5">
+
+            <div class="mb-3">
+                <i class="fas fa-tags fa-3x text-muted"></i>
+            </div>
+
+            <h5>No Brands Found</h5>
+
+            <p class="text-muted mb-0">
+                No brands are available for this inventory.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+</div>
+
+<style>
+    .brand-card {
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .brand-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.10);
+        border-color: #7367f0 !important;
+    }
+
+    .brand-icon {
+        width: 55px;
+        height: 55px;
+        margin: 0 auto;
+        border-radius: 50%;
+        background: #f3f2ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .brand-icon i {
+        font-size: 22px;
+        color: #7367f0;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,15 @@
+<table class="table table-sm table-bordered">
+  <tr><th>Name</th><td>{{ staff.staff_name|default_if_none:'' }}</td></tr>
+  <tr><th>Mobile</th><td>{{ staff.mobile|default_if_none:'' }}</td></tr>
+  <tr><th>Date of Birth</th><td>{{ staff.dob|date:'d M Y'|default_if_none:'' }}</td></tr>
+  <tr><th>Join Date</th><td>{{ staff.join_date|date:'d M Y'|default_if_none:'' }}</td></tr>
+  <tr><th>Exit Date</th><td>{{ staff.exit_date|date:'d M Y'|default_if_none:'' }}</td></tr>
+  <tr><th>Address</th><td>{{ staff.address|default_if_none:'' }}</td></tr>
+  <tr><th>City</th><td>{{ staff.city|default_if_none:'' }}</td></tr>
+  <tr><th>State</th><td>{{ staff.state|default_if_none:'' }}</td></tr>
+  <tr><th>Country</th><td>{{ staff.country|default_if_none:'' }}</td></tr>
+  <tr><th>Pincode</th><td>{{ staff.pincode|default_if_none:'' }}</td></tr>
+  <tr><th>ID Number</th><td>{{ staff.id_number|default_if_none:'' }}</td></tr>
+  <tr><th>Salary</th><td>{{ staff.salary|default_if_none:'' }}</td></tr>
+  <tr><th>Remark</th><td>{{ staff.remark|default_if_none:'' }}</td></tr>
+</table>
