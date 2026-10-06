@@ -1,0 +1,191 @@
+{% extends 'layouts2/main.html' %}
+{% load custom_filters %}
+{% block content %}
+
+<style>
+    /* General screen styles */
+    .print-only {
+        display: none !important;
+    }
+
+    /* Print styles */
+    @media print {
+        * {
+            box-sizing: border-box !important;
+        }
+
+        body, html {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #fff !important;
+            color: #000 !important;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+        }
+
+        #printable {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #printable_content {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        table.table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            page-break-inside: auto;
+        }
+
+        table.table th, table.table td {
+            border: 1px solid #000 !important;
+            padding: 6px 8px !important;
+            color: #000 !important;
+            text-align: left !important;
+        }
+
+        table.table th {
+            background-color: #e0e0e0 !important;
+            font-weight: bold;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        tfoot {
+            display: table-footer-group;
+        }
+
+        tr {
+            page-break-inside: avoid !important;
+            page-break-after: auto;
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 10mm;
+        }
+
+        /* Hide these during print */
+        .no-print, nav, .pagination, .sidebar, footer {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+        }
+
+        /* Show these only in print */
+        .print-only {
+            display: block !important;
+        }
+    }
+</style>
+
+        <div class="print-only" style="text-align: center; margin-bottom: 5px;">
+            <h2 style="margin: 0;">{{ request.user.company.company_name }}</h2>
+        </div>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+<span class="d-flex align-items-center justify-content-center mb-3">
+                <form action="" method="POST" class="row gy-2 gx-3 align-items-center">
+                    {% csrf_token %}
+                    <div class="col-auto">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                From:
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <input style='width:150px;' class='form-control datepicker form-control-sm-4'
+                               type='text' name='start_date' value='{{form_start_date}}'>
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                To:
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <input style='width:150px;' class='form-control datepicker form-control-sm-4'
+                               type='text' name='end_date' value='{{form_end_date}}'>
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                Filter:
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <input style='width:150px;' type='text' class='form-control form-control-sm-4'
+                               name='filter' value='{{filter}}'>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Show</button>
+                    </div>
+                </form>
+ </span>
+
+
+
+
+
+<!-- Page Content -->
+<div id="printable">
+    <div id="printable_content">
+
+
+
+
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Type/ID</th>
+                    <th>Date</th>
+                    <th>User</th>
+                    <th>Description</th>
+                    <th style="text-align: right;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in expenses_list %}
+                <tr>
+                    <td>{{ forloop.counter }}.</td>
+                    <td>#{{data.type}}{{data.id|short_uuid}}</td>
+                    <td>{{data.date|date:"d/m/Y"}}</td>
+                    <td>{{data.username}}</td>
+                    <td style="max-width: 300px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+    {{ data.description }}
+</td>
+
+                    <td style="text-align: right;">{{ data.amount|floatformat:2 }}</td>
+
+                </tr>
+                {% endfor %}
+                <tr>
+                    <th colspan="5" style="text-align: right;">Total:</th>
+                    <th style="text-align: right;">{{total_amount|floatformat:2}}</th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Print Button (Visible only on screen) -->
+<button onclick="window.print()" class="btn btn-primary no-print">Print</button>
+
+
+{% endblock content %}

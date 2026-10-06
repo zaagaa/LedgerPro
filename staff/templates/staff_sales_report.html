@@ -1,0 +1,67 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+<h3>Staff Sales Report</h3>
+
+<form method="get" class="row mb-3">
+    <div class="col-md-3">
+        <label>From Date</label>
+        <input type="date" name="from_date" value="{{ from_date }}" class="form-control">
+    </div>
+
+    <div class="col-md-3">
+        <label>To Date</label>
+        <input type="date" name="to_date" value="{{ to_date }}" class="form-control">
+    </div>
+
+    <div class="col-md-3 mt-4">
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </div>
+</form>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>SL</th>
+            <th>Staff Name</th>
+            <th>Below 6M (0.5%)</th>
+            <th>6M - 1Y (1%)</th>
+            <th>> 1Y (2%)</th>
+            <th>Total</th>
+            <th>Total Incentive</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in staff_sales %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ row.staff__staff_name }}</td>
+
+            <td>
+                ₹ {{ row.below_6|floatformat:2 }}<br>
+                <small class="text-success">+ ₹ {{ row.below_6_inc|floatformat:2 }}</small>
+            </td>
+
+            <td>
+                ₹ {{ row.six_to_one|floatformat:2 }}<br>
+                <small class="text-success">+ ₹ {{ row.six_to_one_inc|floatformat:2 }}</small>
+            </td>
+
+            <td>
+                ₹ {{ row.above_one|floatformat:2 }}<br>
+                <small class="text-success">+ ₹ {{ row.above_one_inc|floatformat:2 }}</small>
+            </td>
+
+            <td>₹ {{ row.total|floatformat:2 }}</td>
+            <td class="text-primary fw-bold">₹ {{ row.total_incentive|floatformat:2 }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8" class="text-center">No data found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
