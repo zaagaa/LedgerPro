@@ -1,0 +1,413 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LedgerPRO - Setup</title>
+
+  <link rel="stylesheet" href="{% static 'bootstrap/assets/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'bootstrap/assets/plugins/fontawesome/css/all.min.css' %}">
+  <script src="{% static 'bootstrap/assets/js/jquery-3.7.1.min.js' %}"></script>
+
+  <style>
+    body {
+      background: #f5f7fa;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .auth-container {
+      padding-top: 40px;
+      padding-bottom: 40px;
+    }
+
+    .card-style {
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.07);
+    }
+
+    .form-control {
+      background: #f1f1f1;
+    }
+
+    .title {
+      font-weight: 600;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: #ffa500;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: #e69500;
+    }
+
+    .btn-danger {
+      background: #ff3b3b;
+      border: none;
+    }
+
+    .btn-danger:hover {
+      background: #e03131;
+    }
+
+    .brand-logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .brand-logo img {
+      height: 70px;
+    }
+
+    .footer {
+      text-align: center;
+      color: #aaa;
+      font-size: 12px;
+      margin-top: 40px;
+    }
+
+    .restore-info {
+      font-size: .875rem;
+      color: #6c757d;
+    }
+
+    #restoreCard{
+      display:none;
+    }
+
+    .restore-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:20px;
+    }
+
+    .restore-header h4{
+      margin:0;
+      font-weight:600;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container auth-container">
+
+    <!-- Logo -->
+    <div class="brand-logo pb-2">
+        <img src="{% static 'bootstrap/assets/img/logo.png' %}" alt="LedgerPRO">
+    </div>
+
+    <div class="row justify-content-center g-4">
+
+        {% if user_count == 0 %}
+        <!-- Signup -->
+        <div class="col-lg-5 card-style m-3">
+
+            <h4 class="title">
+                <i class="fas fa-user-plus text-primary me-2"></i>
+                Admin Sign Up
+            </h4>
+
+            <form action="" method="POST">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <input type="text" name="name" class="form-control" placeholder="Full Name" required>
+                </div>
+
+                <div class="mb-3">
+                    <input type="text" name="username" class="form-control" placeholder="Username" required>
+                </div>
+
+                <div class="mb-3">
+                    <input type="email" name="email" class="form-control" placeholder="Email Address" required>
+                </div>
+
+                <div class="mb-3">
+                    <input type="password" name="password" class="form-control" placeholder="Password" required>
+                </div>
+
+                <div class="mb-3">
+                    <input type="password" name="password2" class="form-control" placeholder="Confirm Password" required>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="agree">
+                    <label class="form-check-label" for="agree">
+                        I agree to the
+                        <a href="#">Terms</a> and
+                        <a href="#">Privacy Policy</a>.
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+                    Create Account
+                </button>
+
+                <div class="text-center mt-3">
+                    <small>
+                        Already have an account?
+                        <a href="/authenticate/">Sign In</a>
+                        &nbsp;|&nbsp;
+                        <a href="#" id="showRestore">Restore Database</a>
+                    </small>
+                </div>
+
+            </form>
+
+        </div>
+        {% endif %}
+
+        <!-- Restore Card (Hidden by default) -->
+        <div class="col-lg-5 card-style m-3" id="restoreCard">
+
+            <div class="restore-header">
+                <h4>
+                    <i class="fas fa-toolbox text-danger me-2"></i>
+                    Restore Database
+                </h4>
+
+                <button type="button" class="btn-close" id="hideRestore"></button>
+            </div>
+
+            <form id="restoreForm" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Upload Backup File (.sql)</label>
+                    <input type="file"
+                           name="backup_file"
+                           class="form-control"
+                           onchange="showFileInfo(this)"
+                           required>
+                </div>
+
+                <div class="mb-3 restore-info"
+                     id="last-backup-info"
+                     style="display:none;">
+
+                    <strong>Selected File</strong><br>
+
+                    <span id="backup-name"></span><br>
+                    <span id="backup-size"></span><br>
+                    <span id="backup-date"></span>
+
+                </div>
+
+                <button class="btn btn-danger w-100" type="submit">
+                    Start Restore
+                </button>
+
+            </form>
+
+            <div id="restore-ui" class="mt-4" style="display:none;">
+
+                <div class="progress mb-2" style="height:25px;">
+
+                    <div id="restore-bar"
+                         class="progress-bar progress-bar-striped progress-bar-animated"
+                         role="progressbar"
+                         style="width:0%;">
+
+                        0%
+
+                    </div>
+
+                </div>
+
+                <p class="text-center text-muted mb-0">
+                    ⏱️ Elapsed :
+                    <span id="restore-timer">0</span>
+                    sec
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+        &copy; LedgerPro. All rights reserved.
+    </div>
+
+</div>
+
+<script src="{% static 'bootstrap/assets/js/bootstrap.bundle.min.js' %}"></script>
+
+<script>
+
+let timerInterval;
+let elapsed = 0;
+
+function startTimer(){
+
+    elapsed = 0;
+
+    $("#restore-timer").text(0);
+
+    timerInterval = setInterval(function(){
+
+        elapsed++;
+
+        $("#restore-timer").text(elapsed);
+
+    },1000);
+
+}
+
+function stopTimer(){
+
+    clearInterval(timerInterval);
+
+}
+
+function updateProgress(percent){
+
+    $("#restore-bar")
+        .css("width",percent+"%")
+        .text(percent+"%");
+
+}
+
+function showFileInfo(input){
+
+    const file = input.files[0];
+
+    if(file){
+
+        $("#last-backup-info").show();
+
+        $("#backup-name").text("File : " + file.name);
+
+        $("#backup-size").text("Size : " + (file.size/1024).toFixed(1) + " KB");
+
+        $("#backup-date").text("Modified : " + new Date(file.lastModified).toLocaleString());
+
+    }
+
+}
+
+// Show Restore Card
+$("#showRestore").click(function(e){
+
+    e.preventDefault();
+
+    $("#restoreCard").slideDown(300);
+
+    $('html, body').animate({
+        scrollTop: $("#restoreCard").offset().top - 20
+    },300);
+
+});
+
+// Hide Restore Card
+$("#hideRestore").click(function(){
+
+    $("#restoreCard").slideUp(300);
+
+});
+
+// Restore
+$("#restoreForm").submit(function(e){
+
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    $("#restore-ui").show();
+
+    updateProgress(10);
+
+    startTimer();
+
+    $.ajax({
+
+        url: "{% url 'restore_backup' %}",
+
+        method: "POST",
+
+        data: formData,
+
+        processData:false,
+
+        contentType:false,
+
+        xhr:function(){
+
+            const xhr = new XMLHttpRequest();
+
+            xhr.addEventListener("loadstart",function(){
+
+                updateProgress(20);
+
+            });
+
+            xhr.addEventListener("progress",function(){
+
+                updateProgress(50);
+
+            });
+
+            xhr.addEventListener("loadend",function(){
+
+                updateProgress(90);
+
+            });
+
+            return xhr;
+
+        },
+
+        success:function(res){
+
+            updateProgress(100);
+
+            stopTimer();
+
+            setTimeout(function(){
+
+                if(res.success){
+
+                    alert("✅ Restore completed in " + elapsed + " sec");
+
+                    window.location.href="/authenticate/";
+
+                }
+                else{
+
+                    alert("❌ Restore failed : " + res.error);
+
+                    updateProgress(0);
+
+                }
+
+            },500);
+
+        },
+
+        error:function(){
+
+            stopTimer();
+
+            updateProgress(0);
+
+            alert("❌ Restore failed. Check server logs.");
+
+        }
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>

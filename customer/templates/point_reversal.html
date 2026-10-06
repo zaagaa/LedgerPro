@@ -1,0 +1,124 @@
+{% extends 'layouts2/main.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="mb-3">Reverse Customer Points</h5>
+
+                <form method="GET" class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <input type="text" name="mobile" class="form-control" placeholder="Enter Customer Mobile" value="{{ entered_mobile }}" required>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary">Show</button>
+                    </div>
+                </form>
+
+                {% if message %}
+                    <div class="alert alert-success">{{ message }}</div>
+                {% endif %}
+                {% if error %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
+
+                {% if recent_logs %}
+                    <h6>Last 5 Point Entries</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm mt-2">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Points</th>
+                                    <th>Description</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in recent_logs %}
+                                    <tr>
+                                        <td>{{ log.entry_date|date:"d/m/Y h:i:s A" }}</td>
+                                        <td>{{ log.point }}</td>
+                                        <td>{{ log.description }}</td>
+                                        <td>
+                                            <form method="POST" onsubmit="return confirm('Are you sure you want to reverse this point entry?');">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="mobile" value="{{ entered_mobile }}">
+                                                <input type="hidden" name="reverse_id" value="{{ log.id }}">
+                                                {% if log.point > 0 %}
+                                                    <button type="submit" class="btn btn-danger btn-sm">Reverse</button>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Reversed</span>
+                                                {% endif %}
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+
+                {% if reversed_logs %}
+                    <hr>
+                    <h6>Last 5 Reversed Entries</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm mt-2">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Points</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in reversed_logs %}
+                                    <tr>
+                                        <td>{{ log.entry_date|date:"d/m/Y h:i:s A" }}</td>
+                                        <td class="text-danger">{{ log.point }}</td>
+                                        <td>{{ log.description }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if recent_global_reversals %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="mb-3">🔁 Recently Reversed Points (All Customers)</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Customer</th>
+                                <th>Points</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in recent_global_reversals %}
+                                <tr>
+                                    <td>{{ entry.entry_date|date:"d/m/Y h:i:s A" }}</td>
+                                    <td>{{ entry.customer.customer_name }}</td>
+                                    <td class="text-danger">{{ entry.point }}</td>
+                                    <td>{{ entry.description }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

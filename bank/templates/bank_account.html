@@ -1,0 +1,195 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+
+<div class="page-header">
+    <div class="add-item d-flex">
+        <div class="page-title">
+            <h4>Bank Account</h4>
+
+        </div>
+    </div>
+
+    <div class="page-btn">
+        <a href="#" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#standard-modal"><i
+                data-feather="plus-circle" class="me-2"></i>Add New</a>
+    </div>
+</div>
+
+
+<div id="standard-modal" class="modal fade" tabindex="-1" role="dialog"
+     aria-labelledby="standard-modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Add Bank Account</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="POST">
+                <div class="modal-body">
+
+
+                    {% csrf_token %}
+                    <div class="form-group row mb-3">
+                        <label for="colFormLabelLg" class="col-sm-4 col-form-label">BANK NAME:</label>
+                        <div class="col-sm-8">
+                            <select name="bank_name" class="form-control" id="colFormLabelLg">
+
+                                <OPTION>ALLAHABAD BANK</OPTION>
+                                <OPTION>ANDHRA BANK</OPTION>
+                                <OPTION>AXIS BANK</OPTION>
+                                <OPTION>BANK OF BAHRAIN AND KUWAIT</OPTION>
+                                <OPTION>BANK OF BARODA</OPTION>
+                                <OPTION>BANK OF INDIA</OPTION>
+                                <OPTION>BANK OF MAHARASHTRA</OPTION>
+                                <OPTION>CANARA BANK</OPTION>
+                                <OPTION>CENTRAL BANK OF INDIA</OPTION>
+                                <OPTION>CITY UNION BANK</OPTION>
+                                <OPTION>CORPORATION BANK</OPTION>
+                                <OPTION>DEUTSCHE BANK</OPTION>
+                                <OPTION>DEVELOPMENT CREDIT BANK</OPTION>
+                                <OPTION>DHANLAXMI BANK</OPTION>
+                                <OPTION>FEDERAL BANK</OPTION>
+                                <OPTION>ICICI BANK</OPTION>
+                                <OPTION>IDBI BANK</OPTION>
+                                <OPTION>INDIAN BANK</OPTION>
+                                <OPTION>INDIAN OVERSEAS BANK</OPTION>
+                                <OPTION>INDUSIND BANK</OPTION>
+                                <OPTION>ING VYSYA BANK</OPTION>
+                                <OPTION>JAMMU AND KASHMIR BANK</OPTION>
+                                <OPTION>KARNATAKA BANK LTD</OPTION>
+                                <OPTION>KARUR VYSYA BANK</OPTION>
+                                <OPTION>KOTAK BANK</OPTION>
+                                <OPTION>LAXMI VILAS BANK</OPTION>
+                                <OPTION>ORIENTAL BANK OF COMMERCE</OPTION>
+                                <OPTION>PUNJAB NATIONAL BANK</OPTION>
+                                <OPTION>PUNJAB & SIND BANK</OPTION>
+                                <OPTION>SHAMRAO VITTHAL CO-OPERATIVE BANK</OPTION>
+                                <OPTION>SOUTH INDIAN BANK</OPTION>
+                                <OPTION>STATE BANK OF BIKANER & JAIPUR</OPTION>
+                                <OPTION>STATE BANK OF HYDERABAD</OPTION>
+                                <OPTION>STATE BANK OF INDIA</OPTION>
+                                <OPTION>STATE BANK OF MYSORE</OPTION>
+                                <OPTION>STATE BANK OF PATIALA</OPTION>
+                                <OPTION>STATE BANK OF TRAVANCORE</OPTION>
+                                <OPTION>SYNDICATE BANK</OPTION>
+                                <OPTION>TAMILNAD MERCANTILE BANK LTD</OPTION>
+                                <OPTION>UCO BANK</OPTION>
+                                <OPTION>UNION BANK OF INDIA</OPTION>
+                                <OPTION>UNITED BANK OF INDIA</OPTION>
+                                <OPTION>VIJAYA BANK</OPTION>
+                                <OPTION>YES BANK LTD</OPTION>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row mb-3">
+                        <label for="colFormLabelLg" class="col-sm-4 col-form-label">A/C NAME:</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="ac_name" class="form-control" id="colFormLabelLg">
+                        </div>
+                    </div>
+                    <div class="form-group row mb-3">
+                        <label for="colFormLabelLg" class="col-sm-4 col-form-label">A/C No:</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="ac_no" class="form-control" id="colFormLabelLg">
+                        </div>
+                    </div>
+                    <div class="form-group row mb-3">
+                        <label for="colFormLabelLg" class="col-sm-4 col-form-label">A/C Type:</label>
+                        <div class="col-sm-8">
+                            <select name="ac_type" class="form-control" id="colFormLabelLg">
+
+                                <option>CURRENT</option>
+                                <option>SAVING</option>
+                                <option>OVER DRAFT</option>
+                                <option>TERM LOAN</option>
+                                <option>JEWEL LOAN</option>
+
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row mb-3">
+                        <label for="colFormLabelLg" class="col-sm-4 col-form-label">Branch:</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="branch" class="form-control" id="colFormLabelLg">
+                        </div>
+                    </div>
+                    <div class="form-group row mb-3">
+                        <label for="colFormLabelLg" class="col-sm-4 col-form-label">IFSC Code:</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="ifsc" class="form-control" id="colFormLabelLg">
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">ADD BANK ACCOUNT</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+
+
+    <div class="col-lg-12">
+        <div class="card widget-flat">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered datanew mb-4">
+                        <thead>
+                        <tr style='font-weight:bold;'>
+                            <td>SL.</td>
+                            <td>ID</td>
+                            <td>BANK NAME</td>
+                            <td>AC NAME</td>
+                            <td>AC NUMBER</td>
+                            <td>AC TYPE</td>
+                            <td>BRANCH</td>
+                            <td>ISFC</td>
+                            <td style='text-align:center;'>RESET</td>
+                            <td style='text-align:center;'>DELETE</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for data in bank_account_list %}
+
+
+                        <tr id='6'>
+                            <td>{{ forloop.counter }}.</td>
+                            <td>#{{data.id}}</td>
+                            <td><b>{{data.bank_name}}</b></td>
+                            <td>{{data.ac_name}}</a></td>
+                            <td><a class="text-primary" href="{% url 'bank_statement' data.id %}">{{data.ac_no}}</a></td>
+                            <td>{{data.ac_type}}</td>
+                            <td> {{data.branch}}</td>
+                            <td>IFSC: {{data.ifsc}}</td>
+                            <td class="text-center"><a onclick='return confirm("Are You Sure to Reset Bank Statement Records?");'
+                                                       class="confirm-text p-2" href="{% url 'bank_reset' data.id %}">
+                                <i data-feather="repeat" class="feather-repeat"></i>
+                            </a></td>
+                            <td style='text-align:center;'><a onclick='return confirm("Are You Sure?");'
+                                                              href='#'
+                                                              class='action-icon'> <i data-feather="trash-2" class="feather-trash-2"></i></a>
+                            </td>
+                        </tr>
+
+
+                        {% endfor %}
+                        </tbody>
+
+                    </table>
+                    <br> <br>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {% endblock content %}

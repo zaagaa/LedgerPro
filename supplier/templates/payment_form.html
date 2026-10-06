@@ -1,0 +1,76 @@
+<div class="col-lg-12">
+    <div class="card mb-4">
+        <div class="card-body mb-2">
+
+            <form class="row g-3" method="POST" action="">
+                {% csrf_token %}
+                <input type='hidden' value='' name='purchase_id'>
+                <input type='hidden' value='1' name='company_idx'>
+
+                <table class='table mt-4 table-bordered' style="width: auto; margin: auto;">
+                    <thead>
+                    <tr>
+                        <th>DATE</th>
+                        <th>REMARKS</th>
+                        <th>TRAN NO./CHEQUE NO.</th>
+                        <th>METHOD</th>
+                        <th>AMOUNT</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <input type="text" value="" id="paid_date" name="date"
+                                   class="form-control flatpickr"
+                                   style="min-width: 150px;" placeholder="dd/mm/yyyy">
+                        </td>
+                        <td>
+                            <input autocomplete='off' type='text' class='form-control'
+                                   name='description' style='min-width: 180px;'>
+                        </td>
+                        <td>
+                            <input autocomplete='off' type='text' class='form-control'
+                                   name='tran_no' style='min-width: 180px;'>
+                        </td>
+                        <td>
+                            <select class='form-select' id='paid_by' name='paid_by'
+                                    style="min-width: 120px;">
+                                <option>CASH</option>
+                                <option>CHEQUE</option>
+                                <option>RTGS/NEFT</option>
+                                <option>UPI</option>
+                                <option>DEPOSIT</option>
+                                <option>RETURN</option>
+                                <option>DISCOUNT</option>
+                                <option>OTHER</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input class='form-control numeric_only' autocomplete='off'
+                                   type='text' value='' id='amount' name='amount'
+                                   style='min-width: 100px;'>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan='5' style='text-align:center;'>
+                            <br>
+                            <input type='submit' class='btn btn-primary'
+                                   name='submit' id='paid_button'
+                                   onclick='return confirm("Are You Sure?");'
+                                   value='MAKE PAYMENT'>
+                        </td>
+                    </tr>
+                    <tr>
+    <td colspan="5">
+        <div id="paymentList" class="mt-3"></div>
+    </td>
+</tr>
+                    </tbody>
+                </table>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,312 @@
+{% extends 'layouts2/main.html' %}
+{% load humanize %}
+{% load custom_filters %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h4 class="mb-3">Floor-wise Sales Summary</h4>
+
+        <form method="get" class="row g-3 mb-3">
+          <div class="col-md-3">
+            <label class="form-label">From</label>
+            <input type="date" name="from_date" class="form-control" value="{{ from_date }}">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">To</label>
+            <input type="date" name="to_date" class="form-control" value="{{ to_date }}">
+          </div>
+          <div class="col-md-3 align-self-end">
+            <button class="btn btn-primary w-100">Show</button>
+          </div>
+        </form>
+
+        {% if floor_list %}
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>Floor Name</th>
+              <th class="text-end">Sale Amount (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in floor_list %}
+            <tr class="floor-toggle" data-target="#floor-{{ forloop.counter }}">
+              <td>
+                <a href="javascript:void(0)" class="text-decoration-none fw-semibold">{{ row.floor }}</a>
+              </td>
+              <td class="text-end">₹{{ row.amount|floatformat:2|intcomma_indian }}</td>
+            </tr>
+            <tr id="floor-{{ forloop.counter }}" class="d-none">
+              <td colspan="2">
+                <!-- Line Chart -->
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between">
+                    <strong>Day-wise Sales Chart</strong>
+                    <small class="text-muted" id="avg-{{ forloop.counter }}">Average: ₹0.00</small>
+                  </div>
+                  <canvas id="floorChart{{ forloop.counter }}" height="120"></canvas>
+                </div>
+
+                <!-- Section Table -->
+                {% with floor_sections|get_item:row.floor as section_data %}
+                  {% if section_data %}
+                  <table class="table table-sm table-hover mb-0">
+                    <thead>
+                      <tr>
+                        <th>Section</th>
+                        <th class="text-end">Sale Amount (₹)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for section_name, section_amount in section_data|dict_items %}
+                      <tr>
+                        <td>
+                          <a href="javascript:void(0)" class="section-link text-primary text-decoration-none"
+                             data-floor="{{ row.floor }}"
+                             data-section="{{ section_name }}"
+                             data-from="{{ from_date }}"
+                             data-to="{{ to_date }}">
+                            {{ section_name }}
+                          </a>
+                        </td>
+                        <td class="text-end">₹{{ section_amount|floatformat:2|intcomma_indian }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                  {% endif %}
+                {% endwith %}
+              </td>
+            </tr>
+            {% endfor %}
+            <tr class="table-dark">
+              <th class="text-end">Grand Total</th>
+              <th class="text-end">₹{{ grand_total|floatformat:2|intcomma_indian }}</th>
+            </tr>
+          </tbody>
+        </table>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Inventory Breakdown Modal -->
+<div class="modal fade" id="inventoryBreakdownModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Inventory Breakdown</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="modalLoading" class="text-center py-5">Loading...</div>
+        <div id="modalContent" class="d-none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const charts = {};
+  document.querySelectorAll(".floor-toggle").forEach((row, index) => {
+    row.addEventListener("click", function () {
+      const targetId = row.getAttribute("data-target");
+      const detailRow = document.querySelector(targetId);
+      if (detailRow) {
+        detailRow.classList.toggle("d-none");
+
+        const floorName = row.querySelector("a").innerText.trim();
+        const chartId = `floorChart${index + 1}`;
+        const chartCanvas = document.getElementById(chartId);
+        if (!charts[chartId] && chartCanvas) {
+          const chartData = {{ floor_charts|safe }};
+          const current = chartData[floorName];
+          if (!current) return;
+
+          const ctx = chartCanvas.getContext("2d");
+          const avg = current.avg || 0;
+          document.getElementById(`avg-${index + 1}`).textContent =
+            `Average: ₹${avg.toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
+
+          charts[chartId] = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: current.labels,
+              datasets: [
+                {
+                  label: "Daily Sales",
+                  data: current.data,
+                  borderColor: "#0d6efd",
+                  backgroundColor: "rgba(13,110,253,0.1)",
+                  tension: 0.3,
+                  fill: true,
+                  pointRadius: 2,
+                  borderWidth: 2
+                },
+                {
+                  label: "Average",
+                  data: Array(current.labels.length).fill(avg),
+                  borderColor: "#e74a3b",
+                  borderDash: [5, 5],
+                  borderWidth: 2,
+                  pointRadius: 0,
+                  fill: false
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    callback: val => '₹' + val.toLocaleString("en-IN")
+                  }
+                }
+              },
+              plugins: {
+                tooltip: {
+                  callbacks: {
+                    label: ctx => `${ctx.dataset.label}: ₹${ctx.parsed.y.toLocaleString("en-IN")}`
+                  }
+                },
+                legend: { position: "bottom" }
+              }
+            }
+          });
+        }
+      }
+    });
+  });
+
+  $(document).on("click", ".section-link", function () {
+    const floor = $(this).data("floor");
+    const section = $(this).data("section");
+    const from = $(this).data("from");
+    const to = $(this).data("to");
+
+    $("#inventoryBreakdownModal").modal("show");
+    $("#modalLoading").removeClass("d-none").show();
+    $("#modalContent").addClass("d-none").html("");
+
+    $.ajax({
+      url: "{% url 'inventory_breakdown' %}",
+      data: {
+        floor: floor,
+        section: section,
+        from_date: from,
+        to_date: to
+      },
+      success: function (data) {
+        $("#modalLoading").hide();
+
+        let grandTotal = 0;
+        data.inventory_list.forEach(item => grandTotal += item.amount);
+
+        const invRows = data.inventory_list.map(item => `
+          <tr>
+            <td>${item.inventory}</td>
+            <td class="text-end">₹${item.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+          </tr>
+        `).join("");
+
+        // Calculate average
+        let avg = 0;
+        if (data.daily_chart.data.length > 0) {
+          const total = data.daily_chart.data.reduce((sum, val) => sum + val, 0);
+          avg = total / data.daily_chart.data.length;
+        }
+
+        const chartCanvas = `
+          <div class="d-flex justify-content-between mb-1">
+            <strong>Day-wise Sales Chart</strong>
+            <small class="text-muted">Average: ₹${avg.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</small>
+          </div>
+          <canvas id="sectionBreakdownChart" height="120"></canvas>
+        `;
+
+        const tableHtml = `
+          <h6 class="fw-bold mb-2">Inventory Sale List</h6>
+          <table class="table table-sm table-bordered mb-4">
+            <thead><tr><th>Inventory</th><th class="text-end">Amount (₹)</th></tr></thead>
+            <tbody>
+              ${invRows}
+              <tr class="table-dark">
+                <th class="text-end">Grand Total</th>
+                <th class="text-end">₹${grandTotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</th>
+              </tr>
+            </tbody>
+          </table>
+        `;
+
+        $("#modalContent").removeClass("d-none").html(chartCanvas + tableHtml);
+
+        if (window.sectionChart) {
+          window.sectionChart.destroy();
+        }
+
+        const ctx = document.getElementById("sectionBreakdownChart").getContext("2d");
+        window.sectionChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: data.daily_chart.labels,
+            datasets: [
+              {
+                label: "Day-wise Sales",
+                data: data.daily_chart.data,
+                borderColor: "#0d6efd",
+                backgroundColor: "rgba(13,110,253,0.1)",
+                fill: true,
+                tension: 0.3,
+                pointRadius: 2,
+                borderWidth: 2
+              },
+              {
+                label: "Average",
+                data: Array(data.daily_chart.labels.length).fill(avg),
+                borderColor: "#e74a3b",
+                borderDash: [5, 5],
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false
+              }
+            ]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: val => '₹' + val.toLocaleString("en-IN")
+                }
+              }
+            },
+            plugins: {
+              legend: { position: "bottom" },
+              tooltip: {
+                callbacks: {
+                  label: ctx => `${ctx.dataset.label}: ₹${ctx.parsed.y.toLocaleString("en-IN")}`
+                }
+              }
+            }
+          }
+        });
+      },
+      error: function () {
+        $("#modalLoading").hide();
+        $("#modalContent").removeClass("d-none").html("<p class='text-danger'>Failed to load inventory breakdown.</p>");
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

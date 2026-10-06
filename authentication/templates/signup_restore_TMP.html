@@ -1,0 +1,226 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LedgerPRO - Setup</title>
+
+  <link rel="stylesheet" href="{% static 'bootstrap/assets/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'bootstrap/assets/plugins/fontawesome/css/all.min.css' %}">
+  <script src="{% static 'bootstrap/assets/js/jquery-3.7.1.min.js' %}"></script>
+
+  <style>
+    body {
+      background: #f5f7fa;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .auth-container {
+      padding-top: 40px;
+      padding-bottom: 40px;
+    }
+    .card-style {
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+    }
+    .form-control {
+      background-color: #f1f1f1;
+    }
+    .title {
+      font-weight: 600;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+    .btn-primary {
+      background-color: #ffa500;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #e69500;
+    }
+    .btn-danger {
+      background-color: #ff3b3b;
+      border: none;
+    }
+    .btn-danger:hover {
+      background-color: #e03131;
+    }
+    .brand-logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .brand-logo img {
+      height: 70px;
+    }
+    .footer {
+      text-align: center;
+      color: #aaa;
+      font-size: 12px;
+      margin-top: 40px;
+    }
+    .restore-info {
+      font-size: 0.875rem;
+      color: #6c757d;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container auth-container">
+
+  <!-- Logo Header -->
+  <div class="brand-logo pb-2">
+    <img src="{% static 'bootstrap/assets/img/logo.png' %}" alt="LEDGER PRO">
+  </div>
+
+  <!-- Two-Column Layout -->
+  <div class="row justify-content-center g-4">
+
+    {% if user_count == 0 %}
+    <!-- Signup Card -->
+    <div class="col-lg-5 card-style m-3">
+      <h4 class="title"><i class="fas fa-user-plus text-primary me-2"></i> Admin Sign Up</h4>
+      <form action="" method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+          <input type="text" name="name" placeholder="Full Name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <input type="text" name="username" placeholder="Username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <input type="email" name="email" placeholder="Email Address" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <input type="password" name="password" placeholder="Password" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <input type="password" name="password2" placeholder="Confirm Password" class="form-control" required>
+        </div>
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="agree">
+          <label class="form-check-label" for="agree">
+            I agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.
+          </label>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Create Account</button>
+        <div class="text-center mt-2">
+          <small>Already have an account? <a href="/authenticate/">Sign In</a></small>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+
+    <!-- Restore Card -->
+    <div class="col-lg-5 card-style m-3">
+      <h4 class="title"><i class="fas fa-toolbox text-danger me-2"></i> Restore Database</h4>
+      <form id="restoreForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Upload Backup File (.sql / .sqlite3)</label>
+          <input type="file" name="backup_file" class="form-control" onchange="showFileInfo(this)" required>
+        </div>
+
+        <div class="mb-3 restore-info" id="last-backup-info" style="display: none;">
+          <strong>Selected:</strong><br>
+          <span id="backup-name"></span><br>
+          <span id="backup-size"></span><br>
+          <span id="backup-date"></span>
+        </div>
+
+        <button type="submit" class="btn btn-danger w-100">Start Restore</button>
+      </form>
+
+      <div id="restore-ui" class="mt-4" style="display:none;">
+        <div class="progress mb-2" style="height: 25px;">
+          <div id="restore-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%">0%</div>
+        </div>
+        <p class="text-center text-muted">⏱️ Elapsed: <span id="restore-timer">0</span> sec</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    &copy; ZTech. All rights reserved.
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="{% static 'bootstrap/assets/js/bootstrap.bundle.min.js' %}"></script>
+<script>
+  let timerInterval, elapsed = 0;
+
+  function startTimer() {
+    elapsed = 0;
+    $("#restore-timer").text("0");
+    timerInterval = setInterval(() => {
+      elapsed++;
+      $("#restore-timer").text(elapsed);
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+  }
+
+  function updateProgress(percent) {
+    $("#restore-bar").css("width", percent + "%").text(percent + "%");
+  }
+
+  function showFileInfo(input) {
+    const file = input.files[0];
+    if (file) {
+      document.getElementById('last-backup-info').style.display = 'block';
+      document.getElementById('backup-name').textContent = `File: ${file.name}`;
+      document.getElementById('backup-size').textContent = `Size: ${(file.size / 1024).toFixed(1)} KB`;
+      document.getElementById('backup-date').textContent = `Modified: ${file.lastModifiedDate.toLocaleString()}`;
+    }
+  }
+
+  $("#restoreForm").on("submit", function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    $("#restore-ui").show();
+    updateProgress(10);
+    startTimer();
+
+    $.ajax({
+      url: "{% url 'restore_backup' %}",
+      method: "POST",
+      data: formData,
+      processData: false,
+      contentType: false,
+      xhr: function () {
+        const xhr = new window.XMLHttpRequest();
+        xhr.addEventListener("loadstart", () => updateProgress(20));
+        xhr.addEventListener("progress", () => updateProgress(50));
+        xhr.addEventListener("loadend", () => updateProgress(90));
+        return xhr;
+      },
+      success: function (res) {
+        updateProgress(100);
+        stopTimer();
+        setTimeout(() => {
+          if (res.success) {
+            alert("✅ Restore completed in " + elapsed + " sec");
+            window.location.href = "/authenticate/";
+          } else {
+            alert("❌ Restore failed: " + res.error);
+          }
+        }, 500);
+      },
+      error: function () {
+        stopTimer();
+        updateProgress(0);
+        alert("❌ Restore failed. Check server logs.");
+      }
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+{% extends 'layouts2/main.html' %}
+{% load static %}
+{% load humanize %}
+{% load statement_tags %}
+{% load custom_filters %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h4 class="mb-3">Sales Breakdown — Floor → Section → Inventory</h4>
+
+        <form method="get" class="row mb-3 g-2">
+          <div class="col-md-2">
+            <label class="form-label">From</label>
+            <input type="date" name="from_date" class="form-control" value="{{ from_date }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">To</label>
+            <input type="date" name="to_date" class="form-control" value="{{ to_date }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Floor</label>
+            <select name="floor" class="form-select">
+              <option value="">All</option>
+              {% for floor in all_floors %}
+              <option value="{{ floor.name }}" {% if request.GET.floor == floor.name %}selected{% endif %}>{{ floor.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Section</label>
+            <select name="section" class="form-select">
+              <option value="">All</option>
+              {% for section in all_sections %}
+              <option value="{{ section.name }}" {% if request.GET.section == section.name %}selected{% endif %}>{{ section.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Inventory</label>
+            <select name="inventory" class="form-select">
+              <option value="">All</option>
+              {% for inv in all_inventories %}
+              <option value="{{ inv.inventory_name }}" {% if request.GET.inventory == inv.inventory_name %}selected{% endif %}>{{ inv.inventory_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-2 align-self-end">
+            <button class="btn btn-primary w-100">Show</button>
+          </div>
+        </form>
+
+        {% if daily_labels_json %}
+        <h5 class="mt-4">Day-wise Floor Sales</h5>
+        <canvas id="dailySalesChart" height="180"></canvas>
+        <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const labels = {{ daily_labels_json|safe }};
+          const datasets = {{ daily_chart_datasets_json|safe }};
+
+          const ctx = document.getElementById("dailySalesChart").getContext("2d");
+
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: datasets.map((set, index) => ({
+                label: set.label,
+                data: set.data,
+                borderColor: `hsl(${index * 57 % 360}, 80%, 45%)`,
+                backgroundColor: `hsla(${index * 57 % 360}, 80%, 45%, 0.3)`,
+                tension: 0.4,
+                fill: false,
+                borderWidth: 2,
+                pointRadius: 3,
+                pointHoverRadius: 5
+              }))
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    callback: val => '₹' + val.toLocaleString('en-IN')
+                  }
+                },
+                x: {
+                  ticks: {
+                    maxRotation: 90,
+                    minRotation: 45
+                  }
+                }
+              },
+              plugins: {
+                tooltip: {
+                  callbacks: {
+                    label: context => `${context.dataset.label}: ₹${context.parsed.y.toLocaleString('en-IN')}`
+                  }
+                },
+                legend: {
+                  position: 'bottom'
+                }
+              }
+            }
+          });
+        });
+        </script>
+        {% endif %}
+
+        {% if breakdown %}
+        <div class="accordion mt-4" id="floorAccordion">
+          {% for floor_name, sections in breakdown.items %}
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="floorHeading{{ forloop.counter }}">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#floorCollapse{{ forloop.counter }}">
+                Floor: {{ floor_name }}
+              </button>
+            </h2>
+            <div id="floorCollapse{{ forloop.counter }}" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <div class="accordion" id="sectionAccordion{{ forloop.counter }}">
+                  {% for section_name, section_info in sections.items %}
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="sectionHeading{{ forloop.parentloop.counter }}_{{ forloop.counter }}">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                              data-bs-target="#sectionCollapse{{ forloop.parentloop.counter }}_{{ forloop.counter }}">
+                        Section: {{ section_name }} — ₹{{ section_info.total|floatformat:2|intcomma_indian }}
+                      </button>
+                    </h2>
+                    <div id="sectionCollapse{{ forloop.parentloop.counter }}_{{ forloop.counter }}"
+                         class="accordion-collapse collapse">
+                      <div class="accordion-body">
+                        <table class="table table-sm table-bordered mb-2">
+                          <thead>
+                            <tr><th>Inventory</th><th>Sales</th></tr>
+                          </thead>
+                          <tbody>
+                            {% for inv_name, inv_total in section_info.inventories.items %}
+                            <tr>
+                              <td>{{ inv_name }}</td>
+                              <td>₹{{ inv_total|floatformat:2|intcomma_indian }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr class="table-dark">
+                              <td><strong>Section Total</strong></td>
+                              <td><strong>₹{{ section_info.total|floatformat:2|intcomma_indian }}</strong></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                <div class="text-end mt-3">
+                  <strong>Floor Total: ₹{{ sections|get_total:"total"|floatformat:2|intcomma_indian }}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p>No data found for selected date range.</p>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
