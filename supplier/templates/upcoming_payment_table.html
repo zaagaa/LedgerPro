@@ -1,0 +1,64 @@
+{% if upcoming_payment %}
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4>Upcoming Payments</h4>
+                <table class="table table table-bordered table-centered mt-4">
+
+                    <tr>
+                        <th>ID</th>
+                        <th>DATE</th>
+                        <th>DESCRIPTION</th>
+                        <th>PAID BY</th>
+                        <th class="text-end">PAYMENT</th>
+                        <th class="text-end">BALANCE</th>
+
+                    </tr>
+
+
+                    {% for data in upcoming_payment %}
+                    <tr>
+{% if data.payment != '-' and request.user.is_superuser %}
+    <td><a href="{% url 'edit_payment' data.id %}" target="_blank">#{{ data.id }}</a></td>
+{% else %}
+    <td>#{{ data.id }}</td>
+{% endif %}
+                        <td>{{data.date|date:'d/m/Y'}}</td>
+                        <td>{{data.description|safe}}</td>
+                        <td>
+    {{ data.paid_by }}
+    <a href="javascript:void(0);" class="ms-2 cheque-icon"
+       data-id="{{ data.id }}"
+       style="color: {% if data.cheque_given %}green{% else %}lightgray{% endif %};"
+       title="Mark cheque given">
+        <i class="fas fa-handshake"></i>
+    </a>
+</td>
+                        <td class="text-end">{{data.payment}}</td>
+                        <td class="text-end">{{data.balance}}</td>
+                    </tr>
+
+                    {% endfor %}
+
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th class="text-end"></th>
+                        <th class="text-end">{{upcoming_payment_total}}</th>
+                        <th class="text-end"></th>
+                    </tr>
+
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+

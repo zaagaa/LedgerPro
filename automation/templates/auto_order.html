@@ -1,0 +1,931 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div class="add-item d-flex">
+
+        <div class="page-title">
+
+            <h4>
+                Auto Order
+            </h4>
+
+            <h6>
+                Items that have reached the minimum stock level
+            </h6>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- SUMMARY CARDS -->
+<!-- ===================================================== -->
+
+<div class="row">
+
+
+    <!-- Total Items -->
+
+    <div class="col-xl-4 col-lg-4 col-md-6">
+
+        <div class="card">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center">
+
+                    <div class="avatar avatar-lg bg-warning me-3">
+
+                        <i class="fas fa-shopping-cart"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h3
+                            class="mb-1"
+                            id="totalItems"
+                        >
+                            {{ total_items }}
+                        </h3>
+
+                        <p class="mb-0 text-muted">
+                            Items to Order
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Total Quantity -->
+
+    <div class="col-xl-4 col-lg-4 col-md-6">
+
+        <div class="card">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center">
+
+                    <div class="avatar avatar-lg bg-primary me-3">
+
+                        <i class="fas fa-boxes"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h3
+                            class="mb-1"
+                            id="totalOrderQuantity"
+                        >
+                            {{ total_order_quantity|floatformat:"-2" }}
+                        </h3>
+
+                        <p class="mb-0 text-muted">
+                            Total Order Quantity
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Inventories -->
+
+    <div class="col-xl-4 col-lg-4 col-md-6">
+
+        <div class="card">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center">
+
+                    <div class="avatar avatar-lg bg-success me-3">
+
+                        <i class="fas fa-box"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h3 class="mb-1">
+                            {{ inventories_count }}
+                        </h3>
+
+                        <p class="mb-0 text-muted">
+                            Inventories
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- MAIN CARD -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+    <div class="card-body">
+
+
+        <!-- ================================================= -->
+        <!-- HEADER -->
+        <!-- ================================================= -->
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+
+                <h4 class="mb-1">
+
+                    <i class="fas fa-shopping-cart me-2"></i>
+
+                    Items Requiring Order
+
+                </h4>
+
+                <p class="text-muted mb-0">
+
+                    Based on your minimum and maximum stock settings.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% if order_items %}
+
+
+        <!-- ================================================= -->
+        <!-- FILTERS -->
+        <!-- ================================================= -->
+
+        <div class="row g-3 mb-4">
+
+
+            <!-- Inventory -->
+
+            <div class="col-xl-3 col-lg-4 col-md-6">
+
+                <label class="form-label">
+
+                    <i class="fas fa-box me-1"></i>
+
+                    Inventory
+
+                </label>
+
+
+                <select
+                    id="inventoryFilter"
+                    class="form-select"
+                >
+
+                    <option value="all">
+                        All Inventory
+                    </option>
+
+
+                    {% for inventory_id, inventory_name in filter_inventories %}
+
+                    <option value="{{ inventory_id }}">
+
+                        {{ inventory_name }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- Brand -->
+
+            <div class="col-xl-3 col-lg-4 col-md-6">
+
+                <label class="form-label">
+
+                    <i class="fas fa-tag me-1"></i>
+
+                    Brand
+
+                </label>
+
+
+                <select
+                    id="brandFilter"
+                    class="form-select"
+                >
+
+                    <option value="all">
+                        All Brands
+                    </option>
+
+
+                    {% for brand in filter_brands %}
+
+                    <option value="{{ brand|lower }}">
+
+                        {{ brand }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- Search -->
+
+            <div class="col-xl-3 col-lg-4 col-md-6">
+
+                <label class="form-label">
+
+                    <i class="fas fa-search me-1"></i>
+
+                    Search
+
+                </label>
+
+
+                <input
+                    type="text"
+                    id="orderSearch"
+                    class="form-control"
+                    placeholder="Search product or supplier..."
+                >
+
+            </div>
+
+
+            <!-- Clear -->
+
+            <div class="col-xl-3 col-lg-4 col-md-6 d-flex align-items-end">
+
+                <button
+                    type="button"
+                    id="clearAutoOrderFilters"
+                    class="btn btn-light w-100"
+                >
+
+                    <i class="fas fa-times me-1"></i>
+
+                    Clear Filter
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- FILTER INFORMATION -->
+        <!-- ================================================= -->
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <div>
+
+                <span class="text-muted">
+
+                    Showing
+
+                    <strong id="autoOrderVisibleCount">
+                        {{ total_items }}
+                    </strong>
+
+                    items
+
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <span class="badge bg-warning text-dark">
+
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+
+                    Need Order
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- TABLE -->
+        <!-- ================================================= -->
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            Inventory
+                        </th>
+
+                        <th>
+                            Product
+                        </th>
+
+                        <th>
+                            Supplier
+                        </th>
+
+                        <th class="text-center">
+                            Current
+                        </th>
+
+                        <th class="text-center">
+                            Minimum
+                        </th>
+
+                        <th class="text-center">
+                            Maximum
+                        </th>
+
+                        <th class="text-center">
+                            Order Qty
+                        </th>
+
+                        <th class="text-center">
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for item in order_items %}
+
+                    <tr
+                        class="auto-order-row"
+
+                        data-inventory-id="{{ item.inventory_id }}"
+
+                        data-brand="{{ item.brand_name|lower }}"
+                    >
+
+
+                        <!-- Number -->
+
+                        <td>
+
+                            {{ forloop.counter }}
+
+                        </td>
+
+
+                        <!-- Inventory -->
+
+                        <td>
+
+                            <strong>
+
+                                {{ item.inventory.inventory_name }}
+
+                            </strong>
+
+                        </td>
+
+
+                        <!-- Product -->
+
+                        <td>
+
+                            <div class="d-flex flex-wrap gap-1">
+
+                                {% for attribute in item.attributes %}
+
+                                <span
+                                    class="badge bg-light text-dark product-badge"
+                                >
+
+                                    {{ attribute.type }}:
+                                    {{ attribute.name }}
+
+                                </span>
+
+                                {% endfor %}
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- Supplier -->
+
+                        <td>
+
+                            {% if item.supplier_names %}
+
+
+                                {% for supplier in item.supplier_names %}
+
+                                <span
+                                    class="badge bg-secondary supplier-badge"
+                                >
+
+                                    {{ supplier }}
+
+                                </span>
+
+                                {% endfor %}
+
+
+                            {% else %}
+
+
+                                <span class="text-danger">
+
+                                    No Supplier
+
+                                </span>
+
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Current -->
+
+                        <td class="text-center">
+
+                            <strong class="text-danger">
+
+                                {{ item.current_stock|floatformat:"-2" }}
+
+                            </strong>
+
+                        </td>
+
+
+                        <!-- Minimum -->
+
+                        <td class="text-center">
+
+                            {{ item.minimum_stock|floatformat:"-2" }}
+
+                        </td>
+
+
+                        <!-- Maximum -->
+
+                        <td class="text-center">
+
+                            {{ item.maximum_stock|floatformat:"-2" }}
+
+                        </td>
+
+
+                        <!-- Order Quantity -->
+
+                        <td class="text-center">
+
+                            <strong class="text-success">
+
+                                {{ item.order_quantity|floatformat:"-2" }}
+
+                            </strong>
+
+                        </td>
+
+
+                        <!-- Status -->
+
+                        <td class="text-center">
+
+                            <span
+                                class="badge bg-warning text-dark"
+                            >
+
+                                NEED ORDER
+
+                            </span>
+
+                        </td>
+
+
+                    </tr>
+
+                    {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+
+        <!-- ================================================= -->
+        <!-- NO ORDER -->
+        <!-- ================================================= -->
+
+        <div class="text-center py-5">
+
+            <div class="mb-3">
+
+                <i
+                    class="fas fa-check-circle fa-3x text-success"
+                ></i>
+
+            </div>
+
+
+            <h4>
+
+                No Items Require Ordering
+
+            </h4>
+
+
+            <p class="text-muted mb-0">
+
+                All enabled auto-order items are currently
+                above their minimum stock level.
+
+            </p>
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- STYLE -->
+<!-- ===================================================== -->
+
+<style>
+
+.product-badge {
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+}
+
+
+.supplier-badge {
+
+    font-size: 12px;
+
+    margin-right: 3px;
+
+}
+
+
+.auto-order-row {
+
+    transition: opacity 0.15s ease;
+
+}
+
+
+#orderSearch {
+
+    min-height: 38px;
+
+}
+
+
+</style>
+
+
+<!-- ===================================================== -->
+<!-- JAVASCRIPT -->
+<!-- ===================================================== -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        /* ================================================ */
+        /* ELEMENTS */
+        /* ================================================ */
+
+
+        const inventoryFilter =
+            document.getElementById(
+                "inventoryFilter"
+            );
+
+
+        const brandFilter =
+            document.getElementById(
+                "brandFilter"
+            );
+
+
+        const searchInput =
+            document.getElementById(
+                "orderSearch"
+            );
+
+
+        const clearButton =
+            document.getElementById(
+                "clearAutoOrderFilters"
+            );
+
+
+        const visibleCount =
+            document.getElementById(
+                "autoOrderVisibleCount"
+            );
+
+
+        const rows =
+            Array.from(
+                document.querySelectorAll(
+                    ".auto-order-row"
+                )
+            );
+
+
+        /* ================================================ */
+        /* FILTER FUNCTION */
+        /* ================================================ */
+
+
+        function applyFilters() {
+
+
+            const inventoryValue =
+                inventoryFilter.value;
+
+
+            const brandValue =
+                brandFilter.value;
+
+
+            const searchValue =
+                searchInput.value
+                    .trim()
+                    .toLowerCase();
+
+
+            let count = 0;
+
+
+            rows.forEach(
+                function (row) {
+
+
+                    const rowInventory =
+                        row.dataset.inventoryId;
+
+
+                    const rowBrand =
+                        row.dataset.brand;
+
+
+                    const rowText =
+                        row.textContent
+                            .trim()
+                            .toLowerCase();
+
+
+                    let show = true;
+
+
+                    /* ================================= */
+                    /* INVENTORY */
+                    /* ================================= */
+
+
+                    if (
+
+                        inventoryValue !== "all"
+
+                        &&
+
+                        rowInventory !==
+                            inventoryValue
+
+                    ) {
+
+                        show = false;
+
+                    }
+
+
+                    /* ================================= */
+                    /* BRAND */
+                    /* ================================= */
+
+
+                    if (
+
+                        brandValue !== "all"
+
+                        &&
+
+                        rowBrand !== brandValue
+
+                    ) {
+
+                        show = false;
+
+                    }
+
+
+                    /* ================================= */
+                    /* SEARCH */
+                    /* ================================= */
+
+
+                    if (
+
+                        searchValue
+
+                        &&
+
+                        !rowText.includes(
+                            searchValue
+                        )
+
+                    ) {
+
+                        show = false;
+
+                    }
+
+
+                    /* ================================= */
+                    /* SHOW / HIDE */
+                    /* ================================= */
+
+
+                    if (show) {
+
+                        row.style.display = "";
+
+                        count++;
+
+                    }
+
+                    else {
+
+                        row.style.display = "none";
+
+                    }
+
+                }
+            );
+
+
+            /* ================================= */
+            /* COUNT */
+            /* ================================= */
+
+
+            visibleCount.textContent =
+                count;
+
+        }
+
+
+        /* ================================================ */
+        /* INVENTORY FILTER */
+        /* ================================================ */
+
+
+        inventoryFilter.addEventListener(
+            "change",
+            applyFilters
+        );
+
+
+        /* ================================================ */
+        /* BRAND FILTER */
+        /* ================================================ */
+
+
+        brandFilter.addEventListener(
+            "change",
+            applyFilters
+        );
+
+
+        /* ================================================ */
+        /* SEARCH */
+        /* ================================================ */
+
+
+        searchInput.addEventListener(
+            "input",
+            applyFilters
+        );
+
+
+        /* ================================================ */
+        /* CLEAR */
+        /* ================================================ */
+
+
+        clearButton.addEventListener(
+            "click",
+            function () {
+
+
+                inventoryFilter.value =
+                    "all";
+
+
+                brandFilter.value =
+                    "all";
+
+
+                searchInput.value =
+                    "";
+
+
+                applyFilters();
+
+            }
+        );
+
+
+        /* ================================================ */
+        /* INITIAL */
+        /* ================================================ */
+
+
+        applyFilters();
+
+
+    }
+);
+
+</script>
+
+
+{% endblock content %}

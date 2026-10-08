@@ -1,0 +1,54 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">🧭 Keyboard Shortcuts Help</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 100px;">Key</th>
+                            <th>Function</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><kbd>F1</kbd></td>
+                            <td>🔍 Find Customer</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>F2</kbd></td>
+                            <td>📦 Search & Find Stock</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>F4</kbd></td>
+                            <td>📝 Headline (e.g., Invoice Notes)</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>F8</kbd></td>
+                            <td>💸 Apply Discount</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="text-muted mt-3">
+                    Use these keyboard shortcuts to speed up your billing workflow. Most actions will automatically focus the related field or open the modal instantly.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script>
+    $(function() {
+
+    document.querySelector("html").setAttribute('data-layout-style', 'modern');
+
+    });
+</script>
+{% endblock footer %}

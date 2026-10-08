@@ -1,0 +1,1964 @@
+{% extends 'layouts2/main.html' %}
+
+{% block content %}
+
+{% csrf_token %}
+
+<div class="page-header">
+
+    <div class="add-item d-flex">
+        <div class="page-title">
+            <h4>Purchase Order Settings</h4>
+            <h6>
+                {{ inventory.inventory_name }} → {{ brand.attribute_name }}
+            </h6>
+        </div>
+    </div>
+
+    <div class="page-btn">
+        <a href="{% url 'purchase_order_settings_inventory' inventory.id %}"
+           class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>
+            Back
+        </a>
+    </div>
+
+</div>
+
+
+<div class="card">
+
+    <div class="card-body">
+
+        <div class="d-flex align-items-center mb-4">
+
+            <div>
+                <h3 class="mb-1">
+                    <i class="fas fa-tags me-2"></i>
+                    {{ brand.attribute_name }}
+                </h3>
+
+                <p class="text-muted mb-0">
+                    Configure automatic reorder settings for this brand.
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- AUTO ORDER SUPPLIER SETTINGS -->
+        <!-- ===================================================== -->
+
+        <div class="card border mb-4">
+
+            <div class="card-header bg-light">
+
+                <h5 class="mb-0">
+                    <i class="fas fa-truck me-2"></i>
+                    Auto Order Supplier Settings
+                </h5>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <!-- ================================================= -->
+                    <!-- DEFAULT SUPPLIER -->
+                    <!-- ================================================= -->
+
+                    <div class="col-xl-4 col-lg-4 col-md-6">
+
+                        <label class="form-label">
+                            <i class="fas fa-user-tie me-1"></i>
+                            Default Supplier
+                        </label>
+
+
+                        {% if suppliers|length == 1 %}
+
+                            {% for supplier in suppliers %}
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    value="{{ supplier.supplier_name }}"
+                                    readonly
+                                >
+
+                                <input
+                                    type="hidden"
+                                    id="defaultSupplier"
+                                    value="{{ supplier.id }}"
+                                >
+
+                            {% endfor %}
+
+                            <small class="text-muted">
+                                Only one supplier found for this brand.
+                            </small>
+
+
+                        {% elif suppliers|length > 1 %}
+
+                            <select
+                                id="defaultSupplier"
+                                class="form-select"
+                            >
+
+                                <option value="">
+                                    Select Default Supplier
+                                </option>
+
+                                {% for supplier in suppliers %}
+
+                                    <option
+                                        value="{{ supplier.id }}"
+                                        {% if brand_setting and brand_setting.default_supplier_id == supplier.id %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ supplier.supplier_name }}
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                            <small class="text-warning">
+                                <i class="fas fa-exclamation-circle me-1"></i>
+                                Select the supplier for automatic orders.
+                            </small>
+
+
+                        {% else %}
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                value="No supplier found"
+                                readonly
+                            >
+
+                            <small class="text-danger">
+                                No supplier found for this brand.
+                            </small>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- WHATSAPP -->
+                    <!-- ================================================= -->
+
+                    <div class="col-xl-4 col-lg-4 col-md-6">
+
+                        <label class="form-label">
+                            <i class="fab fa-whatsapp text-success me-1"></i>
+                            WhatsApp Mobile
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="text"
+                                id="whatsappMobile"
+                                class="form-control"
+                                value="{% if brand_setting %}{{ brand_setting.whatsapp_mobile }}{% elif suppliers|length == 1 %}{% for supplier in suppliers %}{{ supplier.mobile|default:'' }}{% endfor %}{% endif %}"
+                                placeholder="WhatsApp number"
+                            >
+
+                            <button
+                                type="button"
+                                id="saveWhatsapp"
+                                class="btn btn-outline-success"
+                            >
+                                <i class="fas fa-save"></i>
+                            </button>
+
+                        </div>
+
+                        <small class="text-muted">
+                            WhatsApp number used for automatic purchase orders.
+                        </small>
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- MINIMUM ORDER QTY -->
+                    <!-- ================================================= -->
+
+                    <div class="col-xl-4 col-lg-4 col-md-6">
+
+                        <label class="form-label">
+                            <i class="fas fa-boxes me-1"></i>
+                            Minimum Order Qty
+                        </label>
+
+                        <input
+                            type="number"
+                            id="minimumOrderQty"
+                            class="form-control"
+                            min="0"
+                            step="1"
+                            value="{% if brand_setting %}{{ brand_setting.minimum_order_qty|floatformat:'0' }}{% else %}0{% endif %}"
+                        >
+
+                        <small class="text-muted">
+                            Order will proceed when total quantity reaches this amount.
+                        </small>
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- BRAND DEFAULT PER BOX -->
+                    <!-- ================================================= -->
+
+                    <div class="col-xl-4 col-lg-4 col-md-6">
+
+                        <label class="form-label">
+                            <i class="fas fa-cube me-1"></i>
+                            Default Per Box Contains
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="perBoxContain"
+                                class="form-control"
+                                min="1"
+                                step="1"
+                                value="{% if brand_setting %}{{ brand_setting.per_box_contain|default:1 }}{% else %}1{% endif %}"
+                                placeholder="Example: 10"
+                            >
+
+                            <span class="input-group-text">
+                                Pcs
+                            </span>
+
+                        </div>
+
+                        <small class="text-muted">
+                            Default pieces contained in one box.
+                            Individual rows can override this value.
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="supplierSettingStatus"
+                    class="mt-3"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- FILTERS -->
+        <!-- ===================================================== -->
+
+        <div class="row g-3 mb-4">
+
+            <!-- Search -->
+
+            <div class="col-xl-4 col-lg-4 col-md-6">
+
+                <label class="form-label">
+                    <i class="fas fa-search me-1"></i>
+                    Search
+                </label>
+
+                <input
+                    type="text"
+                    id="stockSearch"
+                    class="form-control"
+                    placeholder="Search size, style, type..."
+                >
+
+            </div>
+
+
+            <!-- Auto Order -->
+
+            <div class="col-xl-2 col-lg-2 col-md-6">
+
+                <label class="form-label">
+                    <i class="fas fa-toggle-on me-1"></i>
+                    Auto Order
+                </label>
+
+                <select
+                    id="autoFilter"
+                    class="form-select"
+                >
+
+                    <option value="all">
+                        All
+                    </option>
+
+                    <option value="on">
+                        ON
+                    </option>
+
+                    <option value="off">
+                        OFF
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Stock Status -->
+
+            <div class="col-xl-3 col-lg-3 col-md-6">
+
+                <label class="form-label">
+                    <i class="fas fa-box me-1"></i>
+                    Stock Status
+                </label>
+
+                <select
+                    id="stockFilter"
+                    class="form-select"
+                >
+
+                    <option value="all">
+                        All Stock
+                    </option>
+
+                    <option value="low">
+                        Below Minimum
+                    </option>
+
+                    <option value="minimum">
+                        At / Below Minimum
+                    </option>
+
+                    <option value="normal">
+                        Above Minimum
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Sort -->
+
+            <div class="col-xl-3 col-lg-3 col-md-6">
+
+                <label class="form-label">
+                    <i class="fas fa-sort me-1"></i>
+                    Sort By
+                </label>
+
+                <select
+                    id="stockSort"
+                    class="form-select"
+                >
+
+                    <option value="default">
+                        Default
+                    </option>
+
+                    <option value="current-asc">
+                        Current Stock ↑
+                    </option>
+
+                    <option value="current-desc">
+                        Current Stock ↓
+                    </option>
+
+                    <option value="minimum-asc">
+                        Minimum Stock ↑
+                    </option>
+
+                    <option value="minimum-desc">
+                        Minimum Stock ↓
+                    </option>
+
+                    <option value="maximum-asc">
+                        Maximum Stock ↑
+                    </option>
+
+                    <option value="maximum-desc">
+                        Maximum Stock ↓
+                    </option>
+
+                    <option value="attribute-asc">
+                        Attribute A-Z
+                    </option>
+
+                    <option value="attribute-desc">
+                        Attribute Z-A
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- FILTER SUMMARY -->
+        <!-- ===================================================== -->
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <div>
+
+                <span class="text-muted">
+
+                    Showing
+
+                    <strong id="visibleCount">
+                        0
+                    </strong>
+
+                    items
+
+                </span>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="clearFilters"
+                class="btn btn-light btn-sm"
+            >
+
+                <i class="fas fa-times me-1"></i>
+
+                Clear Filter
+
+            </button>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- TABLE -->
+        <!-- ===================================================== -->
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+
+                        <!-- Dynamic Attributes -->
+
+                        {% for attribute_type in attribute_types %}
+
+                            <th>
+                                {{ attribute_type }}
+                            </th>
+
+                        {% endfor %}
+
+
+                        <th class="text-center">
+                            Current Stock
+                        </th>
+
+
+                        <th class="text-center">
+                            Minimum Stock
+                        </th>
+
+
+                        <th class="text-center">
+                            Maximum Stock
+                        </th>
+
+
+                        <th class="text-center">
+                            Per Box
+                        </th>
+
+
+                        <th class="text-center">
+                            Auto Order
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for combination in stock_combinations %}
+
+<tr
+    class="purchase-setting-row"
+    data-brand-id="{{ brand.id }}"
+    data-attribute-ids="{{ combination.attribute_ids|join:',' }}"
+    data-auto-save-url="{% url 'auto_save_purchase_order_setting' inventory.id %}"
+    data-current-stock="{{ combination.current_stock }}"
+    data-minimum-stock="{{ combination.minimum_stock }}"
+    data-maximum-stock="{{ combination.maximum_stock }}"
+    data-enabled="{% if combination.enabled %}1{% else %}0{% endif %}"
+>
+
+
+                            <!-- Number -->
+
+                            <td>
+
+                                {{ forloop.counter }}
+
+                            </td>
+
+
+                            <!-- Dynamic Attributes -->
+
+                            {% for attribute_type in attribute_types %}
+
+                                <td>
+
+                                    {% for key, value in combination.attributes.items %}
+
+                                        {% if key == attribute_type %}
+
+                                            {{ value.name }}
+
+                                        {% endif %}
+
+                                    {% endfor %}
+
+                                </td>
+
+                            {% endfor %}
+
+
+                            <!-- Current Stock -->
+
+                            <td class="text-center">
+
+                                <strong>
+
+                                    {{ combination.current_stock|floatformat:"-2" }}
+
+                                </strong>
+
+                            </td>
+
+
+                            <!-- Minimum Stock -->
+
+                            <td class="text-center">
+
+                                <input
+                                    type="number"
+
+                                    name="minimum_stock"
+
+                                    class="form-control stock-input minimum-stock"
+
+                                    value="{{ combination.minimum_stock|floatformat:'0' }}"
+
+                                    min="0"
+
+                                    step="1"
+
+                                    inputmode="numeric"
+
+                                    style="width:110px; margin:auto;"
+                                >
+
+                            </td>
+
+
+                            <!-- Maximum Stock -->
+
+                            <td class="text-center">
+
+                                <input
+                                    type="number"
+
+                                    name="maximum_stock"
+
+                                    class="form-control stock-input maximum-stock"
+
+                                    value="{{ combination.maximum_stock|floatformat:'0' }}"
+
+                                    min="0"
+
+                                    step="1"
+
+                                    inputmode="numeric"
+
+                                    style="width:110px; margin:auto;"
+                                >
+
+                            </td>
+
+
+                            <!-- ================================================= -->
+                            <!-- PER BOX CONTAIN -->
+                            <!-- ================================================= -->
+
+                            <td class="text-center">
+
+                                <input
+                                    type="number"
+
+                                    name="per_box_contain"
+
+                                    class="form-control stock-input per-box-contain"
+
+                                    value="{% if combination.per_box_contain %}{{ combination.per_box_contain }}{% endif %}"
+
+                                    min="1"
+
+                                    step="1"
+
+                                    inputmode="numeric"
+
+                                    placeholder="{{ brand_setting.per_box_contain|default:1 }}"
+
+                                    style="width:110px; margin:auto;"
+                                >
+
+                                <small class="text-muted d-block mt-1">
+                                    {% if combination.per_box_contain %}
+                                        Override
+                                    {% else %}
+                                        Default
+                                    {% endif %}
+                                </small>
+
+                            </td>
+
+
+                            <!-- Auto Order -->
+
+                            <td class="text-center">
+
+                                <div class="form-check form-switch d-flex justify-content-center">
+
+                                    <input
+                                        class="form-check-input auto-order-switch"
+
+                                        type="checkbox"
+
+                                        role="switch"
+
+                                        {% if combination.enabled %}
+                                            checked
+                                        {% endif %}
+                                    >
+
+                                </div>
+
+                            </td>
+
+
+                        </tr>
+
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="100%"
+                                class="text-center text-muted py-5"
+                            >
+
+                                <i class="fas fa-box-open fa-2x mb-3"></i>
+
+                                <p class="mb-0">
+
+                                    No stock found for this brand.
+
+                                </p>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+/* ===================================================== */
+/* STOCK INPUT */
+/* ===================================================== */
+
+.stock-input {
+
+    width: 110px;
+
+    margin: auto;
+
+    text-align: center;
+
+}
+
+
+/* ===================================================== */
+/* AUTO ORDER SWITCH */
+/* ===================================================== */
+
+.form-switch .form-check-input {
+
+    width: 42px;
+
+    height: 22px;
+
+    cursor: pointer;
+
+}
+
+
+.form-switch .form-check-input:checked {
+
+    background-color: #28a745;
+
+    border-color: #28a745;
+
+}
+
+
+/* ===================================================== */
+/* INVALID INPUT */
+/* ===================================================== */
+
+.is-invalid {
+
+    border-color: #dc3545 !important;
+
+}
+
+
+/* ===================================================== */
+/* ROW TRANSITION */
+/* ===================================================== */
+
+.purchase-setting-row {
+
+    transition: opacity 0.15s ease;
+
+}
+
+
+/* ===================================================== */
+/* FILTER INPUT */
+/* ===================================================== */
+
+#stockSearch {
+
+    min-height: 38px;
+
+}
+
+</style>
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        /* ===================================================== */
+        /* ELEMENTS */
+        /* ===================================================== */
+
+        const rows = Array.from(
+            document.querySelectorAll(
+                ".purchase-setting-row"
+            )
+        );
+
+
+        const tableBody = document.querySelector(
+            "table tbody"
+        );
+
+
+        const searchInput =
+            document.getElementById(
+                "stockSearch"
+            );
+
+
+        const autoFilter =
+            document.getElementById(
+                "autoFilter"
+            );
+
+
+        const stockFilter =
+            document.getElementById(
+                "stockFilter"
+            );
+
+
+        const stockSort =
+            document.getElementById(
+                "stockSort"
+            );
+
+
+        const visibleCount =
+            document.getElementById(
+                "visibleCount"
+            );
+
+
+        const clearFilters =
+            document.getElementById(
+                "clearFilters"
+            );
+
+
+        /* ===================================================== */
+        /* CSRF TOKEN */
+        /* ===================================================== */
+
+        const csrfTokenElement =
+            document.querySelector(
+                "[name=csrfmiddlewaretoken]"
+            );
+
+
+        const csrfToken =
+            csrfTokenElement
+                ? csrfTokenElement.value
+                : "";
+
+
+        /* ===================================================== */
+        /* AUTO ORDER SUPPLIER SETTINGS */
+        /* ===================================================== */
+
+        const defaultSupplier =
+            document.getElementById(
+                "defaultSupplier"
+            );
+
+
+        const whatsappMobile =
+            document.getElementById(
+                "whatsappMobile"
+            );
+
+
+        const minimumOrderQty =
+            document.getElementById(
+                "minimumOrderQty"
+            );
+
+
+        const perBoxContain =
+            document.getElementById(
+                "perBoxContain"
+            );
+
+
+        const supplierSettingStatus =
+            document.getElementById(
+                "supplierSettingStatus"
+            );
+
+
+        const saveWhatsapp =
+            document.getElementById(
+                "saveWhatsapp"
+            );
+
+
+        /* ===================================================== */
+        /* SAVE BRAND SUPPLIER SETTINGS */
+        /* ===================================================== */
+
+        function saveSupplierSettings() {
+
+            if (!defaultSupplier) {
+                return;
+            }
+
+
+            const supplierId =
+                defaultSupplier.value;
+
+
+            if (!supplierId) {
+
+                supplierSettingStatus.innerHTML = `
+                    <div class="alert alert-warning py-2 mb-0">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Please select a default supplier.
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            const mobile =
+                whatsappMobile
+                    ? whatsappMobile.value.trim()
+                    : "";
+
+
+            const minimumQty =
+                parseFloat(
+                    minimumOrderQty.value || 0
+                );
+
+
+            const perBox =
+                parseInt(
+                    perBoxContain.value || 1,
+                    10
+                );
+
+
+            if (minimumQty < 0) {
+
+                supplierSettingStatus.innerHTML = `
+                    <div class="alert alert-warning py-2 mb-0">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Minimum Order Qty cannot be negative.
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            if (perBox < 1) {
+
+                supplierSettingStatus.innerHTML = `
+                    <div class="alert alert-warning py-2 mb-0">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Per Box Contains must be at least 1.
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            const formData =
+                new FormData();
+
+
+            formData.append(
+                "supplier_id",
+                supplierId
+            );
+
+
+            formData.append(
+                "whatsapp_mobile",
+                mobile
+            );
+
+
+            formData.append(
+                "minimum_order_qty",
+                minimumQty
+            );
+
+
+            formData.append(
+                "per_box_contain",
+                perBox
+            );
+
+
+            formData.append(
+                "csrfmiddlewaretoken",
+                csrfToken
+            );
+
+
+            fetch(
+                "{% url 'save_purchase_order_supplier_setting' inventory.id brand.id %}",
+                {
+                    method: "POST",
+
+                    body: formData,
+
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest"
+                    }
+                }
+            )
+
+            .then(
+                function (response) {
+                    return response.json();
+                }
+            )
+
+            .then(
+                function (data) {
+
+                    if (data.success) {
+
+                        supplierSettingStatus.innerHTML = `
+                            <div class="alert alert-success py-2 mb-0">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Supplier settings saved.
+                            </div>
+                        `;
+
+
+                        setTimeout(
+                            function () {
+
+                                supplierSettingStatus.innerHTML = "";
+
+                            },
+                            2500
+                        );
+
+                    }
+
+                    else {
+
+                        supplierSettingStatus.innerHTML = `
+                            <div class="alert alert-danger py-2 mb-0">
+                                ${data.message || "Unable to save settings."}
+                            </div>
+                        `;
+
+                    }
+
+                }
+            )
+
+            .catch(
+                function (error) {
+
+                    console.error(
+                        "Supplier setting error:",
+                        error
+                    );
+
+                    supplierSettingStatus.innerHTML = `
+                        <div class="alert alert-danger py-2 mb-0">
+                            Unable to save settings.
+                        </div>
+                    `;
+
+                }
+            );
+
+        }
+
+
+        /* ===================================================== */
+        /* SUPPLIER CHANGE */
+        /* ===================================================== */
+
+        if (defaultSupplier) {
+
+            defaultSupplier.addEventListener(
+                "change",
+                saveSupplierSettings
+            );
+
+        }
+
+
+        /* ===================================================== */
+        /* WHATSAPP */
+        /* ===================================================== */
+
+        if (whatsappMobile) {
+
+            whatsappMobile.addEventListener(
+                "change",
+                saveSupplierSettings
+            );
+
+        }
+
+
+        /* ===================================================== */
+        /* MINIMUM ORDER QTY */
+        /* ===================================================== */
+
+        if (minimumOrderQty) {
+
+            minimumOrderQty.addEventListener(
+                "change",
+                saveSupplierSettings
+            );
+
+        }
+
+
+        /* ===================================================== */
+        /* BRAND DEFAULT PER BOX */
+        /* ===================================================== */
+
+        if (perBoxContain) {
+
+            perBoxContain.addEventListener(
+                "change",
+                saveSupplierSettings
+            );
+
+        }
+
+
+        /* ===================================================== */
+        /* SAVE WHATSAPP BUTTON */
+        /* ===================================================== */
+
+        if (saveWhatsapp) {
+
+            saveWhatsapp.addEventListener(
+                "click",
+                saveSupplierSettings
+            );
+
+        }
+
+
+        /* ===================================================== */
+        /* ROW AUTO SAVE */
+        /* ===================================================== */
+
+        /* ===================================================== */
+        /* AUTO SAVE */
+        /* ===================================================== */
+
+        rows.forEach(function (row) {
+
+            const minimumInput =
+                row.querySelector(".minimum-stock");
+
+            const maximumInput =
+                row.querySelector(".maximum-stock");
+
+            const perBoxInput =
+                row.querySelector(".per-box-contain");
+
+            const autoSwitch =
+                row.querySelector(".auto-order-switch");
+
+            let saveTimer = null;
+
+            function autoSave() {
+
+                clearTimeout(saveTimer);
+
+                saveTimer = setTimeout(function () {
+
+                    /* ============================= */
+                    /* VALUES */
+                    /* ============================= */
+
+                    const minimumValue =
+                        minimumInput
+                            ? minimumInput.value.trim()
+                            : "0";
+
+                    const maximumValue =
+                        maximumInput
+                            ? maximumInput.value.trim()
+                            : "0";
+
+                    const perBoxValue =
+                        perBoxInput
+                            ? perBoxInput.value.trim()
+                            : "";
+
+                    const minimumStock =
+                        minimumValue === ""
+                            ? 0
+                            : Number(minimumValue);
+
+                    const maximumStock =
+                        maximumValue === ""
+                            ? 0
+                            : Number(maximumValue);
+
+                    /* ============================= */
+                    /* VALIDATION */
+            /* ============================= */
+
+            if (
+                !Number.isFinite(minimumStock) ||
+                !Number.isFinite(maximumStock)
+            ) {
+
+                console.error(
+                    "Invalid stock value"
+                );
+
+                return;
+            }
+
+            if (minimumStock < 0) {
+                return;
+            }
+
+            if (maximumStock < minimumStock) {
+
+                maximumInput.classList.add(
+                    "is-invalid"
+                );
+
+                return;
+            }
+
+            maximumInput.classList.remove(
+                "is-invalid"
+            );
+
+            /* ============================= */
+            /* PER BOX */
+            /* ============================= */
+
+            let perBox = "";
+
+            if (perBoxValue !== "") {
+
+                perBox = Number(
+                    perBoxValue
+                );
+
+                if (
+                    !Number.isInteger(perBox) ||
+                    perBox < 1
+                ) {
+
+                    perBoxInput.classList.add(
+                        "is-invalid"
+                    );
+
+                    return;
+                }
+
+                perBoxInput.classList.remove(
+                    "is-invalid"
+                );
+            }
+
+            /* ============================= */
+            /* FORM DATA */
+            /* ============================= */
+
+            const formData =
+                new FormData();
+
+            formData.append(
+                "brand_id",
+                row.dataset.brandId || ""
+            );
+
+            formData.append(
+                "attribute_ids",
+                row.dataset.attributeIds || ""
+            );
+
+            formData.append(
+                "minimum_stock",
+                minimumStock
+            );
+
+            formData.append(
+                "maximum_stock",
+                maximumStock
+            );
+
+            formData.append(
+                "enabled",
+                autoSwitch &&
+                autoSwitch.checked
+                    ? "1"
+                    : "0"
+            );
+
+            formData.append(
+                "per_box_contain",
+                perBox
+            );
+
+            formData.append(
+                "csrfmiddlewaretoken",
+                csrfToken
+            );
+
+            /* ============================= */
+            /* DEBUG */
+            /* ============================= */
+
+            console.log(
+                "AUTO SAVE",
+                {
+                    brand_id:
+                        row.dataset.brandId,
+
+                    attribute_ids:
+                        row.dataset.attributeIds,
+
+                    minimum_stock:
+                        minimumStock,
+
+                    maximum_stock:
+                        maximumStock,
+
+                    enabled:
+                        autoSwitch
+                            ? autoSwitch.checked
+                            : false,
+
+                    per_box_contain:
+                        perBox
+                }
+            );
+
+            /* ============================= */
+            /* SAVE */
+            /* ============================= */
+
+            fetch(
+                row.dataset.autoSaveUrl,
+                {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest"
+                    }
+                }
+            )
+            .then(function (response) {
+
+                return response.text().then(function (text) {
+
+                    let data;
+
+                    try {
+                        data = JSON.parse(text);
+                    }
+                    catch (error) {
+
+                        console.error(
+                            "Server response:",
+                            text
+                        );
+
+                        throw new Error(
+                            "Server returned invalid response."
+                        );
+                    }
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            data.message ||
+                            "Auto save failed."
+                        );
+                    }
+
+                    return data;
+                });
+
+            })
+            .then(function (data) {
+
+                console.log(
+                    "AUTO SAVE RESPONSE:",
+                    data
+                );
+
+                if (data.success) {
+
+                    row.dataset.minimumStock =
+                        minimumStock;
+
+                    row.dataset.maximumStock =
+                        maximumStock;
+
+                    row.dataset.enabled =
+                        autoSwitch &&
+                        autoSwitch.checked
+                            ? "1"
+                            : "0";
+
+                    if (perBoxInput) {
+
+                        if (perBox === "") {
+
+                            perBoxInput.classList.remove(
+                                "is-invalid"
+                            );
+
+                        }
+                    }
+
+                    applyFilterAndSort();
+
+                }
+                else {
+
+                    console.error(
+                        "Auto save failed:",
+                        data.message
+                    );
+                }
+
+            })
+            .catch(function (error) {
+
+                console.error(
+                    "AUTO SAVE ERROR:",
+                    error
+                );
+
+            });
+
+        }, 400);
+    }
+
+    /* ================================================= */
+    /* EVENTS */
+    /* ================================================= */
+
+    if (minimumInput) {
+
+        minimumInput.addEventListener(
+            "change",
+            autoSave
+        );
+
+    }
+
+    if (maximumInput) {
+
+        maximumInput.addEventListener(
+            "change",
+            autoSave
+        );
+
+    }
+
+    if (perBoxInput) {
+
+        perBoxInput.addEventListener(
+            "change",
+            autoSave
+        );
+
+    }
+
+    if (autoSwitch) {
+
+        autoSwitch.addEventListener(
+            "change",
+            autoSave
+        );
+
+    }
+
+});
+
+
+        /* ===================================================== */
+        /* FILTER + SORT */
+        /* ===================================================== */
+
+        function applyFilterAndSort() {
+
+
+            const search =
+                searchInput.value
+                    .trim()
+                    .toLowerCase();
+
+
+            const autoValue =
+                autoFilter.value;
+
+
+            const stockValue =
+                stockFilter.value;
+
+
+            const sortValue =
+                stockSort.value;
+
+
+            /* ================================================= */
+            /* FILTER */
+            /* ================================================= */
+
+            let filteredRows =
+                rows.filter(
+                    function (row) {
+
+
+                        /* ============================ */
+                        /* SEARCH */
+                        /* ============================ */
+
+                        const rowText =
+                            row.textContent
+                                .trim()
+                                .toLowerCase();
+
+
+                        if (
+                            search &&
+                            !rowText.includes(
+                                search
+                            )
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        /* ============================ */
+                        /* AUTO ORDER */
+                        /* ============================ */
+
+                        const enabled =
+                            row.dataset.enabled === "1";
+
+
+                        if (
+                            autoValue === "on" &&
+                            !enabled
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        if (
+                            autoValue === "off" &&
+                            enabled
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        /* ============================ */
+                        /* STOCK */
+                        /* ============================ */
+
+                        const current =
+                            parseFloat(
+                                row.dataset.currentStock || 0
+                            );
+
+
+                        const minimum =
+                            parseFloat(
+                                row.dataset.minimumStock || 0
+                            );
+
+
+                        /* ============================ */
+                        /* STOCK FILTER */
+                        /* ============================ */
+
+                        if (
+                            stockValue === "low" &&
+                            current >= minimum
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        if (
+                            stockValue === "minimum" &&
+                            current > minimum
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        if (
+                            stockValue === "normal" &&
+                            current <= minimum
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        return true;
+
+                    }
+                );
+
+
+            /* ================================================= */
+            /* SORT */
+            /* ================================================= */
+
+            filteredRows.sort(
+                function (a, b) {
+
+
+                    let valueA;
+
+                    let valueB;
+
+
+                    /* ============================= */
+                    /* CURRENT STOCK */
+                    /* ============================= */
+
+                    if (
+                        sortValue ===
+                            "current-asc" ||
+
+                        sortValue ===
+                            "current-desc"
+                    ) {
+
+                        valueA =
+                            parseFloat(
+                                a.dataset.currentStock || 0
+                            );
+
+
+                        valueB =
+                            parseFloat(
+                                b.dataset.currentStock || 0
+                            );
+
+                    }
+
+
+                    /* ============================= */
+                    /* MINIMUM STOCK */
+                    /* ============================= */
+
+                    else if (
+                        sortValue ===
+                            "minimum-asc" ||
+
+                        sortValue ===
+                            "minimum-desc"
+                    ) {
+
+                        valueA =
+                            parseFloat(
+                                a.dataset.minimumStock || 0
+                            );
+
+
+                        valueB =
+                            parseFloat(
+                                b.dataset.minimumStock || 0
+                            );
+
+                    }
+
+
+                    /* ============================= */
+                    /* MAXIMUM STOCK */
+                    /* ============================= */
+
+                    else if (
+                        sortValue ===
+                            "maximum-asc" ||
+
+                        sortValue ===
+                            "maximum-desc"
+                    ) {
+
+                        valueA =
+                            parseFloat(
+                                a.dataset.maximumStock || 0
+                            );
+
+
+                        valueB =
+                            parseFloat(
+                                b.dataset.maximumStock || 0
+                            );
+
+                    }
+
+
+                    /* ============================= */
+                    /* ATTRIBUTE */
+                    /* ============================= */
+
+                    else if (
+                        sortValue ===
+                            "attribute-asc" ||
+
+                        sortValue ===
+                            "attribute-desc"
+                    ) {
+
+                        valueA =
+                            a.textContent
+                                .trim()
+                                .toLowerCase();
+
+
+                        valueB =
+                            b.textContent
+                                .trim()
+                                .toLowerCase();
+
+                    }
+
+
+                    else {
+
+                        return 0;
+
+                    }
+
+
+                    /* ============================= */
+                    /* ASCENDING */
+                    /* ============================= */
+
+                    if (
+                        sortValue.endsWith(
+                            "-asc"
+                        )
+                    ) {
+
+                        if (
+                            valueA < valueB
+                        ) {
+
+                            return -1;
+
+                        }
+
+
+                        if (
+                            valueA > valueB
+                        ) {
+
+                            return 1;
+
+                        }
+
+                    }
+
+
+                    /* ============================= */
+                    /* DESCENDING */
+                    /* ============================= */
+
+                    if (
+                        sortValue.endsWith(
+                            "-desc"
+                        )
+                    ) {
+
+                        if (
+                            valueA > valueB
+                        ) {
+
+                            return -1;
+
+                        }
+
+
+                        if (
+                            valueA < valueB
+                        ) {
+
+                            return 1;
+
+                        }
+
+                    }
+
+
+                    return 0;
+
+                }
+            );
+
+
+            /* ================================================= */
+            /* REORDER TABLE */
+            /* ================================================= */
+
+            filteredRows.forEach(
+                function (row) {
+
+                    tableBody.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+
+            /* ================================================= */
+            /* HIDE NON-MATCHING */
+            /* ================================================= */
+
+            rows.forEach(
+                function (row) {
+
+
+                    if (
+                        filteredRows.includes(
+                            row
+                        )
+                    ) {
+
+                        row.style.display = "";
+
+                    }
+
+                    else {
+
+                        row.style.display = "none";
+
+                    }
+
+                }
+            );
+
+
+            /* ================================================= */
+            /* COUNT */
+            /* ================================================= */
+
+            visibleCount.textContent =
+                filteredRows.length;
+
+        }
+
+
+        /* ===================================================== */
+        /* SEARCH */
+        /* ===================================================== */
+
+        searchInput.addEventListener(
+            "input",
+            applyFilterAndSort
+        );
+
+
+        /* ===================================================== */
+        /* AUTO FILTER */
+        /* ===================================================== */
+
+        autoFilter.addEventListener(
+            "change",
+            applyFilterAndSort
+        );
+
+
+        /* ===================================================== */
+        /* STOCK FILTER */
+        /* ===================================================== */
+
+        stockFilter.addEventListener(
+            "change",
+            applyFilterAndSort
+        );
+
+
+        /* ===================================================== */
+        /* SORT */
+        /* ===================================================== */
+
+        stockSort.addEventListener(
+            "change",
+            applyFilterAndSort
+        );
+
+
+        /* ===================================================== */
+        /* CLEAR FILTERS */
+        /* ===================================================== */
+
+        clearFilters.addEventListener(
+            "click",
+            function () {
+
+
+                searchInput.value = "";
+
+                autoFilter.value = "all";
+
+                stockFilter.value = "all";
+
+                stockSort.value = "default";
+
+
+                applyFilterAndSort();
+
+            }
+        );
+
+
+        /* ===================================================== */
+        /* INITIAL COUNT */
+        /* ===================================================== */
+
+        applyFilterAndSort();
+
+
+    }
+);
+
+</script>
+
+{% endblock content %}

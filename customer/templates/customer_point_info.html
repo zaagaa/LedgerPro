@@ -1,0 +1,159 @@
+{% extends "layouts2/main.html" %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="mb-3">Customer Point Info</h5>
+                <p><strong>Total Points:</strong> {{ total_points|floatformat:2 }}</p>
+
+<form method="get" class="row g-3 align-items-end mb-4 bg-light p-3 rounded border">
+
+
+
+    <!-- Period -->
+    <div class="col-auto">
+        <label class="form-label fw-bold">Period</label>
+        <select name="filter" class="form-select" id="filterSelect">
+            <option value="all" {% if filter_type == "all" %}selected{% endif %}>All Time</option>
+            <option value="last_1_year" {% if filter_type == "last_1_year" %}selected{% endif %}>Last 1 Year</option>
+            <option value="last_2_years" {% if filter_type == "last_2_years" %}selected{% endif %}>Last 2 Years</option>
+            <option value="custom" {% if filter_type == "custom" %}selected{% endif %}>Custom Period</option>
+        </select>
+    </div>
+
+        <!-- Entry Type -->
+    <div class="col-auto">
+        <label class="form-label fw-bold">Entry Type</label><br>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="entry_type" value="" id="entryAll"
+                   {% if not entry_type %}checked{% endif %}>
+            <label class="form-check-label" for="entryAll">All</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="entry_type" value="with" id="withEntry"
+                   {% if entry_type == "with" %}checked{% endif %}>
+            <label class="form-check-label" for="withEntry">Include</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="entry_type" value="without" id="withoutEntry"
+                   {% if entry_type == "without" %}checked{% endif %}>
+            <label class="form-check-label" for="withoutEntry">Exclude</label>
+        </div>
+    </div>
+
+    <!-- Custom From Date -->
+    <div class="col-auto" id="customFrom" style="display: {% if filter_type == 'custom' %}block{% else %}none{% endif %};">
+        <label class="form-label fw-bold">From</label>
+        <input type="date" name="from_date" class="form-control" value="{{ from_date }}">
+    </div>
+
+    <!-- Custom To Date -->
+    <div class="col-auto" id="customTo" style="display: {% if filter_type == 'custom' %}block{% else %}none{% endif %};">
+        <label class="form-label fw-bold">To</label>
+        <input type="date" name="to_date" class="form-control" value="{{ to_date }}">
+    </div>
+
+    <!-- Order By -->
+    <div class="col-auto">
+        <label class="form-label fw-bold">Order By</label>
+        <select name="order_by" class="form-select">
+            <option value="-point" {% if order_by == "-point" %}selected{% endif %}>Points (High → Low)</option>
+            <option value="point" {% if order_by == "point" %}selected{% endif %}>Points (Low → High)</option>
+            <option value="-last_entry_date" {% if order_by == "-last_entry_date" %}selected{% endif %}>Last Entry (Recent → Old)</option>
+            <option value="last_entry_date" {% if order_by == "last_entry_date" %}selected{% endif %}>Last Entry (Old → Recent)</option>
+        </select>
+    </div>
+
+        <!-- Active Status Filter -->
+    <div class="col-auto">
+        <label class="form-label fw-bold">Status</label>
+        <select name="active" class="form-select">
+            <option value="all" {% if active_filter == "all" %}selected{% endif %}>All</option>
+            <option value="active" {% if active_filter == "active" %}selected{% endif %}>Active</option>
+            <option value="inactive" {% if active_filter == "inactive" %}selected{% endif %}>Inactive</option>
+        </select>
+    </div>
+
+    <!-- Submit -->
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Apply</button>
+    </div>
+</form>
+
+<script>
+    document.getElementById("filterSelect").addEventListener("change", function () {
+        const showCustom = this.value === "custom";
+        document.getElementById("customFrom").style.display = showCustom ? "block" : "none";
+        document.getElementById("customTo").style.display = showCustom ? "block" : "none";
+    });
+</script>
+
+
+
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+<thead class="table-light">
+    <tr>
+        <th>#</th>
+        <th>Customer Name</th>
+        <th>Mobile</th>
+        <th>City</th>
+        <th>Points</th>
+        <th>Last Entry</th>
+    </tr>
+</thead>
+<tbody>
+    {% for customer in page_obj %}
+    <tr>
+        <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
+        <td>{{ customer.customer_name }}</td>
+        <td>{{ customer.mobile }}</td>
+        <td>{{ customer.city }}</td>
+        <td>{{ customer.point|floatformat:2 }}</td>
+        <td>{{ customer.last_entry_date|date:"d M Y, h:i A" }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6" class="text-center">No customers found.</td></tr>
+    {% endfor %}
+</tbody>
+
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?{{ request.GET.urlencode }}&page={{ page_obj.previous_page_number }}">Previous</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+
+        <li class="page-item disabled">
+            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?{{ request.GET.urlencode }}&page={{ page_obj.next_page_number }}">Next</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+    </ul>
+</nav>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
